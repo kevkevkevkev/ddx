@@ -8,7 +8,7 @@
  */
 var mongoose = require('mongoose');    
 
-const uri = process.env.MONGODB_URI;
+const uri = "mongodb://heroku_pb5zl9xf:274rkj6i60o0ohgpor451lge2c@ds157390.mlab.com:57390/heroku_pb5zl9xf";
 
 mongoose.Promise = global.Promise
 
