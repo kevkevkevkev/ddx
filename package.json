@@ -4,7 +4,7 @@
   "description": "Direct Democracy Exchange - Where your ideas become action",
   "main": "webServer.js",
   "scripts": {
-    "start": "node webServer.js && node loadDatabase.js", 
+    "start": "node webServer.js && node loadExampleDB.js", 
     "test": "echo Test your code by opening http://localhost:3000 in your browser.",
     "jshint": "./node_modules/.bin/jshint --config .jshintrc --exclude=node_modules,test . || exit 0",
     "upgrade": "ncu -ua && npm i"
