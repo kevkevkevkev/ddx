@@ -8,7 +8,7 @@
  */
 var mongoose = require('mongoose');    
 
-const uri = "mongodb://heroku_pb5zl9xf:274rkj6i60o0ohgpor451lge2c@ds157390.mlab.com:57390/heroku_pb5zl9xf";
+const uri = "mongodb://<kev>:<19911991k>@ds157390.mlab.com:57390/heroku_pb5zl9xf";
 
 mongoose.Promise = global.Promise
 
@@ -20,6 +20,7 @@ db.on('error', console.error.bind(console, 'connection error:'));
 
 db.once('open', function callback () {
 
+  console.log("Running loadExampleDB.js");
   // Create song schema
   var songSchema = mongoose.Schema({
     decade: String,
