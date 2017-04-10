@@ -1,26 +1,9 @@
+header {
+  padding: 10px 0;
+  background-color: rgb(174, 242, 219);
+}
+
 header h1 {
   font-weight: 700;
-  margin: 0;
-}
-
-.jumbotron {
-  display: flex;
-  align-items: center;
-  background-image: url('https://dl.dropboxusercontent.com/s/ecvce4naeh5uvb4/pedestrian%20crossing.jpg?dl=0');
-  background-size: cover;
-  color: #ffffff;
-  height: 500px;
-  text-shadow: 0.25px 0.25px 0.25px #000000;
-}
-
-.jumbotron h2 {
-  font-size: 60px;
-  font-weight: 700;
-  margin: 0;
-  color: #fff;
-}
-
-.jumbotron h3 {
-  margin: 0 0 20px;
-  color: #fff;
+  margin-left: 20px;
 }

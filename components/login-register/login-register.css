@@ -1,0 +1,51 @@
+.login-container {
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.username-input {
+	margin: 10px;
+}
+
+.password-input {
+	margin: 10px;
+}
+
+.fullname-input {
+	margin: 10px;
+}
+
+.location-input {
+	margin: 10px;
+}
+
+.description-input {
+	margin: 10px;
+}
+
+.occupation-input {
+	margin: 10px;
+}
+
+.login-btn {
+	margin: 5px;
+	margin-left: 10px;
+	padding: 10px;
+	color: #fff;
+	background-color: #6496c8;
+	border: none;
+	border-radius: 15px;
+	box-shadow: 0 2px #27496d;
+  outline: none;
+}
+
+.login-btn:hover {
+	background-color: #417cb8
+}
+
+.login-btn:active {
+	background-color: #417cb8;
+  	box-shadow: 0 1px #27496d;
+  	transform: translateY(1px);
+}

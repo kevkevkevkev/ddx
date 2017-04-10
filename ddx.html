@@ -1,0 +1,42 @@
+<!doctype html>
+<html ng-app="ddxApp" ng-controller="MainController">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="index.css">
+
+        <link href="./node_modules/angular-material/angular-material.css" rel="stylesheet" />
+    
+        <script src="./node_modules/angular/angular.js" type="text/javascript" ></script>
+        <script src="./node_modules/angular-animate/angular-animate.js" type="text/javascript" ></script>
+        <script src="./node_modules/angular-aria/angular-aria.js" type="text/javascript" ></script>
+        <script src="./node_modules/angular-material/angular-material.js" type="text/javascript" ></script>
+        <script src="./node_modules/angular-messages/angular-messages.js"></script>
+        <script src="./node_modules/angular-route/angular-route.js"></script>
+        <script src="./node_modules/angular-resource/angular-resource.js"></script>
+
+        <script src="mainController.js"></script>
+        <link rel="stylesheet" type="text/css" href="main.css" />
+
+        <script src="components/login-register/login-registerController.js"></script>
+        <link rel="stylesheet" type="text/css" href="components/login-register/login-register.css" />
+
+    </head>
+
+    <body>
+        <header class="navbar">
+            <div class="row">
+              <h1 class="col-sm-8">DDX</h1>
+            </div>
+        </header>    
+
+         <section class="container" flex layout="row">
+            <md-content flex id="content">
+                <div ng-view></div>
+            </md-content>
+        </div>       
+    </body>
+</html>

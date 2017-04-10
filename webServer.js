@@ -28,10 +28,9 @@ var processFormBody = multer({storage: multer.memoryStorage()}).single('uploaded
 var fs = require("fs");
 
 
-// TODO: Load the Mongoose schema for User, Photo, and SchemaInfo
-// var User = require('./schema/user.js');
-// var Photo = require('./schema/photo.js');
-// var SchemaInfo = require('./schema/schemaInfo.js');
+// Load the Mongoose schema for User, Photo, and SchemaInfo
+var User = require('./schema/user.js');
+var SchemaInfo = require('./schema/schemaInfo.js');
 
 var express = require('express');
 var app = express();
@@ -64,6 +63,98 @@ app.get('/session', function(request, response) {
     } else {
         response.end(JSON.stringify(false));
     }
+});
+
+/***********************************
+ * Login and Registration Handling *
+ ***********************************/
+
+/* If a user has entered a valid login_name and password combination,
+ * logs in as that account. 
+ */
+app.post('/admin/login', function (request, response) {
+
+    var username = request.body.login_name;
+    var password = request.body.password;
+
+    // Try to find a user with that login_name
+    User.findOne({login_name: username, password: password}, function (err, user) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        // If no user found, report an error.
+        if (!user) {
+            response.status(400).send('Missing user');
+            return;
+        }
+        if (user.length === 0) {
+            // Query didn't return an error but didn't find the SchemaInfo object - This
+            // is also an internal error return.
+            console.log("user.length === 0");
+            response.status(400).send('Missing user');
+            return;
+        }
+
+        // Create new session, which will be part of the request, so we have access on all routes
+        request.session.login_name = username;
+        request.session.user_id = user._id;
+        request.session.user = user;
+
+        // Send session back
+        console.log('user', user);
+        //response.send(session);
+        response.end(JSON.stringify(user));
+    }); 
+});
+
+// Logout from the current account
+app.post('/admin/logout', function (request, response) {
+
+    if (!request.session.login_name) {
+        response.status(401).send("No user logged in");
+        return;
+    } else {
+        request.session.destroy(function (err) {
+            if (err) {
+                response.status(500).send(err);
+                return;
+            }
+            response.send("Logout success");
+        });
+    }
+});
+
+// Register a new user
+app.post('/user', function (request, response) {
+
+    console.log("app.post: registering a new user");
+
+    // If a user with the entered login name already exists, return an error
+    User.findOne({login_name: request.body.login_name}, function (err, user) {
+        if (user) {
+            response.status(400).send('That user already exists');
+            return;
+        }
+    });
+
+    var user_attributes = {
+        first_name: request.body.first_name, // First name of the user.
+        last_name: request.body.last_name,  // Last name of the user.
+        location: request.body.location,    // Location  of the user.
+        description: request.body.description,  // A brief user description
+        occupation: request.body.occupation,    // Occupation of the user.
+        login_name: request.body.login_name, // The login_name of the user.
+        password: request.body.password    // The password of the user
+    };
+
+    function doneCallback(err, newUser) {
+        console.log("Created userObject with ID", newUser._id);
+        response.end(JSON.stringify(newUser));
+    }
+
+    User.create(user_attributes, doneCallback);
 });
 
 var server = app.listen(process.env.PORT || 3000, function () {

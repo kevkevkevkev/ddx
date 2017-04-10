@@ -1,0 +1,89 @@
+<div class="login-container" ng-if="!main.registerView">
+    <form ng-submit="LoginRegisterController.login()" name="loginForm">
+        <div layout-gt-xs="row">
+            <md-input-container class="register-username-input" flex-gt-xs="">
+                <label>Username</label>
+                <input ng-model="LoginRegisterController.usernameTextInput" required="">
+            </md-input-container>
+        </div>
+
+        <div layout-gt-xs="row">        
+            <md-input-container class="register-password-input" flex-gt-xs="">
+                <label>Password</label>
+                <input ng-model="LoginRegisterController.passwordTextInput" required="" type="password">
+                <div ng-messages="loginForm.LoginRegisterController.login().$error">
+                    <div ng-message="pattern">
+                        Incorrect password.
+                    </div>
+                </div>
+            </md-input-container>
+        </div>
+    </form>
+
+    <div class="login-register-buttons">
+        <button class="login-btn" type="button" ng-model="loginBtn" ng-click="LoginRegisterController.login()">Login</button>
+        <button class="login-btn" type="button" ng-model="registerBtn" ng-click="LoginRegisterController.switchToRegisterView()">Register</button>
+    </div>
+</div>
+
+<md-content layout-padding="" ng-if="main.registerView">
+    <div>
+        <form name="registerForm">
+            <div layout-gt-xs="row">
+                <md-input-container class="register-username-input" flex-gt-xs="">
+                    <label>Username</label>
+                    <input ng-model="LoginRegisterController.usernameTextInput" required="">
+                </md-input-container>
+
+                <md-input-container class="register-password-input" flex-gt-xs="">
+                    <label>Password</label>
+                    <input ng-model="LoginRegisterController.passwordTextInput" required="" type="password">
+                </md-input-container>
+
+                <md-input-container class="register-password-input" flex-gt-xs="">
+                    <label>Re-enter password</label>
+                    <input ng-model="LoginRegisterController.confirmPasswordTextInput" required="" type="password" ng-pattern="{{LoginRegisterController.passwordTextInput}}">
+                
+                    <div ng-messages="registerForm.LoginRegisterController.confirmPasswordTextInput.$error">
+                        <div ng-message="pattern">
+                            Confirmation does not match your password.
+                        </div>
+                    </div>
+                </md-input-container>
+            </div>
+
+            <div layout-gt-xs="row">
+                <md-input-container class="register-first-name-input" flex-gt-xs="">
+                    <label>Your first name</label>
+                    <input ng-model="LoginRegisterController.firstNameInput" required="">
+                </md-input-container>
+                <md-input-container class="register-last-name-input" flex-gt-xs="">
+                    <label>Your last name</label>
+                    <input ng-model="LoginRegisterController.lastNameInput" required="">
+                </md-input-container>
+            </div>
+
+            <div layout-gt-xs="row">
+                <md-input-container class="register-location-input" flex-gt-xs="">
+                    <label>Your location</label>
+                    <input ng-model="LoginRegisterController.locationInput">
+                </md-input-container>
+                <md-input-container class="register-occupation-input" flex-gt-xs="">
+                    <label>Occupation</label>
+                    <input ng-model="LoginRegisterController.occupationInput">
+                </md-input-container>
+            </div>
+
+            <div layout-gt-xs="row">
+                <md-input-container class="register-description-input" flex-gt-xs="">
+                    <label>Description</label>
+                    <textarea ng-model="LoginRegisterController.descriptionInput" md-maxlength="200" rows="5" md-select-on-focus=""></textarea>
+                </md-input-container>
+            </div>
+
+            <div>
+                <md-button type="submit" ng-click="LoginRegisterController.register()">Register Me</md-button>
+            </div>
+        </form>
+    </div>
+</md-content>
