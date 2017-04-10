@@ -5,7 +5,6 @@
   "main": "webServer.js",
   "scripts": {
     "start": "node webServer.js", 
-    "start": "node loadDatabase.js", 
     "test": "echo Test your code by opening http://localhost:3000 in your browser.",
     "jshint": "./node_modules/.bin/jshint --config .jshintrc --exclude=node_modules,test . || exit 0",
     "upgrade": "ncu -ua && npm i"
