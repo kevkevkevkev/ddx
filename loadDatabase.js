@@ -32,7 +32,5 @@ var versionString = '1.0';
 var removePromises = [User.remove({}), SchemaInfo.remove({})];
 
 Promise.all(removePromises).then(function () {
-    allPromises.then(function () {
-        mongoose.disconnect();
-    });
+    mongoose.disconnect();  
 });
