@@ -37,7 +37,7 @@ ddxApp.controller('LoginRegisterController', ['$scope', '$rootScope', '$routePar
 
       $scope.main.active_user_name = "Create new profile";
 
-      var register_resource = $resource('/user');
+      var register_resource = $resource('/admin/register');
       var register_data = {
         email_address: $scope.LoginRegisterController.email_addressTextInput, 
         password: $scope.LoginRegisterController.confirmPasswordTextInput, 

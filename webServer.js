@@ -48,8 +48,8 @@ app.use(express.static(__dirname));
 // session state across different request handlers, so you can know whether or not
 // a user is logged in.
 app.use(session({
-    //secret: 'secretKey', 
-    secret: process.env.SECRET_KEY,
+    secret: 'secretKey', 
+    //secret: process.env.SECRET_KEY,
     resave: false,
     saveUninitialized: false
 }));
@@ -132,7 +132,7 @@ app.post('/admin/logout', function (request, response) {
 });
 
 // Register a new user
-app.post('admin/register', function (request, response) {
+app.post('/admin/register', function (request, response) {
 
     console.log("app.post: registering a new user");
 

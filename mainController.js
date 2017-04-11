@@ -10,6 +10,10 @@ ddxApp.config(['$locationProvider', function($locationProvider) {
 ddxApp.config(['$routeProvider',
     function ($routeProvider) {
         $routeProvider.
+            when('/users/:userId', {
+                templateUrl: 'components/user-detail/user-detailTemplate.html',
+                controller: 'UserDetailController'
+            }).
             when('/login-register', {
                 templateUrl: 'components/login-register/login-registerTemplate.html',
                 controller: 'LoginRegisterController'
