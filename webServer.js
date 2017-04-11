@@ -137,7 +137,7 @@ app.post('/admin/register', function (request, response) {
     console.log("app.post: registering a new user");
 
     // If a user with the entered login name already exists, return an error
-    User.findOne({login_name: request.body.login_name}, function (err, user) {
+    User.findOne({email_address: request.body.email_address}, function (err, user) {
         if (user) {
             response.status(400).send('That user already exists');
             return;
