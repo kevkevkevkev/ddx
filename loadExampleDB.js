@@ -103,6 +103,7 @@ db.once('open', function callback () {
 
           // Only close the connection when your app is terminating
           mongoose.connection.db.close(function (err) {
+            console.log("loadExampleDB: Closing connection");
             if(err) throw err;
           });
         //});
