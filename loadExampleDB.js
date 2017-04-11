@@ -28,7 +28,7 @@ db.once('open', function callback () {
     first_name: 'Kevin', // First name of the user.
     last_name: 'O\'Connell',  // Last name of the user.
     description: 'Student',  // A brief user description
-    password: 'weak', // The password of the user
+    password: 'weak' // The password of the user
   });
 
   User.create(kevin);

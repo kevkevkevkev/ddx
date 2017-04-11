@@ -8,13 +8,11 @@ ddxApp.controller('LoginRegisterController', ['$scope', '$rootScope', '$routePar
 
     // Initialize scope variables to keep track of username and password entry
     $scope.LoginRegisterController = {};
-    $scope.LoginRegisterController.usernameTextInput = "";
+    $scope.LoginRegisterController.email_addressTextInput = "";
     $scope.LoginRegisterController.passwordTextInput = "";
     $scope.LoginRegisterController.confirmPasswordTextInput = "";
     $scope.LoginRegisterController.firstNameInput = "";
     $scope.LoginRegisterController.lastNameInput = "";
-    $scope.LoginRegisterController.locationInput = "";
-    $scope.LoginRegisterController.occupationInput = "";
     $scope.LoginRegisterController.descriptionInput = "";
     $scope.LoginRegisterController.newRegisteredUser = [];
 
@@ -22,7 +20,7 @@ ddxApp.controller('LoginRegisterController', ['$scope', '$rootScope', '$routePar
       console.log("Submitting login() request");
       var login_resource = $resource('/admin/login');
       var login_data = {
-        login_name: $scope.LoginRegisterController.usernameTextInput, 
+        email_address: $scope.LoginRegisterController.email_addressTextInput, 
         password: $scope.LoginRegisterController.passwordTextInput
       };
       
@@ -41,13 +39,11 @@ ddxApp.controller('LoginRegisterController', ['$scope', '$rootScope', '$routePar
 
       var register_resource = $resource('/user');
       var register_data = {
-        login_name: $scope.LoginRegisterController.usernameTextInput, 
+        email_address: $scope.LoginRegisterController.email_addressTextInput, 
         password: $scope.LoginRegisterController.confirmPasswordTextInput, 
         first_name: $scope.LoginRegisterController.firstNameInput, 
         last_name: $scope.LoginRegisterController.lastNameInput, 
-        location: $scope.LoginRegisterController.locationInput,
         description: $scope.LoginRegisterController.descriptionInput, 
-        occupation: $scope.LoginRegisterController.occupationInput
       };
 
       $scope.main.active_user = register_resource.save(register_data, function () {

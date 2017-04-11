@@ -1,9 +1,9 @@
 <div class="login-container" ng-if="!main.registerView">
     <form ng-submit="LoginRegisterController.login()" name="loginForm">
         <div layout-gt-xs="row">
-            <md-input-container class="register-username-input" flex-gt-xs="">
-                <label>Username</label>
-                <input ng-model="LoginRegisterController.usernameTextInput" required="">
+            <md-input-container class="register-email_address-input" flex-gt-xs="">
+                <label>Email Address</label>
+                <input ng-model="LoginRegisterController.email_addressTextInput" required="">
             </md-input-container>
         </div>
 
@@ -30,9 +30,9 @@
     <div>
         <form name="registerForm">
             <div layout-gt-xs="row">
-                <md-input-container class="register-username-input" flex-gt-xs="">
-                    <label>Username</label>
-                    <input ng-model="LoginRegisterController.usernameTextInput" required="">
+                <md-input-container class="register-email_address-input" flex-gt-xs="">
+                    <label>Email Address</label>
+                    <input ng-model="LoginRegisterController.email_addressTextInput" required="">
                 </md-input-container>
 
                 <md-input-container class="register-password-input" flex-gt-xs="">
@@ -60,17 +60,6 @@
                 <md-input-container class="register-last-name-input" flex-gt-xs="">
                     <label>Your last name</label>
                     <input ng-model="LoginRegisterController.lastNameInput" required="">
-                </md-input-container>
-            </div>
-
-            <div layout-gt-xs="row">
-                <md-input-container class="register-location-input" flex-gt-xs="">
-                    <label>Your location</label>
-                    <input ng-model="LoginRegisterController.locationInput">
-                </md-input-container>
-                <md-input-container class="register-occupation-input" flex-gt-xs="">
-                    <label>Occupation</label>
-                    <input ng-model="LoginRegisterController.occupationInput">
                 </md-input-container>
             </div>
 

@@ -12,7 +12,7 @@ var userSchema = new mongoose.Schema({
     first_name: String, // First name of the user.
     last_name: String,  // Last name of the user.
     description: String,  // A brief user description
-    password: String,	// The password of the user
+    password: String	// The password of the user
 });
 
 // the schema is useless so far
