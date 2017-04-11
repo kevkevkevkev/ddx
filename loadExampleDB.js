@@ -87,8 +87,8 @@ db.once('open', function callback () {
         });
 
         // Since this is an example, we'll clean up after ourselves.
-        mongoose.connection.db.collection('songs').drop(function (err) {
-          if(err) throw err;
+        // mongoose.connection.db.collection('songs').drop(function (err) {
+        //   if(err) throw err;
 
           // Only close the connection when your app is terminating
           mongoose.connection.db.close(function (err) {
