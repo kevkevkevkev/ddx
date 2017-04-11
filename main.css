@@ -1,6 +1,14 @@
+.navbar {
+	margin-bottom: 0;
+	padding-bottom: 0;
+	border-bottom-width: 0;
+}
+
 header {
 	padding: 10px 0;
 	background-color: rgb(174, 242, 219);
+	margin-bottom: 0;
+	padding-bottom: 0;
 }
 
 header h1 {
@@ -10,4 +18,29 @@ header h1 {
 
 .span10 {
 	left: 300px;
+}
+
+.nav-and-content {
+	margin-top: 0;
+	padding-top: 0;
+	margin-left: 0;
+	padding-left: 0;
+}
+
+.content_display {
+	margin-top: 20px;
+	background-color: white;
+}
+
+.nav-tabs {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    background-color: 
+}
+
+.inactive {
+	color: white;
 }

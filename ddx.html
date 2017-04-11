@@ -34,52 +34,33 @@
 
     <body>
 
-    <header class="navbar">
-        <div class="row">
-          <h1 class="col-sm-8">DDX</h1>
-        </div>
-    </header>  
+            <header class="navbar">
+                <div class="row">
+                  <h1 class="col-sm-8">DDX</h1>
+                </div>
+                <ul class="nav nav-tabs">
+                  <li class="inactive"><a href="#"> Final Votes </a></li>
+                  <li class="active"><a href="#"> Proposals </a></li>
+                  <li class="inactive"><a href="#"> Group Information </a></li>
+                </ul>
+            </header>  
 
-<!--     <div class="container">
-        <div id='content' class='row-fluid'>
-            <div class='span1 sidebar'>
-                <div ng-include="'components/sidebar/sidebarTemplate.html'" ng-controller="SidebarController" ng-if="!main.noOneIsLoggedIn"></div>
+            <div class="container nav-and-content" flex layout="row" ng-if="!main.noOneIsLoggedIn">
+
+                <md-sidenav md-is-locked-open="true" >
+                    <div ng-include="'components/sidebar/sidebarTemplate.html'" ng-controller="SidebarController"></div>
+                </md-sidenav>
+
+                <md-content class="content_display" flex id="content">
+                    <div ng-view></div>
+                </md-content>
+
             </div>
-            <div class='span10 main'>
-                <div ng-view></div>
+
+            <div class="container" flex layout="row" ng-if="main.noOneIsLoggedIn">
+                <md-content class="content_display" flex id="content">
+                    <div ng-view></div>
+                </md-content>
             </div>
-        </div>
-
-    </div> -->
-
-            <div class="container" flex layout="row">
-
-            <md-sidenav md-is-locked-open="true" ng-if="!main.noOneIsLoggedIn">
-                <div ng-include="'components/sidebar/sidebarTemplate.html'" ng-controller="SidebarController"></div>
-            </md-sidenav>
-
-            <md-content flex id="content">
-                <div ng-view></div>
-            </md-content>
-
-        </div>
-
-
-<!--         <header class="navbar">
-            <div class="row">
-              <h1 class="col-sm-8">DDX</h1>
-            </div>
-        </header>    
-
-        <section class="container" flex layout="row">
-
-            <md-sidenav md-is-locked-open="true" class="md-whiteframe-z2">
-                <div ng-include="'components/sidebar/sidebarTemplate.html'" ng-controller="SidebarController"></div>
-            </md-sidenav>
-
-            <md-content flex id="content">
-                <div ng-view></div>
-            </md-content>
-        </div>    -->    
     </body>
 </html>
