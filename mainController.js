@@ -14,6 +14,10 @@ ddxApp.config(['$routeProvider',
                 templateUrl: 'components/user-detail/user-detailTemplate.html',
                 controller: 'UserDetailController'
             }).
+            when('/proposals', {
+                templateUrl: 'components/proposals/proposalsTemplate.html',
+                controller: 'proposalsController'
+            }).            
             when('/login-register', {
                 templateUrl: 'components/login-register/login-registerTemplate.html',
                 controller: 'LoginRegisterController'
@@ -37,7 +41,7 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
          * successfully logged on––it will update the display values. */
         $scope.$on("Logged In", function () {
             $scope.main.noOneIsLoggedIn = false;
-            //$location.path("/options/" + $scope.main.active_user._id);
+            $location.path("/proposals" + $scope.main.active_user._id);
         });
 
         /* When the user has logged out, this listener will return the user to

@@ -79,11 +79,11 @@ app.get('/session', function(request, response) {
  */
 app.post('/admin/login', function (request, response) {
 
-    var username = request.body.login_name;
+    var email_address = request.body.email_address;
     var password = request.body.password;
 
     // Try to find a user with that login_name
-    User.findOne({login_name: username, password: password}, function (err, user) {
+    User.findOne({email_address: email_address, password: password}, function (err, user) {
         if (err) {
             // Query returned an error.
             response.status(400).send(JSON.stringify(err));
@@ -103,7 +103,7 @@ app.post('/admin/login', function (request, response) {
         }
 
         // Create new session, which will be part of the request, so we have access on all routes
-        request.session.login_name = username;
+        request.session.email_address = email_address;
         request.session.user_id = user._id;
         request.session.user = user;
 
