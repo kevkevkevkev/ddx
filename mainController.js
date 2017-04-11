@@ -41,7 +41,7 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
          * successfully logged on––it will update the display values. */
         $scope.$on("Logged In", function () {
             $scope.main.noOneIsLoggedIn = false;
-            $location.path("/proposals" + $scope.main.active_user._id);
+            $location.path("/proposals");
         });
 
         /* When the user has logged out, this listener will return the user to

@@ -25,7 +25,7 @@ ddxApp.controller('LoginRegisterController', ['$scope', '$rootScope', '$routePar
       };
       
       $scope.main.active_user = login_resource.save(login_data, function () {
-        console.log("changing location path to /proposals);
+        console.log("changing location path to /proposals");
         // Broadcast that the user is logged in
         $rootScope.$broadcast("Logged In");
       }, function errorHandling(err) {
