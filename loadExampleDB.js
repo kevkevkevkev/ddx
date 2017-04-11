@@ -31,7 +31,7 @@ db.once('open', function callback () {
     password: 'weak', // The password of the user
   });
 
-  User.insert(kevin);
+  User.insertOne(kevin);
 
   // Create song schema
   var songSchema = mongoose.Schema({
