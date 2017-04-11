@@ -30,7 +30,7 @@ build/Release
 node_modules
 jspm_packages
 
-# Optional npm cache directory
+# Optional npm cache directory		
 .npm
 
 # Optional REPL history

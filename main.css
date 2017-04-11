@@ -1,9 +1,13 @@
 header {
-  padding: 10px 0;
-  background-color: rgb(174, 242, 219);
+	padding: 10px 0;
+	background-color: rgb(174, 242, 219);
 }
 
 header h1 {
-  font-weight: 700;
-  margin-left: 20px;
+	font-weight: 700;
+	margin-left: 20px;
+}
+
+.span10 {
+	left: 300px;
 }

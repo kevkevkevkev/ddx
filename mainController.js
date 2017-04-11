@@ -16,7 +16,7 @@ ddxApp.config(['$routeProvider',
             }).
             when('/proposals', {
                 templateUrl: 'components/proposals/proposalsTemplate.html',
-                controller: 'proposalsController'
+                controller: 'ProposalsController'
             }).            
             when('/login-register', {
                 templateUrl: 'components/login-register/login-registerTemplate.html',
@@ -58,7 +58,8 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
           if ($scope.main.noOneIsLoggedIn) {
              // no logged user, redirect to /login-register unless already there
             if (next.templateUrl !== "components/login-register/login-registerTemplate.html") {
-                $location.path("/login-register");
+                $location.path("/login-register"); // TODO: Change this back
+                //$location.path("/proposals");
             }
           }
         }); 

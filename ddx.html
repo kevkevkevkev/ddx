@@ -27,6 +27,9 @@
         <script src="components/sidebar/sidebarController.js"></script>
         <link rel="stylesheet" type="text/css" href="components/sidebar/sidebar.css"/>
 
+        <script src="components/proposals/proposalsController.js"></script>
+        <link rel="stylesheet" type="text/css" href="components/proposals/proposals.css"/>
+
     </head>
 
     <body>
@@ -37,17 +40,29 @@
         </div>
     </header>  
 
-    <div class="container">
+<!--     <div class="container">
         <div id='content' class='row-fluid'>
             <div class='span1 sidebar'>
-                <div ng-include="'components/sidebar/sidebarTemplate.html'" ng-controller="SidebarController"></div>
+                <div ng-include="'components/sidebar/sidebarTemplate.html'" ng-controller="SidebarController" ng-if="!main.noOneIsLoggedIn"></div>
             </div>
-            <div class='span8 main'>
+            <div class='span10 main'>
                 <div ng-view></div>
             </div>
         </div>
 
-    </div>
+    </div> -->
+
+            <div class="container" flex layout="row">
+
+            <md-sidenav md-is-locked-open="true" ng-if="!main.noOneIsLoggedIn">
+                <div ng-include="'components/sidebar/sidebarTemplate.html'" ng-controller="SidebarController"></div>
+            </md-sidenav>
+
+            <md-content flex id="content">
+                <div ng-view></div>
+            </md-content>
+
+        </div>
 
 
 <!--         <header class="navbar">
