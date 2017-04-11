@@ -1,12 +1,13 @@
 /*
- * Copyright (c) 2017 ObjectLabs Corporation
- * Distributed under the MIT license - http://opensource.org/licenses/MIT
+ * Copyright (c) Kevin O'Connell
+ * All Rights Reserved
  *
  * Written with: mongoose@4.7.7
  * Documentation: http://mongoosejs.com/docs/guide.html
  * A Mongoose script connecting to a MongoDB database given a MongoDB Connection URI.
  */
 var mongoose = require('mongoose');    
+var User = require('./schema/user.js');
 
 const uri = process.env.MONGODB_URI;
 
@@ -21,6 +22,16 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function callback () {
 
   console.log("Running loadExampleDB.js");
+
+  var kevin = new User({
+    email_address: 'kevino@stanford.edu', // Email Address / Login
+    first_name: 'Kevin', // First name of the user.
+    last_name: 'O\'Connell',  // Last name of the user.
+    description: 'Student',  // A brief user description
+    password: 'weak', // The password of the user
+  });
+
+  User.insert(kevin);
 
   // Create song schema
   var songSchema = mongoose.Schema({
