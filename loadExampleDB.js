@@ -94,7 +94,7 @@ db.once('open', function callback () {
           mongoose.connection.db.close(function (err) {
             if(err) throw err;
           });
-        });
+        //});
       });
     }
   )
