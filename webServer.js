@@ -47,7 +47,12 @@ app.use(express.static(__dirname));
 // in order for the program to start using it. Session is used for maintaining 
 // session state across different request handlers, so you can know whether or not
 // a user is logged in.
-app.use(session({secret: 'secretKey', resave: false, saveUninitialized: false}));
+app.use(session({
+    //secret: 'secretKey', 
+    secret: process.env.SECRET_KEY,
+    resave: false,
+    saveUninitialized: false
+}));
 
 // bodyParser is used in photo uploads. 
 app.use(bodyParser.json());
