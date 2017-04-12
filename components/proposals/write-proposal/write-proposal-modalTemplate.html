@@ -1,0 +1,62 @@
+<md-dialog aria-label="Submit New Proposal" class="proposal-dialogue" md-theme='modal'>
+  <form ng-cloak>
+    <md-toolbar class="proposal-dialogue-toolbar">
+      <div class="md-toolbar-tools">
+        <h2>Submit New Proposal</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="ProposalsController.cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_white_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <form name="newProposalForm">
+            <div layout-gt-xs="row">
+                <md-input-container class="proposal-title-input" flex-gt-xs="">
+                    <label><i>Proposal Title</i></label>
+                    <input ng-model="ProposalsController.newProposalTitle" required="">
+                </md-input-container>
+            </div>
+
+            <div layout-gt-xs="row">
+                <md-input-container class="proposal-text-input" flex-gt-xs="">
+                    <label><i>Proposal Text (Just proposal, write description or justification below.)</i></label>
+                    <textarea ng-model="ProposalsController.newProposalText" md-maxlength="400" rows="5" md-select-on-focus=""></textarea>
+                </md-input-container>
+            </div>
+
+            <div layout-gt-xs="row">
+                <md-input-container class="proposal-description-input" flex-gt-xs="">
+                    <label><i>Proposal Description (Make your case! Why should people vote for this?)</i></label>
+                    <textarea ng-model="ProposalsController.newProposalDescription" md-maxlength="400" rows="5" md-select-on-focus=""></textarea>
+                </md-input-container>
+            </div>            
+<!-- 
+            <div>
+                <md-button type="submit" ng-click="ProposalsController.saveProposalDraft()">Save Draft</md-button>
+                <md-button type="submit" ng-click="ProposalsController.submitNewProposal()">Submit</md-button>
+            </div> -->
+        </form>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+      <md-button class="save-btn" type="submit" ng-click="ProposalsController.saveProposalDraft()">
+        Save Draft
+      </md-button>
+      <md-button class="submit-btn" type="submit" ng-click="ProposalsController.submitNewProposal()">
+        Submit
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
+
+<style>
+  .proposal-title {
+    padding: 10px;
+    font-style: italic;
+  }
+  .proposal-dialogue {
+    width: 80%;
+  }
+</style>

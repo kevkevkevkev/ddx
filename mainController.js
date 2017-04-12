@@ -27,6 +27,13 @@ ddxApp.config(['$routeProvider',
             });
     }]);
 
+ddxApp.config(function($mdThemingProvider) {
+
+  $mdThemingProvider.theme('modal')
+    .primaryPalette('grey')
+    .accentPalette('orange');
+});
+
 
 ddxApp.controller('MainController', ['$scope', '$rootScope', '$location', 
     '$http', '$resource', '$mdDialog',
