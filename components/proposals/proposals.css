@@ -1,0 +1,22 @@
+.proposal {
+	display: flex;
+	flex-direction: row;
+	margin-top: 5px;
+	margin-bottom: 15px;
+}
+
+.proposal-votes {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.proposal-title-and-details {
+	margin-top: 5px;
+	margin-left: 10px;
+}
+
+.proposal-display-details {
+	margin-left: 10px;
+	line-height: 90%;
+}

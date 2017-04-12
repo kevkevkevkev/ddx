@@ -173,6 +173,9 @@ app.post('/admin/register', function (request, response) {
  * Proposal Submission and Retrieval Handling *
  **********************************************/
 
+/*
+ * URL /proposals/new - Enter a new proposal in the database
+ */
 app.post('/proposals/new', function (request, response) {
 
     console.log("Server received proposal upload request");
@@ -198,6 +201,39 @@ app.post('/proposals/new', function (request, response) {
 
     Proposal.create(proposal_attributes, doneCallback);
 });
+
+/*
+ * URL /proposals/retrieve - Retrieve the active proposals associated with a group
+ */
+app.get('/proposals/retrieve', function (request, response) {
+
+    console.log("Server received proposal retrieval request");
+
+    // if (!request.session.email_address) {
+    //     response.status(401).send("No user logged in");
+    //     return;
+    // }
+
+    // Retrieve all proposals with TODO: add group / active query qualifiers
+    Proposal.find().exec(function (err, proposals) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (proposals.length === 0) {
+            // Query didn't return an error but didn't find the SchemaInfo object - This
+            // is also an internal error return.
+            response.status(200).send('Missing proposals');
+            return;
+        }
+
+        // We got the object - create an array version of it in JSON
+        var proposalsArray = JSON.parse(JSON.stringify(proposals));
+        console.log('proposals', proposals);
+        response.end(JSON.stringify(proposals));
+    });
+});    
 
 
  /***********************

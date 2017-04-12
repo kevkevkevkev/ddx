@@ -1,36 +1,25 @@
 <div class="proposals">
 	<md-button ng-click="ProposalsController.showProposalModal($event)">+ Submit New Proposal</md-button>
 
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
-	<p>Hello user</p>
+	<div ng-repeat="proposal in ProposalsController.proposals" ng-init="sectionIndex = $index" class="proposal_col">
+		<div class="proposal">
+			<div class="proposal-votes">
+		        <md-button class="md-icon-button" ng-click="ProposalsController.upvote()">
+		          <md-icon md-svg-src="img/icons/upvote_btn.svg" aria-label="Upvote"></md-icon>
+		        </md-button>
+		        <md-label>{{proposal.users_who_upvoted.length-proposal.users_who_downvoted.length}}</md-label>				
+		        <md-button class="md-icon-button" ng-click="ProposalsController.upvote()">
+		          <md-icon md-svg-src="img/icons/downvote_btn.svg" aria-label="Downvote"></md-icon>
+		        </md-button>		        
+			</div>
+			<div class="proposal-title-and-details">
+				<p class="proposal-display-title"><b>{{proposal.title}}</b></p>
+				<div class="proposal-display-details">
+					<p><i>Proposed by: {{proposal.user_author_id}}</i></p>
+					<p><i>Group: {{proposal.group}}</i></p>
+					<p><i>Threshold for General Election: </i></p>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
