@@ -1,7 +1,7 @@
 'use strict';
 
 var ddxApp = angular.module('ddxApp', ['ngRoute', 'ngMaterial', 'ngResource', 
-    'ngMessages']);
+    'ngMessages', 'LocalStorageModule']);
 
 ddxApp.config(['$locationProvider', function($locationProvider) {
   $locationProvider.hashPrefix('');
@@ -34,10 +34,14 @@ ddxApp.config(function($mdThemingProvider) {
     .accentPalette('orange');
 });
 
+ddxApp.config(['localStorageServiceProvider', function(localStorageServiceProvider) {
+    localStorageServiceProvider.setPrefix('ddx');
+}]);
+
 
 ddxApp.controller('MainController', ['$scope', '$rootScope', '$location', 
-    '$http', '$resource', '$mdDialog',
-      function ($scope, $rootScope, $location, $http, $resource, $mdDialog) {
+    '$http', '$resource', '$mdDialog', 'localStorageService',
+      function ($scope, $rootScope, $location, $http, $resource, $mdDialog, localStorageService) {
         $scope.main = {};
         $scope.main.noOneIsLoggedIn = true;
         $scope.main.registerView = false;
@@ -48,6 +52,14 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
          * successfully logged on––it will update the display values. */
         $scope.$on("Logged In", function () {
             $scope.main.noOneIsLoggedIn = false;
+            // Save the current session in local storage
+            var session_resource = $resource('/get-current-session');
+            var current_session = session_resource.get({}, function () {
+                console.log("setting current_session to ", current_session);
+                localStorageService.set('session', current_session);
+            }, function errorHandling(err) {
+                console.log(err);
+            });
             $location.path("/proposals");
         });
 
@@ -62,9 +74,25 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
         /* When the user first loads the webpage, if there is no session saved,
          * this listener will direct the user to the login page */
         $rootScope.$on( "$routeChangeStart", function(event, next, current) {
+            //localStorageService.clearAll();
+            console.log("rootScope called");
           if ($scope.main.noOneIsLoggedIn) {
-             // no logged user, redirect to /login-register unless already there
-            if (next.templateUrl !== "components/login-register/login-registerTemplate.html") {
+            // If session saved in local storage, restore session and direct to /proposals
+            if (localStorageService.get('session')) {
+                console.log("Session saved in localStorageService");
+                var session_resource = $resource('/restore-session');
+                var saved_session = localStorageService.get('session');
+                var restore_session_data = {email_address: saved_session.email_address};
+                console.log("restore_session_data", restore_session_data);
+                $scope.main.active_user = session_resource.save(restore_session_data, function () {
+                    // Broadcast that the user is logged in
+                    $rootScope.$broadcast("Logged In");
+                    }, function errorHandling(err) {
+                     console.log(err);
+                });                
+            }
+            // If no logged-in user or saved session, redirect to /login-register unless already there
+            else if (next.templateUrl !== "components/login-register/login-registerTemplate.html") {
                 $location.path("/login-register"); // TODO: Change this back
                 //$location.path("/proposals");
             }

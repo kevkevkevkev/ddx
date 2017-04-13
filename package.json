@@ -4,7 +4,7 @@
   "description": "Direct Democracy Exchange - Where your ideas become action",
   "main": "webServer.js",
   "scripts": {
-    "start": "node webServer.js", 
+    "start": "node webServer.js",
     "test": "echo Test your code by opening http://localhost:3000 in your browser.",
     "jshint": "./node_modules/.bin/jshint --config .jshintrc --exclude=node_modules,test . || exit 0",
     "upgrade": "ncu -ua && npm i"
@@ -15,6 +15,7 @@
     "angular": "^1.6.4",
     "angular-animate": "^1.6.4",
     "angular-aria": "^1.6.4",
+    "angular-local-storage": "^0.5.2",
     "angular-material": "^1.1.3",
     "angular-messages": "^1.6.4",
     "angular-resource": "^1.6.4",

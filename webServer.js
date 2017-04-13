@@ -68,6 +68,9 @@ app.get('/', function (request, response) {
     response.send('Simple web server of files from ' + __dirname);
 });
 
+/*
+ * URL /session - Returns whether there is an active session
+ */
 app.get('/session', function(request, response) {
 
     if (request.session.login_name) {
@@ -75,6 +78,57 @@ app.get('/session', function(request, response) {
     } else {
         response.end(JSON.stringify(false));
     }
+});
+
+/*
+ * URL /current-session - Returns the current session, to be saved
+ * in local storage for purposes of restoring the session
+ */
+app.get('/get-current-session', function(request, response) {
+
+    console.log("returning current session", JSON.stringify(request.session));
+    response.end(JSON.stringify(request.session));
+});
+
+/*
+ * URL /restore-session - Returns the current session from the session
+ * saved in local storage and returns the user associated with that session's
+ * user.
+ */
+ // TODO: Speak with an experienced developer about how to improve security here. Salting passwords?
+app.post('/restore-session', function(request, response) {
+
+    var email_address = request.body.email_address;
+    console.log("Restoring session for user with email_address:", email_address);
+
+    User.findOne({email_address: email_address}, function (err, user) {    
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (!user) {
+            // If no user found, report an error.
+            response.status(400).send('Missing user');
+            return;
+        }
+        if (user.length === 0) {
+            // Query didn't return an error but didn't find the SchemaInfo object
+            console.log("user.length === 0");
+            response.status(400).send('Missing user');
+            return;
+        }
+
+        // Create new session, which will be part of the request, so we have access on all routes
+        request.session.email_address = email_address;
+        request.session.user_id = user._id;
+        request.session.user = user;
+
+        // Send session back
+        console.log('user', user);
+        //response.send(session);
+        response.end(JSON.stringify(user));
+    }); 
 });
 
 
@@ -209,10 +263,10 @@ app.get('/proposals/retrieve', function (request, response) {
 
     console.log("Server received proposal retrieval request");
 
-    // if (!request.session.email_address) {
-    //     response.status(401).send("No user logged in");
-    //     return;
-    // }
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
 
     // Retrieve all proposals with TODO: add group / active query qualifiers
     Proposal.find().exec(function (err, proposals) {
@@ -236,7 +290,32 @@ app.get('/proposals/retrieve', function (request, response) {
 });    
 
 
- /***********************
+/*****************************************
+ * Proposal Upvote and Downvote Handling *
+ *****************************************/
+
+/*
+ * URL /proposals/upvote/:id - Adds an upvote to the proposal specified by :id
+ * and records that the session user upvoted that proposal
+ */
+app.post('/proposals/upvote/:proposal_id', function (request, response) {
+
+    console.log("Server received request to upvote proposal with id", request.params.proposal_id);
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    function doneCallback(err, newProposal) {
+        console.log("Created proposal object with ID", newProposal._id);
+        response.end(JSON.stringify(newProposal));
+    }
+
+    Proposal.create(proposal_attributes, doneCallback);
+});
+
+/************************
  * Server Configuartion *
  ************************/
 

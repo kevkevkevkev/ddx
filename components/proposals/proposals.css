@@ -1,8 +1,11 @@
 .proposal {
 	display: flex;
 	flex-direction: row;
+	margin-left: 20px;
 	margin-top: 5px;
 	margin-bottom: 15px;
+	padding-bottom: 15px;
+    border-bottom: thin dotted;
 }
 
 .proposal-votes {
