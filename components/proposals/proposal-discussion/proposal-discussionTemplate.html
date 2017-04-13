@@ -28,4 +28,16 @@
 			<p>{{ProposalDiscussionController.proposal.description}}</p>
 		</div>
 	</div>
+	<div class="proposal-discussion-write-comment-or-amendment">
+	    <md-tabs class="proposal-discussion-tabs" md-selected="selectedIndex" md-border-bottom="" md-autoselect="">
+	      <md-tab ng-disabled="tab.disabled" label="Write Comment">
+	        <div class="proposal-discussion-write-comment-tab" style="padding: 25px; text-align: center;">
+	        </div>
+	      </md-tab>
+	      <md-tab ng-disabled="tab.disabled" label="Propose Amendment">
+	        <div class="proposal-discussion-propose-amendment-tab" style="padding: 25px; text-align: center;">
+	        </div>
+	      </md-tab>
+	    </md-tabs>	    	
+	</div>
 </div>
