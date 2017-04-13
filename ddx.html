@@ -47,16 +47,10 @@
                 </ul>
             </header>  
 
-            <div class="container nav-and-content" flex layout="row" ng-if="!main.noOneIsLoggedIn">
-
-                <md-sidenav md-is-locked-open="true" >
-                    <div ng-include="'components/sidebar/sidebarTemplate.html'" ng-controller="SidebarController"></div>
-                </md-sidenav>
-
+            <div class="container" flex layout="row" ng-if="!main.noOneIsLoggedIn">
                 <md-content class="content_display" flex id="content">
                     <div ng-view></div>
                 </md-content>
-
             </div>
 
             <div class="container" flex layout="row" ng-if="main.noOneIsLoggedIn">
