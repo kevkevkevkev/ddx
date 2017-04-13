@@ -23,3 +23,10 @@
 	margin-left: 10px;
 	line-height: 90%;
 }
+
+.md-button.proposal-title-and-details{
+	text-align: left;
+	text-transform: none;
+	line-height: 90%;
+	padding-right: 50px;
+}

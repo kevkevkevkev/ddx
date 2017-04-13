@@ -95,7 +95,8 @@ app.get('/get-current-session', function(request, response) {
  * saved in local storage and returns the user associated with that session's
  * user.
  */
- // TODO: Speak with an experienced developer about how to improve security here. Salting passwords?
+ // TODO: Speak with an experienced developer about how to improve security here. Salting passwords? 
+ // TODO: What are the risks associated with keeping session data stored on local machine?
 app.post('/restore-session', function(request, response) {
 
     var email_address = request.body.email_address;
@@ -244,6 +245,7 @@ app.post('/proposals/new', function (request, response) {
         text: request.body.text, // Text of the proposal
         description: request.body.description, // The proponent's description of the proposal
         user_author_id: request.session.user_id, // Reference to the ID of the user who submitted the proposal
+        user_author_name: request.session.user.first_name + " " + request.session.user.last_name,
         // TODO: Implement this with group
         //group: mongoose.Scheme.Types.ObjectId // Reference to the ID of the group that this proposal was submitted to
     };
@@ -300,20 +302,94 @@ app.get('/proposals/retrieve', function (request, response) {
  */
 app.post('/proposals/upvote/:proposal_id', function (request, response) {
 
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
     console.log("Server received request to upvote proposal with id", request.params.proposal_id);
+    var proposal_id = request.params.proposal_id;
+    var user_id = request.session.user_id;
+
+    // Find the proposal with proposal_id
+    Proposal.findOne({_id: proposal_id}).exec(function (err, proposal) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (proposal === null) {
+            // Query didn't return an error but didn't find the SchemaInfo object
+            response.status(500).send('Proposal does not exist');
+            return;
+        }
+
+        var upvoteUserIndex = proposal.users_who_upvoted.indexOf(user_id);
+        var downvoteUserIndex = proposal.users_who_downvoted.indexOf(user_id);
+        if (upvoteUserIndex >-1) {
+           console.log("User has already upvoted this proposal");
+        } else {
+           console.log("User has not yet upvoted this proposal");
+           proposal.users_who_upvoted.push(user_id);
+           console.log("proposal.users_who_upvoted = ", proposal.users_who_upvoted);
+           // If user had previously downvoted, remove from downvote array
+           if (downvoteUserIndex >-1) {
+                proposal.users_who_downvoted.splice(downvoteUserIndex, 1);
+           }
+        }
+
+        proposal.save();
+        response.send(JSON.stringify(proposal));
+    });
+});
+
+/*
+ * URL /proposals/downvote/:id - Adds downvote to the proposal specified by :id
+ * and records that the session user downvoted that proposal
+ */
+app.post('/proposals/downvote/:proposal_id', function (request, response) {
 
     if (!request.session.email_address) {
         response.status(401).send("No user logged in");
         return;
     }
 
-    function doneCallback(err, newProposal) {
-        console.log("Created proposal object with ID", newProposal._id);
-        response.end(JSON.stringify(newProposal));
-    }
+    console.log("Server received request to downvote proposal with id", request.params.proposal_id);
+    var proposal_id = request.params.proposal_id;
+    var user_id = request.session.user_id;
 
-    Proposal.create(proposal_attributes, doneCallback);
+    // Find the proposal with proposal_id
+    Proposal.findOne({_id: proposal_id}).exec(function (err, proposal) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (proposal === null) {
+            // Query didn't return an error but didn't find the SchemaInfo object
+            response.status(500).send('Proposal does not exist');
+            return;
+        }
+
+        var upvoteUserIndex = proposal.users_who_upvoted.indexOf(user_id);
+        var downvoteUserIndex = proposal.users_who_downvoted.indexOf(user_id);
+        if (downvoteUserIndex >-1) {
+           console.log("User has already downvoted this proposal");
+        } else {
+           console.log("User has not yet downvoted this proposal");
+           proposal.users_who_downvoted.push(user_id);
+           console.log("proposal.users_who_downvoted = ", proposal.users_who_downvoted);
+           // If user had previously upvoted, remove from upvote array
+           if (upvoteUserIndex >-1) {
+                proposal.users_who_upvoted.splice(upvoteUserIndex, 1);
+           }
+        }
+
+        proposal.save();
+        response.send(JSON.stringify(proposal));
+    });
 });
+
 
 /************************
  * Server Configuartion *

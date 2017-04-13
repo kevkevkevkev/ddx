@@ -14,23 +14,53 @@ ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams'
    **********************/
 
   $scope.ProposalsController.proposals = [];
-  // TODO: Switch this to retrieve proposals based on the group ID
-  var proposals_resource = $resource('/proposals/retrieve');
 
-  $scope.ProposalsController.proposals = proposals_resource.query({}, function() {
-    // TODO: Sort by upvotes/downvotes
-    // $scope.ProposalsController.proposals.sort(function(a, b) { 
-    //   if (a !== b) {
-    //     return b.users_who_liked.length-a.users_who_liked.length;
-    //   } else {
-    //     return a.date_time-b.date_time;
-    //   }
-    // });
-  }, function errorHandling(err) {
-      console.log(err);
-  });
+  $scope.ProposalsController.loadProposals = function() {
+    // TODO: Switch this to retrieve proposals based on the group ID
+    var proposals_resource = $resource('/proposals/retrieve');
+    $scope.ProposalsController.proposals = proposals_resource.query({}, function() {
+      // TODO: Sort by upvotes/downvotes
+      // $scope.ProposalsController.proposals.sort(function(a, b) { 
+      //   if (a !== b) {
+      //     return b.users_who_liked.length-a.users_who_liked.length;
+      //   } else {
+      //     return a.date_time-b.date_time;
+      //   }
+      // });
+    }, function errorHandling(err) {
+        console.log(err);
+    });
+  };
 
+  $scope.ProposalsController.loadProposals();
 
+  /********************************
+   * Upvote and Downvote Handling *
+   ********************************/  
+
+  // Executes an upvote request
+  $scope.ProposalsController.upvote = function(proposal, proposalIndex) {
+    console.log("upvote() called on proposal ", proposal);
+    var upvote_resource = $resource('/proposals/upvote/:proposal_id', {proposal_id: proposal._id});
+    proposal = upvote_resource.save({}, function () {
+        $scope.ProposalsController.proposals[proposalIndex].users_who_upvoted = proposal.users_who_upvoted;
+        $scope.ProposalsController.proposals[proposalIndex].users_who_downvoted = proposal.users_who_downvoted;        
+    }, function errorHandling(err) {
+          console.log(err);
+    });
+  };
+
+  // Executes a downvote request
+  $scope.ProposalsController.downvote = function(proposal, proposalIndex) {
+    console.log("downvote() called on proposal ", proposal);
+    var downvote_resource = $resource('/proposals/downvote/:proposal_id', {proposal_id: proposal._id});
+    proposal = downvote_resource.save({}, function () {
+        $scope.ProposalsController.proposals[proposalIndex].users_who_upvoted = proposal.users_who_upvoted;      
+        $scope.ProposalsController.proposals[proposalIndex].users_who_downvoted = proposal.users_who_downvoted;
+    }, function errorHandling(err) {
+          console.log(err);
+    });
+  };
 
   /***************************
    * New Proposal Submission *
@@ -71,6 +101,8 @@ ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams'
 
     var newProposal = proposal_resource.save(proposal_data, function () {
         console.log("proposal_resource.save callback()");
+        $mdDialog.cancel();
+        $scope.ProposalsController.loadProposals();        
     }, function errorHandling(err) {
         console.log(err);
     });

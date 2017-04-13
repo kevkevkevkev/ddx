@@ -12,6 +12,7 @@ var proposalSchema = new mongoose.Schema({
     text: String, // Text of the proposal
     description: String, // The proponent's description of the proposal
     user_author_id: mongoose.Schema.Types.ObjectId, // Reference to the ID of the user who submitted the proposal
+    user_author_name: String, // Name of the user who submitted the proposal
     // TODO: Revisit whether separating users into upvoting and downvoting is the best schema
     users_who_upvoted: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who upvoted the proposal
     users_who_downvoted: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who downvoted the proposal
