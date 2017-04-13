@@ -1,7 +1,8 @@
 'use strict';
 
 /*
- * Returns an array with user objects, one for each of the users of the app
+ * Manages the display of proosals, upvoting and downvoting proposals, navigating to proposal
+ * discussions, and submitting new proposals.
  */
 ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams', '$resource', '$location', '$mdDialog',
   function ($scope, $rootScope, $routeParams, $resource, $location, $mdDialog) {
@@ -19,14 +20,13 @@ ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams'
     // TODO: Switch this to retrieve proposals based on the group ID
     var proposals_resource = $resource('/proposals/retrieve');
     $scope.ProposalsController.proposals = proposals_resource.query({}, function() {
-      // TODO: Sort by upvotes/downvotes
-      // $scope.ProposalsController.proposals.sort(function(a, b) { 
-      //   if (a !== b) {
-      //     return b.users_who_liked.length-a.users_who_liked.length;
-      //   } else {
-      //     return a.date_time-b.date_time;
-      //   }
-      // });
+      $scope.ProposalsController.proposals.sort(function(a, b) { 
+        if (a !== b) {
+          return (b.users_who_upvoted.length-b.users_who_downvoted.length)-(a.users_who_upvoted.length-a.users_who_downvoted.length);
+        } else {
+          return a.date_time-b.date_time;
+        }
+      });
     }, function errorHandling(err) {
         console.log(err);
     });
@@ -108,5 +108,16 @@ ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams'
     });
     console.log("Submitting upload proposal request");      
   };
+
+
+  /*****************
+   * Open Proposal *
+   *****************/
+
+   $scope.ProposalsController.openProposal = function(proposal) {
+
+      $location.path("/proposals/discussion/" + proposal._id);
+   };
+
 }]);
 

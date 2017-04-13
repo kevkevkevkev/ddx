@@ -291,6 +291,41 @@ app.get('/proposals/retrieve', function (request, response) {
     });
 });    
 
+/*
+ * URL /proposals/discussion/:proposal_id - Retrieve the proposal specified by 
+ * the request parameter :proposal_id, and retrieve associated comments
+ */
+app.get('/proposals/discussion/get/:proposal_id', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    var proposal_id = request.params.proposal_id;
+    console.log("Server received request to retrieve proposal with id", proposal_id);
+
+    // Retrieve all proposals with TODO: add group / active query qualifiers
+    Proposal.findOne({_id: proposal_id}).exec(function (err, proposal) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (proposal === null) {
+            // Query didn't return an error but didn't find the SchemaInfo object
+            response.status(500).send('Proposal does not exist');
+            return;
+        }
+
+        // TODO: Add comment retrieval command here, consider async implementation
+
+        // Proposal proposal - create an array version of it in JSON
+        var proposal = JSON.parse(JSON.stringify(proposal));
+        console.log('proposal:', proposal);
+        response.end(JSON.stringify(proposal));
+    });
+});  
 
 /*****************************************
  * Proposal Upvote and Downvote Handling *

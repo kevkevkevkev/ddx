@@ -12,7 +12,7 @@
 		          <md-icon md-svg-src="img/icons/downvote_btn.svg" aria-label="Downvote"></md-icon>
 		        </md-button>		        
 			</div>
-			<md-button class="proposal-title-and-details">
+			<md-button class="proposal-title-and-details" ng-click="ProposalsController.openProposal(proposal)">
 				<p class="proposal-display-title"><b>{{proposal.title}}</b></p>
 				<div class="proposal-display-details">
 					<p><i>Proposed by: {{proposal.user_author_name}}</i></p>

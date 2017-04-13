@@ -1,0 +1,40 @@
+.proposal-discussion-view {
+	display: flex;
+	flex-direction: column;
+}
+
+.discussion-proposal {
+	display: flex;
+	flex-direction: row;
+	margin-left: 20px;
+	margin-top: 5px;
+	margin-bottom: 15px;
+	padding-bottom: 10px;
+}
+
+.proposal-discussion-proposal-text-and-description {
+	display: flex;
+	flex-direction: column;
+	/*margin-top: 5px;*/
+	margin-left: 12%;
+	width: 60%;
+/*	padding: 20px;
+	border: .02px solid #C4C4C4;*/
+}
+
+.proposal-discussion-proposal-text {
+	/* Rectangle 13: */
+	background: #FFFDFD;
+	border: 1px solid #979797;
+	border-radius: 8px;
+	margin-bottom: 15px;
+}
+
+.proposal-discussion-proposal-text > p {
+	/* Rectangle 13: */
+	margin: 10px;
+}
+
+.proposal-discussion-proposal-description {
+	margin-top: 10px;
+}

@@ -17,7 +17,11 @@ ddxApp.config(['$routeProvider',
             when('/proposals', {
                 templateUrl: 'components/proposals/proposalsTemplate.html',
                 controller: 'ProposalsController'
-            }).            
+            }).
+            when('/proposals/discussion/:proposalId', {
+                templateUrl: 'components/proposals/proposal-discussion/proposal-discussionTemplate.html',
+                controller: 'ProposalDiscussionController'
+            }).                        
             when('/login-register', {
                 templateUrl: 'components/login-register/login-registerTemplate.html',
                 controller: 'LoginRegisterController'
