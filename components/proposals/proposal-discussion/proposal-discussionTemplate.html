@@ -30,12 +30,24 @@
 	</div>
 	<div class="proposal-discussion-write-comment-or-amendment">
 	    <md-tabs class="proposal-discussion-tabs" md-selected="selectedIndex" md-border-bottom="" md-autoselect="">
-	      <md-tab ng-disabled="tab.disabled" label="Write Comment">
+	      <md-tab id="proposal-discussion-tab" ng-disabled="tab.disabled" label="Comment">
 	        <div class="proposal-discussion-write-comment-tab" style="padding: 25px; text-align: center;">
+		        <form name="writeCommentForm">
+		            <div layout-gt-xs="row">
+		                <md-input-container class="proposal-discussion-comment-input" flex-gt-xs="">
+		                    <label style="text-align:left; margin:5px;"><i>Write Comment</i></label>
+                    		<textarea ng-model="ProposalDiscussionController.newComment" md-maxlength="400" rows="3" md-select-on-focus=""></textarea>		                    
+		                </md-input-container>
+		            </div>
+			      	<div layout="row" layout-align="end">
+		        		<md-button type="submit" ng-click="ProposalDiscussionController.submitComment()">Submit</md-button>
+		      		</div>
+		  		</form>
 	        </div>
 	      </md-tab>
-	      <md-tab ng-disabled="tab.disabled" label="Propose Amendment">
+	      <md-tab id="proposal-discussion-tab" ng-disabled="tab.disabled" label="Amendment">
 	        <div class="proposal-discussion-propose-amendment-tab" style="padding: 25px; text-align: center;">
+	        	<p>Propose Amendment</p>
 	        </div>
 	      </md-tab>
 	    </md-tabs>	    	
