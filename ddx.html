@@ -42,27 +42,50 @@
 
     <body>
 
-            <header class="navbar">
-                <div class="row">
-                  <h1 class="col-sm-8">DDX</h1>
+<!--         <header class="navbar">
+            <div class="row">
+                <h1 class="col-sm-8">DDX</h1>
+                <div class="nav navbar-nav navbar-right">
+                    <md-button class="md-icon-button" aria-label="Menu" ng-click="ctrl.showToolbarMenu($event,  ctrl.more)">
+                        <md-icon md-svg-icon="img/icons/ic_menu_black_24px.svg"></md-icon>
+                    </md-button>
                 </div>
-                <ul class="nav nav-tabs" ng-if="!main.noOneIsLoggedIn">
-                  <li class="inactive"><a data-toggle="tab" href="#vote"> The Floor </a></li>
-                  <li class="active"><a data-toggle="tab" href="#proposals"> Proposals </a></li>
-                  <li class="inactive"><a data-toggle="tab" href="#group"> Group Information </a></li>
-                </ul>
-            </header>  
-
-            <div class="container" flex layout="row" ng-if="!main.noOneIsLoggedIn">
-                <md-content class="content_display" flex id="content">
-                    <div ng-view></div>
-                </md-content>
             </div>
+            <ul class="nav nav-tabs" ng-if="!main.noOneIsLoggedIn">
+              <li class="inactive"><a data-toggle="tab" href="#vote"> The Floor </a></li>
+              <li class="active"><a data-toggle="tab" href="#proposals"> Proposals </a></li>
+              <li class="inactive"><a data-toggle="tab" href="#group"> Group Information </a></li>
+            </ul>
+        </header>   -->
 
-            <div class="container" flex layout="row" ng-if="main.noOneIsLoggedIn">
-                <md-content class="content_display" flex id="content">
-                    <div ng-view></div>
-                </md-content>
-            </div>
+        <nav class="navbar navbar-default ddx-navbar" role="navigation">
+        <div class="row">
+          <div class="navbar-brand ddx-logo">DDX</div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <md-button class="md-icon-button" aria-label="Menu" ng-click="main.showToolbarMenu($event)">
+                    <md-icon md-svg-icon="img/icons/ic_menu_white_48px.svg"></md-icon>
+                </md-button>
+            </ul>
+          </div>
+        </div>
+        <ul class="nav nav-tabs" ng-if="!main.noOneIsLoggedIn">
+            <li class="inactive"><a data-toggle="tab" href="#vote"> The Floor </a></li>
+            <li class="active"><a data-toggle="tab" href="#proposals"> Proposals </a></li>
+            <li class="inactive"><a data-toggle="tab" href="#group"> Group Information </a></li>
+        </ul>        
+        </nav>        
+
+        <div class="container" flex layout="row" ng-if="!main.noOneIsLoggedIn">
+            <md-content class="content_display" flex id="content">
+                <div ng-view></div>
+            </md-content>
+        </div>
+
+        <div class="container" flex layout="row" ng-if="main.noOneIsLoggedIn">
+            <md-content class="content_display" flex id="content">
+                <div ng-view></div>
+            </md-content>
+        </div>
     </body>
 </html>

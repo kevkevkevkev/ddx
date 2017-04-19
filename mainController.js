@@ -86,6 +86,10 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
             $location.path("/login-register" + $scope.main.active_user._id);
         });
 
+        $scope.main.showToolbarMenu = function($event) {
+            console.log("User clicked on menu");
+        }        
+
         /* When the user first loads the webpage, if there is no session saved,
          * this listener will direct the user to the login page */
         $rootScope.$on( "$routeChangeStart", function(event, next, current) {
