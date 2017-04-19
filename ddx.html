@@ -33,7 +33,10 @@
         <link rel="stylesheet" type="text/css" href="components/proposals/proposals.css"/>
 
         <script src="components/proposals/proposal-discussion/proposal-discussionController.js"></script>
-        <link rel="stylesheet" type="text/css" href="components/proposals/proposal-discussion/proposal-discussion.css"/>        
+        <link rel="stylesheet" type="text/css" href="components/proposals/proposal-discussion/proposal-discussion.css"/>
+
+        <script src="components/vote/voteController.js"></script>
+        <link rel="stylesheet" type="text/css" href="components/vote/vote.css"/>                
 
     </head>
 
@@ -44,9 +47,9 @@
                   <h1 class="col-sm-8">DDX</h1>
                 </div>
                 <ul class="nav nav-tabs" ng-if="!main.noOneIsLoggedIn">
-                  <li class="inactive"><a href="#"> The Floor </a></li>
-                  <li class="active"><a href="#"> Proposals </a></li>
-                  <li class="inactive"><a href="#"> Group Information </a></li>
+                  <li class="inactive"><a data-toggle="tab" href="#vote"> The Floor </a></li>
+                  <li class="active"><a data-toggle="tab" href="#proposals"> Proposals </a></li>
+                  <li class="inactive"><a data-toggle="tab" href="#group"> Group Information </a></li>
                 </ul>
             </header>  
 

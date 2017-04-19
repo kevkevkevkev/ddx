@@ -16,6 +16,7 @@ ddxApp.config(['$routeProvider',
                 templateUrl: 'components/user-detail/user-detailTemplate.html',
                 controller: 'UserDetailController'
             }).
+            // TODO: Add group ID here
             when('/proposals', {
                 templateUrl: 'components/proposals/proposalsTemplate.html',
                 controller: 'ProposalsController'
@@ -27,7 +28,15 @@ ddxApp.config(['$routeProvider',
             when('/login-register', {
                 templateUrl: 'components/login-register/login-registerTemplate.html',
                 controller: 'LoginRegisterController'
-            }).    
+            }). 
+            when('/vote', {
+                templateUrl: 'components/vote/voteTemplate.html',
+                controller: 'VoteController'
+            }).
+            when('/group', {
+                templateUrl: 'components/group/groupTemplate.html',
+                controller: 'GroupController'
+            }).                            
             otherwise({
                 redirectTo: '#'
             });

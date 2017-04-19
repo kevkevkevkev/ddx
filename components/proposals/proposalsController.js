@@ -1,7 +1,9 @@
 'use strict';
 
+/* Copyright © 2017 Kevin O'Connell. All rights reserved. */
+
 /*
- * Manages the display of proosals, upvoting and downvoting proposals, navigating to proposal
+ * Manages the display of proposals, upvoting and downvoting proposals, navigating to proposal
  * discussions, and submitting new proposals.
  */
 ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams', '$resource', '$location', '$mdDialog',

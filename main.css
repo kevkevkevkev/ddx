@@ -6,7 +6,8 @@
 
 header {
 	padding: 10px 0;
-	background-color: rgb(174, 242, 219);
+	/*background-color: rgb(174, 242, 219);*/
+	background-color: rgb(252, 202, 86);
 	margin-bottom: 0;
 	padding-bottom: 0;
 }
@@ -34,13 +35,14 @@ header h1 {
 
 .nav-tabs {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     flex-direction: row;
     padding-bottom: 0;
     margin-bottom: 0;
-    background-color: 
+	color: black;
+	text-decoration-color: black;
 }
 
-.inactive {
-	color: white;
+.nav-tabs > li > a {
+  	color: black !important;
 }
