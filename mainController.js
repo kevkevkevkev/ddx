@@ -55,8 +55,8 @@ ddxApp.config(['localStorageServiceProvider', function(localStorageServiceProvid
 
 
 ddxApp.controller('MainController', ['$scope', '$rootScope', '$location', 
-    '$http', '$resource', '$mdDialog', 'localStorageService',
-      function ($scope, $rootScope, $location, $http, $resource, $mdDialog, localStorageService) {
+    '$http', '$resource', '$mdDialog', 'localStorageService', '$mdPanel',
+      function ($scope, $rootScope, $location, $http, $resource, $mdDialog, localStorageService, $mdPanel) {
         $scope.main = {};
         $scope.main.noOneIsLoggedIn = true;
         $scope.main.registerView = false;
@@ -86,10 +86,6 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
             $location.path("/login-register" + $scope.main.active_user._id);
         });
 
-        $scope.main.showToolbarMenu = function($event) {
-            console.log("User clicked on menu");
-        }        
-
         /* When the user first loads the webpage, if there is no session saved,
          * this listener will direct the user to the login page */
         $rootScope.$on( "$routeChangeStart", function(event, next, current) {
@@ -116,5 +112,72 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
                 //$location.path("/proposals");
             }
           }
-        }); 
+        });
+
+
+      /*******************
+       * Menu Controller *
+       *******************/
+        $scope.main.menuTemplate = '' +
+            '<div class="menu-panel" md-whiteframe="4">' +
+            '  <div class="menu-content">' +
+            '    <div class="menu-item" ng-repeat="item in ctrl.items">' +
+            '      <button class="md-button">' +
+            '        <span>{{item}}</span>' +
+            '      </button>' +
+            '    </div>' +
+            '    <md-divider></md-divider>' +
+            '    <div class="menu-item">' +
+            '      <button class="md-button" ng-click="ctrl.closeMenu()">' +
+            '        <span>Close Menu</span>' +
+            '      </button>' +
+            '    </div>' +
+            '  </div>' +
+            '</div>';
+
+        $scope.main.options = {
+            name: 'options',
+            items: [
+                'Account',
+                'Sign Out'
+            ]
+        };            
+
+        $scope.main.showToolbarMenu = function($event, menu) {
+            console.log("User clicked on menu");
+            var template = $scope.main.menuTemplate;
+
+            var position = $mdPanel.newPanelPosition()
+                .relativeTo($event.srcElement)
+                .addPanelPosition(
+                $mdPanel.xPosition.ALIGN_START,
+                $mdPanel.yPosition.BELOW
+            );
+
+            var config = {
+                id: 'content_' + menu.name,
+                attachTo: angular.element(document.body),
+                // controller: PanelMenuCtrl,
+                // controllerAs: 'ctrl',
+                template: template,
+                position: position,
+                panelClass: 'menu-panel-container',
+                locals: {
+                items: menu.items
+                },
+                openFrom: $event,
+                focusOnOpen: false,
+                zIndex: 100,
+                propagateContainerEvents: true,
+                groupName: 'menus'
+            };
+
+            $mdPanel.open(config);
+            };
+
+            function PanelMenuCtrl(mdPanelRef) {
+                this.closeMenu = function() {
+                    mdPanelRef && mdPanelRef.close();
+                }
+            }                               
     }]);

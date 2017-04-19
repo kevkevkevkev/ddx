@@ -36,7 +36,10 @@
         <link rel="stylesheet" type="text/css" href="components/proposals/proposal-discussion/proposal-discussion.css"/>
 
         <script src="components/vote/voteController.js"></script>
-        <link rel="stylesheet" type="text/css" href="components/vote/vote.css"/>                
+        <link rel="stylesheet" type="text/css" href="components/vote/vote.css"/>
+
+        <script src="components/menu-options/menu-optionsController.js"></script>
+        <link rel="stylesheet" type="text/css" href="components/vote/vote.css"/>                        
 
     </head>
 
@@ -63,7 +66,7 @@
           <div class="navbar-brand ddx-logo">DDX</div>
           <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <md-button class="md-icon-button" aria-label="Menu" ng-click="main.showToolbarMenu($event)">
+                <md-button class="md-icon-button" aria-label="Menu"  ng-click="main.showToolbarMenu($event, ctrl.more)">
                     <md-icon md-svg-icon="img/icons/ic_menu_white_48px.svg"></md-icon>
                 </md-button>
             </ul>
