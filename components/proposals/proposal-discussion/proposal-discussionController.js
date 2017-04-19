@@ -1,5 +1,7 @@
 'use strict';
 
+/* Copyright © 2017 Kevin O'Connell. All rights reserved. */
+
 /*
  * Manages the discussion of a proposal, which includes:
  * 1) Display of the initial proposal
@@ -17,9 +19,9 @@ ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$rou
   var proposalId = $routeParams.proposalId;
   $scope.ProposalDiscussionController = {};
 
-  /**********************
-   * Proposal Retrieval *
-   **********************/
+  /***********************************
+   * Proposal and Comments Retrieval *
+   ***********************************/
 
   $scope.ProposalDiscussionController.proposal = {};
 
@@ -27,14 +29,7 @@ ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$rou
     // TODO: Switch this to retrieve proposals based on the group ID
     var proposal_resource = $resource('/proposals/discussion/get/:proposal_id');
     $scope.ProposalDiscussionController.proposal = proposal_resource.get({proposal_id: proposalId}, function() {
-      // TODO: Perhaps use this to sort comments
-      // $scope.ProposalDiscussionController.proposal.sort(function(a, b) { 
-      //   if (a !== b) {
-      //     return (b.users_who_upvoted.length-b.users_who_downvoted.length)-(a.users_who_upvoted.length-a.users_who_downvoted.length);
-      //   } else {
-      //     return a.date_time-b.date_time;
-      //   }
-      // });
+
     }, function errorHandling(err) {
         console.log(err);
     });
@@ -42,9 +37,31 @@ ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$rou
 
   $scope.ProposalDiscussionController.loadProposal();
 
-  /********************************
-   * Upvote and Downvote Handling *
-   ********************************/  
+  $scope.ProposalDiscussionController.comments = {};
+
+  $scope.ProposalDiscussionController.loadComments = function () {
+    var comments_resource = $resource('/proposals/discussion/get_comments/:proposal_id');
+    $scope.ProposalDiscussionController.comments = comments_resource.query({proposal_id: proposalId}, function() {
+      console.log("Retreived comments: ", $scope.ProposalDiscussionController.comments);
+      // Sort comments by upvotes
+      $scope.ProposalDiscussionController.comments.sort(function(a, b) { 
+        if (a !== b) {
+          return (b.users_who_upvoted.length-b.users_who_downvoted.length)-(a.users_who_upvoted.length-a.users_who_downvoted.length);
+        } else {
+          return a.date_time-b.date_time;
+        }
+      });      
+    }, function errorHandling(err) {
+      console.log(err);
+    });
+  };
+
+  $scope.ProposalDiscussionController.loadComments();
+
+
+  /*****************************************
+   * Proposal Upvote and Downvote Handling *
+   *****************************************/  
 
   // Executes an upvote request
   $scope.ProposalDiscussionController.upvote = function() {
@@ -66,52 +83,59 @@ ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$rou
     });
   };
 
-  // /***************************
-  //  * New Proposal Submission *
-  //  ***************************/
 
-  // $scope.ProposalsController.newProposal = [];
-  // $scope.ProposalsController.newProposalTitle = "";
-  // $scope.ProposalsController.newProposalText = "";
-  // $scope.ProposalsController.newProposalDescription = "";
+  /****************************************
+   * Comment Upvote and Downvote Handling *
+   ****************************************/  
 
-  // /* When the user clicks on the "Upload Photos" button, create a dialog
-  //  * that enables the user to upload a photo */
-  // $scope.ProposalsController.showProposalModal = function(ev) {
-  //   console.log("showProposalModal() called");
-  //   $mdDialog.show({
-  //     scope: $scope.$new(),
-  //     templateUrl: 'components/proposals/write-proposal/write-proposal-modalTemplate.html',
-  //     parent: angular.element(document.body),
-  //     targetEvent: ev,
-  //     clickOutsideToClose:false,
-  //   });
-  // };
+  // Executes an upvote request
+  $scope.ProposalDiscussionController.upvoteComment = function(comment, commentIndex) {
+    console.log("upvote() called on comment ", comment);
+    var upvote_resource = $resource('/comments/upvote/:comment_id', {comment_id: comment._id});
+    comment = upvote_resource.save({}, function () {
+        $scope.ProposalDiscussionController.comments[commentIndex].users_who_upvoted = comment.users_who_upvoted;
+        $scope.ProposalDiscussionController.comments[commentIndex].users_who_downvoted = comment.users_who_downvoted;        
+    }, function errorHandling(err) {
+          console.log(err);
+    });
+  };
 
-  // $scope.ProposalsController.cancel = function() {
-  //     console.log("cancel() called");
-  //     $mdDialog.cancel();
-  // };
+  // Executes a downvote request
+  $scope.ProposalDiscussionController.downvoteComment = function(comment, commentIndex) {
+    console.log("downvote() called on comment ", comment);
+    var downvote_resource = $resource('/comments/downvote/:comment_id', {comment_id: comment._id});
+    comment = downvote_resource.save({}, function () {
+        $scope.ProposalDiscussionController.comments[commentIndex].users_who_upvoted = comment.users_who_upvoted;      
+        $scope.ProposalDiscussionController.comments[commentIndex].users_who_downvoted = comment.users_who_downvoted;
+    }, function errorHandling(err) {
+          console.log(err);
+    });
+  };
 
-  // $scope.ProposalsController.submitNewProposal = function() {
-  //   console.log("submitProposal() called");
+  /***********************************************************
+   * Drafting and Submitting Comments on a Proposal Handling *
+   ***********************************************************/
 
-  //   var proposal_resource = $resource('/proposals/new');
-  //   var proposal_data = {
-  //     title: $scope.ProposalsController.newProposalTitle,
-  //     text: $scope.ProposalsController.newProposalText,
-  //     description: $scope.ProposalsController.newProposalDescription,
-  //   };
+  $scope.ProposalDiscussionController.newCommentText = "";
 
-  //   var newProposal = proposal_resource.save(proposal_data, function () {
-  //       console.log("proposal_resource.save callback()");
-  //       $mdDialog.cancel();
-  //       $scope.ProposalsController.loadProposals();        
-  //   }, function errorHandling(err) {
-  //       console.log(err);
-  //   });
-  //   console.log("Submitting upload proposal request");      
-  // };
+  $scope.ProposalDiscussionController.submitComment = function() {
+    console.log("submitComment() called");
+
+    var comment_resource = $resource('/comments/new');
+    var comment_data = {
+      text: $scope.ProposalDiscussionController.newCommentText,
+      proposal_id: proposalId
+    };
+
+    var newComment = comment_resource.save(comment_data, function () {
+        console.log("comment_resource.save callback()");
+        $mdDialog.cancel();
+        $scope.ProposalDiscussionController.loadComments();  
+    }, function errorHandling(err) {
+        console.log(err);
+    });
+    console.log("Submitted upload comment request");      
+  };
 
 
   // /*****************

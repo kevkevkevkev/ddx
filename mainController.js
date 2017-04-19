@@ -1,5 +1,7 @@
 'use strict';
 
+/* Copyright © 2017 Kevin O'Connell. All rights reserved. */
+
 var ddxApp = angular.module('ddxApp', ['ngRoute', 'ngMaterial', 'ngResource', 
     'ngMessages', 'LocalStorageModule']);
 

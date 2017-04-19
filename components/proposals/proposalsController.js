@@ -71,8 +71,8 @@ ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams'
   $scope.ProposalsController.newProposalText = "";
   $scope.ProposalsController.newProposalDescription = "";
 
-  /* When the user clicks on the "Upload Photos" button, create a dialog
-   * that enables the user to upload a photo */
+  /* When the user clicks on the "Submit New Proposal" button, create a dialog
+   * that enables the user to draft and submit a new proposal */
   $scope.ProposalsController.showProposalModal = function(ev) {
     console.log("showProposalModal() called");
     $mdDialog.show({

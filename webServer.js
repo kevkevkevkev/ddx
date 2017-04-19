@@ -1,4 +1,5 @@
 "use strict";
+/* Copyright © 2017 Kevin O'Connell. All rights reserved. */
 
 /* jshint node: true */
 
@@ -32,6 +33,7 @@ var fs = require("fs");
 // Load the Mongoose schema for User, Photo, and SchemaInfo
 var User = require('./schema/user.js');
 var Proposal = require('./schema/proposal.js');
+var Comment = require('./schema/comment.js');
 var SchemaInfo = require('./schema/schemaInfo.js');
 
 var express = require('express');
@@ -318,14 +320,41 @@ app.get('/proposals/discussion/get/:proposal_id', function (request, response) {
             return;
         }
 
-        // TODO: Add comment retrieval command here, consider async implementation
-
-        // Proposal proposal - create an array version of it in JSON
-        var proposal = JSON.parse(JSON.stringify(proposal));
-        console.log('proposal:', proposal);
-        response.end(JSON.stringify(proposal));
+        console.log('Retrieved proposal:', proposal);
+        response.end(JSON.stringify(proposal));        
     });
-});  
+});
+
+/*
+ * URL /proposals/discussion/get_comments/:proposal_id - Retrieve the comments specified by 
+ * associated with the proposal_id received as a request parameter
+ */
+app.get('/proposals/discussion/get_comments/:proposal_id', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    var proposal_id = request.params.proposal_id;
+    console.log("Server received request to retrieve comments associated with proposal id", proposal_id);
+
+    // Retrieve all comments associated with the proposal_id
+    Comment.find({proposal_id: proposal_id}).exec(function (err, comments) {
+        if (err) {
+            // Query returned an error
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (comments.length === 0) {
+            response.status(200).send("Missing comments");
+            return;
+        }
+
+        console.log("Retrieved comments: ", comments);
+        response.end(JSON.stringify(comments));
+    });
+});
 
 /*****************************************
  * Proposal Upvote and Downvote Handling *
@@ -425,6 +454,145 @@ app.post('/proposals/downvote/:proposal_id', function (request, response) {
     });
 });
 
+/******************************************
+ * Comment Submission and Voting Handling *
+ ******************************************/
+
+/*
+ * URL /comments/new - Enter a new comment in the database
+ */
+app.post('/comments/new', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    console.log("Server received comment upload request");
+
+    var comment_attributes = {
+        text: request.body.text, // Text of the comment
+        user_author_name: request.session.user.first_name + " " + request.session.user.last_name, // Comment author name
+        user_author_id: request.session.user_id, // Reference to the ID of the user who submitted the comment
+        proposal_id: request.body.proposal_id, // Reference to the ID of the proposal to which the comment responds
+    };
+
+    function doneCallback(err, newComment) {
+        console.log("Created comment object with ID", newComment._id);
+        Proposal.findOne({_id: newComment.proposal_id}).exec(function (err, proposal) {
+            if (err) {
+                // Query returned an error.
+                response.status(400).send(JSON.stringify(err));
+                return;
+            }
+            if (proposal === null) {
+                // Query didn't return an error but didn't find the SchemaInfo object
+                response.status(500).send('Proposal does not exist');
+                return;
+            }            
+            proposal.comments.push(newComment._id);
+            proposal.save();
+            response.end(JSON.stringify(newComment));
+        });        
+    }
+
+    Comment.create(comment_attributes, doneCallback);
+
+});
+
+/*
+ * URL /comments/upvote/:comment_id - Adds an upvote to the comment
+ * specified by :id and records that the session user upvoted that comment
+ */
+app.post('/comments/upvote/:comment_id', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    console.log("Server received request to upvote comment with id", request.params.comment_id);
+    var comment_id = request.params.comment_id;
+    var user_id = request.session.user_id;
+
+    // Find the comment with comment_id
+    Comment.findOne({_id: comment_id}).exec(function (err, comment) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (comment === null) {
+            // Query didn't return an error but didn't find the SchemaInfo object
+            response.status(500).send('Comment does not exist');
+            return;
+        }
+
+        var upvoteUserIndex = comment.users_who_upvoted.indexOf(user_id);
+        var downvoteUserIndex = comment.users_who_downvoted.indexOf(user_id);
+        if (upvoteUserIndex >-1) {
+           console.log("User has already upvoted this comment");
+        } else {
+           console.log("User has not yet upvoted this comment");
+           comment.users_who_upvoted.push(user_id);
+           console.log("comment.users_who_upvoted = ", comment.users_who_upvoted);
+           // If user had previously downvoted, remove from downvote array
+           if (downvoteUserIndex >-1) {
+                comment.users_who_downvoted.splice(downvoteUserIndex, 1);
+           }
+        }
+
+        comment.save();
+        response.send(JSON.stringify(comment));
+    });
+});
+
+/*
+ * URL /comments/downvote/:comment_id - Adds downvote to the comment 
+ * specified by :comment_id and records that the session user downvoted that comment
+ */
+app.post('/comments/downvote/:comment_id', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    console.log("Server received request to downvote comment with id", request.params.comment_id);
+    var comment_id = request.params.comment_id;
+    var user_id = request.session.user_id;
+
+    // Find the comment with comment_id
+    Comment.findOne({_id: comment_id}).exec(function (err, comment) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (comment === null) {
+            // Query didn't return an error but didn't find the SchemaInfo object
+            response.status(500).send('Comment does not exist');
+            return;
+        }
+
+        var upvoteUserIndex = comment.users_who_upvoted.indexOf(user_id);
+        var downvoteUserIndex = comment.users_who_downvoted.indexOf(user_id);
+        if (downvoteUserIndex >-1) {
+           console.log("User has already downvoted this comment");
+        } else {
+           console.log("User has not yet downvoted this comment");
+           comment.users_who_downvoted.push(user_id);
+           console.log("comment.users_who_downvoted = ", comment.users_who_downvoted);
+           // If user had previously upvoted, remove from upvote array
+           if (upvoteUserIndex >-1) {
+                comment.users_who_upvoted.splice(upvoteUserIndex, 1);
+           }
+        }
+
+        comment.save();
+        response.send(JSON.stringify(comment));
+    });
+});
 
 /************************
  * Server Configuartion *

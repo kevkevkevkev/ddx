@@ -31,12 +31,12 @@
 	<div class="proposal-discussion-write-comment-or-amendment">
 	    <md-tabs class="proposal-discussion-tabs" md-selected="selectedIndex" md-border-bottom="" md-autoselect="">
 	      <md-tab id="proposal-discussion-tab" ng-disabled="tab.disabled" label="Comment">
-	        <div class="proposal-discussion-write-comment-tab" style="padding: 25px; text-align: center;">
+	        <div class="proposal-discussion-write-comment-tab" style="padding: 25px; padding-top: 0px; padding-bottom: 0px; text-align: center;">
 		        <form name="writeCommentForm">
 		            <div layout-gt-xs="row">
 		                <md-input-container class="proposal-discussion-comment-input" flex-gt-xs="">
 		                    <label style="text-align:left; margin:5px;"><i>Write Comment</i></label>
-                    		<textarea ng-model="ProposalDiscussionController.newComment" md-maxlength="400" rows="3" md-select-on-focus=""></textarea>		                    
+                    		<textarea ng-model="ProposalDiscussionController.newCommentText" md-maxlength="400" rows="3" md-select-on-focus=""></textarea>		                    
 		                </md-input-container>
 		            </div>
 			      	<div layout="row" layout-align="end">
@@ -51,5 +51,26 @@
 	        </div>
 	      </md-tab>
 	    </md-tabs>	    	
+	</div>
+	<div ng-repeat="comment in ProposalDiscussionController.comments" ng-init="commentIndex = $index" class="proposal-discussion-comments">
+		<div class="proposal-discussion-comment">
+			<div class="proposal-discussion-comment-votes">
+		        <md-button class="md-icon-button" ng-click="ProposalDiscussionController.upvoteComment(comment, $index)">
+		          <md-icon md-svg-src="img/icons/upvote_btn.svg" aria-label="Upvote"></md-icon>
+		        </md-button>
+		        <md-label>{{comment.users_who_upvoted.length-comment.users_who_downvoted.length}}</md-label>				
+		        <md-button class="md-icon-button" ng-click="ProposalDiscussionController.downvoteComment(comment, $index)">
+		          <md-icon md-svg-src="img/icons/downvote_btn.svg" aria-label="Downvote"></md-icon>
+		        </md-button>		        
+			</div>
+			<div class="proposal-discussion-comment-title-and-details">
+				<div class="proposal-discussion-comment-display-details">
+					<p>{{comment.user_author_name}} <i>wrote</i></p>
+				</div>
+				<div class="proposal-discussion-comment-text">
+					<p>{{comment.text}}</p>
+				</div>				
+			</div>
+		</div>
 	</div>
 </div>
