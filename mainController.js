@@ -74,6 +74,7 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
         $scope.main.registerView = false;
         $scope.main.session = {};
         $scope.main.active_user = [];
+        $scope.main.current_group = {};
         $scope.main.test_string = "I hope these controllers can communicate";
 
         /* This listener will execute the associated function when the user has 

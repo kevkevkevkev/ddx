@@ -63,3 +63,11 @@
   	/*color: black !important;*/
   	color: black !important;
 }
+
+md-select.md-default-theme .md-select-icon, md-select .md-select-icon {
+    color: rgb(255, 255, 255);
+}
+
+md-select.md-default-theme .md-select-value, md-select .md-select-value {
+    border-bottom-color: rgba(255, 255, 255, .1);
+}

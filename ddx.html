@@ -56,8 +56,16 @@
         <div class="row">
           <div class="navbar-brand ddx-logo">DDX</div>
           <div class="container-fluid">
-            <div class="nav navbar-nav navbar-right navbar-header options-md-panel-content" ng-controller="OptionsMenuController">
-                <md-button class="md-icon-button menu-open-button options-menu-open-button" aria-label="Menu" ng-click="OptionsMenuController.showMenu($event)">
+            <div class="nav navbar-nav navbar-right navbar-header options-md-panel-content" ng-controller="OptionsMenuCtrl as ctrl" ng-app="ddxApp">
+                <md-input-container class="group-selection-dropdown">
+                    <label>Group</label>
+                    <md-select ng-model="selectedItem" md-selected-text="getSelectedText()">
+                        <md-optgroup label="items">
+                        <md-option ng-value="item" ng-repeat="item in items">Group {{item}}</md-option>
+                        </md-optgroup>
+                    </md-select>
+                </md-input-container>            
+                <md-button ng-if="!main.noOneIsLoggedIn" class="md-icon-button menu-open-button options-menu-open-button" aria-label="Menu" ng-click="ctrl.showMenu($event)">
                     <md-icon md-svg-icon="img/icons/ic_menu_white_48px.svg"></md-icon>
                 </md-button>
             </div>

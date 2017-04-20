@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="72px" height="72px" viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Yes Button</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Vote-Page" transform="translate(-742.000000, -507.000000)">
+            <g id="Vote-Proposal-View" transform="translate(389.000000, 182.000000)">
+                <g id="Proposal-Buttons" transform="translate(200.832586, 326.000000)">
+                    <g id="Yes-Button" transform="translate(153.000000, 0.000000)">
+                        <circle id="Oval-2" stroke="#979797" fill="#AEF2C5" cx="35" cy="35" r="35"></circle>
+                        <text id="Yes" font-family="Avenir-Heavy, Avenir" font-size="12" font-weight="600" fill="#000000">
+                            <tspan x="25.664" y="38">Yes</tspan>
+                        </text>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
