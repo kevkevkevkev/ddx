@@ -62,6 +62,7 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
         $scope.main.registerView = false;
         $scope.main.session = {};
         $scope.main.active_user = [];
+        $scope.main.test_string = "I hope these controllers can communicate";
 
         /* This listener will execute the associated function when the user has 
          * successfully logged on––it will update the display values. */
