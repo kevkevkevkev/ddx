@@ -39,7 +39,6 @@
         <link rel="stylesheet" type="text/css" href="components/vote/vote.css"/>
 
         <script src="components/menu-options/menu-optionsController.js"></script>
-        <script src="http://ngmaterial.assets.s3.amazonaws.com/svg-assets-cache.js"></script>
         <link rel="stylesheet" type="text/css" href="components/menu-options/menu-options.css"/>                        
 
     </head>
@@ -65,12 +64,12 @@
         <nav class="navbar navbar-default ddx-navbar" role="navigation">
         <div class="row">
           <div class="navbar-brand ddx-logo">DDX</div>
-          <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right options-md-panel-content" ng-controller="OptionsMenuCtrl as ctrl" ng-app="ddxApp">
+          <div class="container-fluid">
+            <div class="nav navbar-nav navbar-right navbar-header options-md-panel-content" ng-controller="OptionsMenuCtrl as ctrl" ng-app="ddxApp">
                 <md-button class="md-icon-button menu-open-button options-menu-open-button" aria-label="Menu" ng-click="ctrl.showMenu($event)">
                     <md-icon md-svg-icon="img/icons/ic_menu_white_48px.svg"></md-icon>
                 </md-button>
-            </ul>
+            </div>
           </div>
         </div>
         <ul class="nav nav-tabs" ng-if="!main.noOneIsLoggedIn">
