@@ -47,6 +47,7 @@
 
 .proposal-discussion-write-comment-or-amendment .md-tab {
 	background-color: #F3F3F3;
+	border-radius: 15px 15px 0px 0px;
 }
 
 md-tabs.md-default-theme.proposal-discussion-tabs .md-tab.md-active, 
@@ -66,12 +67,18 @@ md-tabs.proposal-discussion-tabs .md-tab.md-focused md-icon {
 }
 
 .proposal-discussion-tab {
+	border-top: 1px solid black;
+}
 
+md-tabs[md-border-bottom] md-tabs-wrapper {
+	border-width: 0px;
 }
 
 .proposal-discussion-write-comment-tab {
 	background-color: #F3F3F3;
 	padding: 0px;
+	border-radius: 0px 15px 15px 15px;
+	border-top: 0px;
 }
 
 .proposal-discussion-write-comment-or-amendment md-input-container .md-input {

@@ -36,7 +36,19 @@ ddxApp.config(['$routeProvider',
             when('/group', {
                 templateUrl: 'components/group/groupTemplate.html',
                 controller: 'GroupController'
-            }).                            
+            }).
+            when('/user-groups', {
+                templateUrl: 'components/user-groups/user-groupsTemplate.html',
+                controller: 'UserGroupsController'
+            }).
+            when('/user-profile', {
+                templateUrl: 'components/user-profile/user-profileTemplate.html',
+                controller: 'UserProfileController'
+            }).
+            when('/proposal-drafts', {
+                templateUrl: 'components/proposal-drafts/proposal-draftsTemplate.html',
+                controller: 'ProfileDraftsController'
+            }).                                                                 
             otherwise({
                 redirectTo: '#'
             });
@@ -79,12 +91,33 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
             $location.path("/proposals");
         });
 
+        /* When the user clicks logout, call the logout function */ 
+        $scope.$on("Logout", function () {
+            console.log("Logout broadcast received");
+            $scope.main.logout();
+        });        
+
+        /* When the user clicks "logout" on the toolbar, execute a post request
+         * to logout */
+        $scope.main.logout = function() {
+            console.log("Submitting logout() request");
+            var logout_resource = $resource('/admin/logout');
+            logout_resource.save(function () {
+                // Broadcast that the user is logged in
+                $rootScope.$broadcast("Logged Out");
+            }, function errorHandling(err) {
+                console.log(err);
+            });
+        };  
+
         /* When the user has logged out, this listener will return the user to
          * the login page. */ 
         $scope.$on("Logged Out", function () {
+            $location.path("/login-register");
             $scope.main.noOneIsLoggedIn = true;
-            $scope.main.active_user_name = "Welcome to PhotoShare";
-            $location.path("/login-register" + $scope.main.active_user._id);
+            $scope.main.active_user = [];
+            localStorageService.clearAll();
+            $scope.main.session = {};            
         });
 
         /* When the user first loads the webpage, if there is no session saved,
@@ -113,72 +146,5 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
                 //$location.path("/proposals");
             }
           }
-        });
-
-
-      /*******************
-       * Menu Controller *
-       *******************/
-        $scope.main.menuTemplate = '' +
-            '<div class="menu-panel" md-whiteframe="4">' +
-            '  <div class="menu-content">' +
-            '    <div class="menu-item" ng-repeat="item in ctrl.items">' +
-            '      <button class="md-button">' +
-            '        <span>{{item}}</span>' +
-            '      </button>' +
-            '    </div>' +
-            '    <md-divider></md-divider>' +
-            '    <div class="menu-item">' +
-            '      <button class="md-button" ng-click="ctrl.closeMenu()">' +
-            '        <span>Close Menu</span>' +
-            '      </button>' +
-            '    </div>' +
-            '  </div>' +
-            '</div>';
-
-        $scope.main.options = {
-            name: 'options',
-            items: [
-                'Account',
-                'Sign Out'
-            ]
-        };            
-
-        $scope.main.showToolbarMenu = function($event, menu) {
-            console.log("User clicked on menu");
-            var template = $scope.main.menuTemplate;
-
-            var position = $mdPanel.newPanelPosition()
-                .relativeTo($event.srcElement)
-                .addPanelPosition(
-                $mdPanel.xPosition.ALIGN_START,
-                $mdPanel.yPosition.BELOW
-            );
-
-            var config = {
-                id: 'content_' + menu.name,
-                attachTo: angular.element(document.body),
-                // controller: PanelMenuCtrl,
-                // controllerAs: 'ctrl',
-                template: template,
-                position: position,
-                panelClass: 'menu-panel-container',
-                locals: {
-                items: menu.items
-                },
-                openFrom: $event,
-                focusOnOpen: false,
-                zIndex: 100,
-                propagateContainerEvents: true,
-                groupName: 'menus'
-            };
-
-            $mdPanel.open(config);
-            };
-
-            function PanelMenuCtrl(mdPanelRef) {
-                this.closeMenu = function() {
-                    mdPanelRef && mdPanelRef.close();
-                }
-            }                               
+        });     
     }]);

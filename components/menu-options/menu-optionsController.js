@@ -4,7 +4,7 @@
 ddxApp.controller('OptionsMenuCtrl', OptionsMenuCtrl)
 
 
-function OptionsMenuCtrl($mdPanel, $scope) {
+function OptionsMenuCtrl($mdPanel, $scope, $location) {
   this._mdPanel = $mdPanel;
   this.$scope = $scope;
 
@@ -12,6 +12,7 @@ function OptionsMenuCtrl($mdPanel, $scope) {
     'My Profile',
     'My Groups',
     'Proposal Drafts',
+    'Logout',
   ];
 
   this.selected = {selectedOption: 'My Profile'};
@@ -58,9 +59,12 @@ OptionsMenuCtrl.prototype.showMenu = function(ev) {
   this._mdPanel.open(config);
 };
 
-function PanelMenuCtrl(mdPanelRef, $timeout) {
+function PanelMenuCtrl(mdPanelRef, $timeout, $location, $scope, $rootScope) {
   this._mdPanelRef = mdPanelRef;
   this.selectedOption = this.selected.selectedOption;
+  this.$location = $location;
+  this.$rootScope = $rootScope;
+  //console.log("$scope test, ", this.$scope.main.test_string);
   $timeout(function() {
     var selected = document.querySelector('.options-menu-item.selected');
     if (selected) {
@@ -73,14 +77,34 @@ function PanelMenuCtrl(mdPanelRef, $timeout) {
 
 
 PanelMenuCtrl.prototype.selectOption = function(option) {
+  console.log("selectOption(), option = ", option);
   this.selected.selectedOption = option;
   this._mdPanelRef && this._mdPanelRef.close().then(function() {
     angular.element(document.querySelector('.options-menu-open-button')).focus();
   });
+
+  switch(option) {
+    case "My Profile":
+      console.log("User clicked My Profile");
+      this.$location.path("/user-profile");
+      break;
+    case "My Groups":
+      console.log("User clicked My Groups");
+      this.$location.path("/user-groups");
+      break;
+    case "Proposal Drafts":
+      console.log("User clicked Proposal Drafts");
+      this.$location.path("/proposal-drafts");
+      break;
+    case "Logout":
+      console.log("User clicked Logout");
+      this.$rootScope.$broadcast("Logout");            
+  }
 };
 
 
 PanelMenuCtrl.prototype.onKeydown = function($event, option) {
+  console.log("User pressed key");
   var handled, els, index, prevIndex, nextIndex;
   switch ($event.which) {
     case 38: // Up Arrow.
