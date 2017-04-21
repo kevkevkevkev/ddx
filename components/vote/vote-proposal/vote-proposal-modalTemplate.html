@@ -25,6 +25,7 @@
                           <p>{{VoteController.voteProposal.text}}</p>
                       </div>                      
                   </div>
+
               </md-content>
             </md-tab>
             <md-tab label="Discussion">
@@ -94,7 +95,7 @@
         </md-content>
       </div>
     </md-dialog-content>
-    <md-dialog-actions layout="row" style="padding: 10px;">
+    <md-dialog-actions layout="row" style="padding: 10px; min-height: 70px;">
       <div class="vote-proposal-buttons">
         <md-button class="md-fab md-primary vote-no-button" style="background-color: #F2B6AE; margin-right: 20px; margin-left: 20px;" ng-click="VoteController.voteNo(proposal)">   
           <!-- <md-icon md-svg-src="img/icons/vote_no_button.svg" aria-label="Vote No"></md-icon> -->
