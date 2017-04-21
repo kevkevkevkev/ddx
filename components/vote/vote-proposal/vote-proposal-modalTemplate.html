@@ -13,53 +13,80 @@
       <div class="md-dialog-content">
         <md-content">
           <md-tabs md-dynamic-height="" md-border-bottom="">
-            <md-tab label="Proposal Text">
+            <md-tab label="Proposal">
               <md-content class="md-padding">
                   <div layout-gt-xs="column">
                       <div class="vote-proposal-title" flex-gt-xs="">
                           <label><i>Proposal Title</i></label>
-                          <p>{{VoteController.voteProposalTitle}}</p>
+                          <p>{{VoteController.voteProposal.title}}</p>
                       </div>
                       <div class="vote-proposal-text" flex-gt-xs="">
                           <label><i>Proposal Text</i></label>
-                          <p>{{VoteController.voteProposalText}}</p>
-                      </div>
-                      <div class="vote-proposal-buttons">
-                        <md-button class="md-icon-button vote-yes-button" ng-click="VoteController.voteYes(proposal)">   
-                          <md-icon md-svg-src="img/icons/vote_yes_button.svg" aria-label="Vote Yes"></md-icon>
-                        </md-button>
-                        <md-button class="md-icon-button vote-no-button" ng-click="VoteController.voteNo(proposal)">   
-                          <md-icon md-svg-src="img/icons/vote_no_button.svg" aria-label="Vote No"></md-icon>
-                        </md-button>                                                
+                          <p>{{VoteController.voteProposal.text}}</p>
                       </div>                      
                   </div>
               </md-content>
             </md-tab>
-            <md-tab label="two">
+            <md-tab label="Discussion">
               <md-content class="md-padding">
                   <div layout-gt-xs="column">
-                      <div class="vote-proposal-title" flex-gt-xs="">
-                          <label><i>Proposal Title</i></label>
-                          <p>{{VoteController.voteProposalTitle}}</p>
+                    <label><i>Author Description</i></label>
+                    <div class="discussion-proposal">
+                      <div class="proposal-votes">
+                            <md-button class="md-icon-button" ng-click="VoteController.upvote()">
+                              <md-icon md-svg-src="img/icons/upvote_btn.svg" aria-label="Upvote"></md-icon>
+                            </md-button>
+                            <md-label>
+                              {{VoteController.voteProposal.users_who_upvoted.length-VoteController.voteProposal.users_who_downvoted.length}}
+                            </md-label>       
+                            <md-button class="md-icon-button" ng-click="VoteController.downvote()">
+                              <md-icon md-svg-src="img/icons/downvote_btn.svg" aria-label="Downvote"></md-icon>
+                            </md-button>            
                       </div>
-                      <div class="vote-proposal-text" flex-gt-xs="">
-                          <label><i>Proposal Text</i></label>
-                          <p>{{VoteController.voteProposalText}}</p>
+                      <div class="proposal-title-and-details">
+                        <p class="proposal-display-title"><b>{{VoteController.voteProposal.title}}</b></p>
+                        <div class="proposal-display-details">
+                          <p><i>Proposed by: {{VoteController.voteProposal.user_author_name}}</i></p>
+                          <p><i>Group: {{VoteController.voteProposal.group}}</i></p>
+                          <p><i>Threshold for General Election: </i></p>
+                        </div>
                       </div>
-                      <div class="vote-proposal-buttons">
-                        <md-button class="md-icon-button vote-yes-button" ng-click="VoteController.voteYes(proposal)">   
-                          <md-icon md-svg-src="img/icons/vote_yes_button.svg" aria-label="Vote Yes"></md-icon>
-                        </md-button>
-                        <md-button class="md-icon-button vote-no-button" ng-click="VoteController.voteNo(proposal)">   
-                          <md-icon md-svg-src="img/icons/vote_no_button.svg" aria-label="Vote No"></md-icon>
-                        </md-button>                                                
-                      </div>                      
+                    </div>
+                    <div class="proposal-discussion-proposal-text-and-description vote-discussion-proposal">
+                      <div class="proposal-discussion-proposal-text">
+                        <p>{{VoteController.voteProposal.text}}</p>
+                      </div>
+                      <div class="proposal-discussion-proposal-description">
+                        <p>{{VoteController.voteProposal.description}}</p>
+                      </div>
+                    </div>                                      
+                    <label class="user-comments-label"><i>User Comments</i></label>
+                    <div ng-repeat="comment in VoteController.comments" ng-init="commentIndex = $index" class="vote-proposal-discussion-comments">
+                      <div class="vote-proposal-discussion-comment">
+                        <div class="vote-proposal-discussion-comment-votes">
+                              <md-button class="md-icon-button" ng-click="VoteController.upvoteComment(comment, $index)">
+                                <md-icon md-svg-src="img/icons/upvote_btn.svg" aria-label="Upvote"></md-icon>
+                              </md-button>
+                              <md-label>{{comment.users_who_upvoted.length-comment.users_who_downvoted.length}}</md-label>        
+                              <md-button class="md-icon-button" ng-click="VoteDiscussionController.downvoteComment(comment, $index)">
+                                <md-icon md-svg-src="img/icons/downvote_btn.svg" aria-label="Downvote"></md-icon>
+                              </md-button>            
+                        </div>
+                        <div class="vote-proposal-discussion-comment-title-and-details">
+                          <div class="vote-proposal-discussion-comment-display-details">
+                            <p>{{comment.user_author_name}} <i>wrote</i></p>
+                          </div>
+                          <div class="vote-proposal-discussion-comment-text">
+                            <p>{{comment.text}}</p>
+                          </div>        
+                        </div>
+                      </div>
+                    </div>                  
                   </div>
               </md-content>
             </md-tab>
-            <md-tab label="three">
+            <md-tab label="Amendment History">
               <md-content class="md-padding">
-                <h1 class="md-display-2">Tab Three</h1>
                 <p>Integer turpis erat, porttitor vitae mi faucibus, laoreet interdum tellus. Curabitur posuere molestie dictum. Morbi eget congue risus, quis rhoncus quam. Suspendisse vitae hendrerit erat, at posuere mi. Cras eu fermentum nunc. Sed id ante eu orci commodo volutpat non ac est. Praesent ligula diam, congue eu enim scelerisque, finibus commodo lectus.</p>
               </md-content>
             </md-tab>
@@ -67,13 +94,18 @@
         </md-content>
       </div>
     </md-dialog-content>
-    <md-dialog-actions layout="row">
-      <md-button class="md-icon-button vote-yes-button" ng-click="VoteController.voteYes(proposal)">   
-        <md-icon md-svg-src="img/icons/vote_yes_button.svg" aria-label="Vote Yes"></md-icon>
-      </md-button>
-      <md-button class="md-icon-button vote-no-button" ng-click="VoteController.voteNo(proposal)">   
-        <md-icon md-svg-src="img/icons/vote_no_button.svg" aria-label="Vote No"></md-icon>
-      </md-button> 
+    <md-dialog-actions layout="row" style="padding: 10px;">
+      <div class="vote-proposal-buttons">
+        <md-button class="md-fab md-primary vote-no-button" style="background-color: #F2B6AE; margin-right: 20px; margin-left: 20px;" ng-click="VoteController.voteNo(proposal)">   
+          <!-- <md-icon md-svg-src="img/icons/vote_no_button.svg" aria-label="Vote No"></md-icon> -->
+          No
+        </md-button>
+        <span></span> 
+        <md-button class="md-fab md-primary vote-yes-button" style="background-color: #AEF2C5; margin-right: 20px; margin-left: 20px;" ng-click="VoteController.voteYes(proposal)">   
+          <!-- <md-icon md-svg-src="img/icons/vote_yes_button.svg" aria-label="Vote Yes"></md-icon> -->
+          Yes
+        </md-button>        
+      </div>
     </md-dialog-actions>
   </form>
 </md-dialog>

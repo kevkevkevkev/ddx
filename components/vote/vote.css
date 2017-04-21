@@ -36,6 +36,51 @@
 	padding-right: 50px;
 }
 
-.vote-yes-button {
-	size: 200%;
+.vote-proposal-buttons {
+	margin: 0 auto;
+}
+
+.vote-discussion-proposal {
+	padding-bottom: 10px;
+	border-bottom: thin solid;	
+}
+
+.vote-proposal-title > p {
+	margin-left: 2%;
+}
+
+.user-comments-label {
+	padding-top: 20px;
+}
+
+.vote-proposal-discussion-comments {
+	/*margin-top: 20px;*/
+	margin-left: 5%;
+	width: 80%;	
+}
+
+.vote-proposal-discussion-comment {
+	display: flex;
+	flex-direction: row;
+	margin-left: 10px;
+	margin-top: 5px;
+	margin-bottom: 15px;
+	padding-bottom: 15px;
+    border-bottom: thin dotted;
+}
+
+.vote-proposal-discussion-comment-votes {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.vote-proposal-discussion-comment-title-and-details {
+	margin-top: 5px;
+	margin-left: 10px;
+}
+
+.vote-proposal-display-details {
+	margin-left: 10px;
+	line-height: 90%;
 }

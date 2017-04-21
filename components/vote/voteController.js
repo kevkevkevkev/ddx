@@ -40,9 +40,6 @@ ddxApp.controller('VoteController', ['$scope', '$rootScope', '$routeParams', '$r
    ********************************/
 
   $scope.VoteController.voteProposal = {};
-  $scope.VoteController.voteProposalTitle = "";
-  $scope.VoteController.voteProposalText = "";
-  $scope.VoteController.voteProposalDescription = "";
 
   /* When the user clicks on a proposal, create a dialogue with three tabs: 
    * 1) View the proposal text and vote on it
@@ -57,8 +54,9 @@ ddxApp.controller('VoteController', ['$scope', '$rootScope', '$routeParams', '$r
       targetEvent: ev,
       clickOutsideToClose:true,
     });
-    $scope.VoteController.voteProposalTitle = proposal.title;
-    $scope.VoteController.voteProposalText = proposal.text;
+    $scope.VoteController.voteProposal = proposal;
+    $scope.VoteController.loadComments();
+    console.log("$scope.VoteController.voteProposal._id = ", $scope.VoteController.voteProposal._id);
   };
 
   $scope.VoteController.cancel = function() {
@@ -84,6 +82,25 @@ ddxApp.controller('VoteController', ['$scope', '$rootScope', '$routeParams', '$r
         console.log(err);
     });
     console.log("Submitting upload proposal request");      
-  };  
+  };
+
+  $scope.VoteController.comments = {};
+
+  $scope.VoteController.loadComments = function () {
+    var comments_resource = $resource('/proposals/discussion/get_comments/:proposal_id');
+    $scope.VoteController.comments = comments_resource.query({proposal_id: $scope.VoteController.voteProposal._id}, function() {
+      console.log("Retreived comments: ", $scope.VoteController.comments);
+      // Sort comments by upvotes
+      $scope.VoteController.comments.sort(function(a, b) { 
+        if (a !== b) {
+          return (b.users_who_upvoted.length-b.users_who_downvoted.length)-(a.users_who_upvoted.length-a.users_who_downvoted.length);
+        } else {
+          return a.date_time-b.date_time;
+        }
+      });      
+    }, function errorHandling(err) {
+      console.log(err);
+    });
+  };
 }]);
 
