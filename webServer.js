@@ -34,6 +34,8 @@ var fs = require("fs");
 var User = require('./schema/user.js');
 var Proposal = require('./schema/proposal.js');
 var Comment = require('./schema/comment.js');
+var Amendment = require('.schema/amendment.js');
+var Group = require('.schema/group.js')
 var SchemaInfo = require('./schema/schemaInfo.js');
 
 var express = require('express');

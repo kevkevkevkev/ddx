@@ -1,6 +1,6 @@
 "use strict";
 /*
- *  Defined the Mongoose Schema and return a Model for a User
+ * Defined the Mongoose Schema and return a Model for a User
  */
 /* jshint node: true */
 
@@ -13,7 +13,7 @@ var commentSchema = new mongoose.Schema({
     user_author_id: mongoose.Schema.Types.ObjectId, // Reference to the ID of the user who wrote the comment
     proposal_id: mongoose.Schema.Types.ObjectId, // Reference to the ID of the proposal to which the comment responds
     users_who_upvoted: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who upvoted the comment
-    users_who_downvoted: [mongoose.Schema.Types.ObjectId] // Reference array of the IDs of the users who downvoted the comment
+    users_who_downvoted: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who downvoted the comment
 });
 
 var Comment = mongoose.model('Comment', commentSchema);

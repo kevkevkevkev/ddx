@@ -18,6 +18,7 @@ ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$rou
 
   var proposalId = $routeParams.proposalId;
   $scope.ProposalDiscussionController = {};
+  $scope.ProposalDiscussionController.amendment = {};
 
   /***********************************
    * Proposal and Comments Retrieval *
@@ -29,7 +30,7 @@ ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$rou
     // TODO: Switch this to retrieve proposals based on the group ID
     var proposal_resource = $resource('/proposals/discussion/get/:proposal_id');
     $scope.ProposalDiscussionController.proposal = proposal_resource.get({proposal_id: proposalId}, function() {
-
+    $scope.ProposalDiscussionController.amendment.text = $scope.ProposalDiscussionController.proposal.text;
     }, function errorHandling(err) {
         console.log(err);
     });
@@ -138,15 +139,14 @@ ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$rou
     console.log("Submitted upload comment request");      
   };
 
+  /************************************************************
+   * Drafting and Proposing Amendments on a Proposal Handling *
+   ************************************************************/
 
-  // /*****************
-  //  * Open Proposal *
-  //  *****************/
 
-  //  $scope.ProposalsController.openProposal = function(proposal) {
 
-  //     $location.path("/proposals/discussion/" + proposal._id);
-  //  };
+
+
 
 }]);
 

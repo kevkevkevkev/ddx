@@ -51,9 +51,15 @@
 		            <div layout-gt-xs="row">
 		                <md-input-container class="proposal-discussion-amendment-input" flex-gt-xs="">
 		                    <label style="text-align:left; margin:5px;"><i>Edit proposal with your proposed amendments</i></label>
-                    		<text-input ng-model="ProposalDiscussionController.newCommentText" md-maxlength="400" rows="3" md-select-on-focus="" placeholder="{{ProposalDiscussionController.proposal.text}}"></textarea>                 
+                    		<textarea ng-model="ProposalDiscussionController.amendment.text" md-maxlength="400" rows="3" md-select-on-focus=""></textarea>                 
 		                </md-input-container>
 		            </div>
+		            <div layout-gt-xs="row">
+		                <md-input-container class="proposal-discussion-amendment-description-input" flex-gt-xs="">
+		                    <label style="text-align:left; margin:5px;"><i>Description (make your case! Why should people vote for this amendment?)</i></label>
+                    		<textarea ng-model="ProposalDiscussionController.amendment.description" md-maxlength="400" rows="3" md-select-on-focus=""></textarea>		                    
+		                </md-input-container>
+		            </div>		            
 			      	<div layout="row" layout-align="end">
 		        		<md-button type="submit" ng-click="ProposalDiscussionController.submitComment()">Submit</md-button>
 		      		</div>
