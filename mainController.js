@@ -48,7 +48,11 @@ ddxApp.config(['$routeProvider',
             when('/proposal-drafts', {
                 templateUrl: 'components/proposal-drafts/proposal-draftsTemplate.html',
                 controller: 'ProfileDraftsController'
-            }).                                                                 
+            }).
+            when('/group', {
+                templateUrl: 'components/group/groupTemplate.html',
+                controller: 'GroupController'
+            }).                                                                              
             otherwise({
                 redirectTo: '#'
             });
