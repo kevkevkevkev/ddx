@@ -2,8 +2,10 @@
 	<div ng-repeat="proposal in VoteController.proposals" ng-init="sectionIndex = $index" class="vote-proposal-col">
 		<div class="vote-proposal">
 			<div class="vote-proposal-user-vote">
-		        <md-button class="md-icon-button vote-oval-button" ng-click="VoteController.showProposalModal($event, proposal)">		
-					<md-icon md-svg-src="img/icons/vote_oval_icon.svg" aria-label="Vote"></md-icon>
+		        <md-button class="md-icon-button vote-oval-button" aria-label="Vote" ng-click="VoteController.showProposalModal($event, proposal, $index)">		
+					<md-icon md-svg-src="img/icons/vote_oval_icon.svg" ng-if="proposal.users_who_voted_yes.indexOf(main.active_user._id)==-1 && proposal.users_who_voted_no.indexOf(main.active_user._id)==-1"></md-icon>
+					<md-icon md-svg-src="img/icons/yes_oval_icon.svg" aria-label="Vote" ng-if="proposal.users_who_voted_yes.indexOf(main.active_user._id)>-1"></md-icon>
+					<md-icon md-svg-src="img/icons/no_oval_icon.svg" aria-label="Vote" ng-if="proposal.users_who_voted_no.indexOf(main.active_user._id)>-1"></md-icon>				
 		        </md-button>						        
 			</div>
 			<md-button class="vote-proposal-title-and-details" ng-click="VoteController.showProposalModal($event, proposal)">

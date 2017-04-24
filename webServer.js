@@ -594,6 +594,108 @@ app.post('/comments/downvote/:comment_id', function (request, response) {
     });
 });
 
+/*******************************************
+ * Floor Proposal Yes and No Vote Handling *
+ *******************************************/
+
+/*
+ * URL /proposals/vote/yes/:proposal_id - Adds a yes vote to the proposal specified
+ * by :id and records that the session user voted yes on that proposal
+ */
+app.post('/proposals/vote/yes/:proposal_id', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    console.log("Server received request to vote yes on proposal with id", request.params.proposal_id);
+    var proposal_id = request.params.proposal_id;
+    var user_id = request.session.user_id;
+    console.log("About to look for proposal");
+
+    // Find the proposal with proposal_id
+    // TODO: Add parameters to require that this proposal be up for vote
+    Proposal.findOne({_id: proposal_id}).exec(function (err, proposal) {
+        console.log("Looking for proposal");
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (proposal === null) {
+            // Query didn't return an error but didn't find the SchemaInfo object
+            response.status(500).send('Proposal does not exist');
+            return;
+        }
+
+        var yesVoteUserIndex = proposal.users_who_voted_yes.indexOf(user_id);
+        var noVoteUserIndex = proposal.users_who_voted_no.indexOf(user_id);
+        if (yesVoteUserIndex >-1) {
+           console.log("User has already voted yes on this proposal");
+        } else {
+           console.log("User has not yet voted yes on this proposal");
+           proposal.users_who_voted_yes.push(user_id);
+           console.log("proposal.users_who_voted_yes = ", proposal.users_who_voted_yes);
+           // If user had previously voted no, remove from users_who_voted_no array
+           if (noVoteUserIndex >-1) {
+                proposal.users_who_voted_no.splice(noVoteUserIndex, 1);
+           }
+        }
+
+        proposal.save();
+        response.send(JSON.stringify(proposal));
+    });
+});
+
+/*
+ * URL /proposals/vote/no/:proposal_id - Adds a no vote to the proposal specified
+ * by :id and records that the session user voted no on that proposal
+ */
+app.post('/proposals/vote/no/:proposal_id', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    console.log("Server received request to vote no on proposal with id", request.params.proposal_id);
+    var proposal_id = request.params.proposal_id;
+    var user_id = request.session.user_id;
+
+    // Find the proposal with proposal_id
+    // TODO: Add parameters to require that this proposal be up for vote
+    Proposal.findOne({_id: proposal_id}).exec(function (err, proposal) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (proposal === null) {
+            // Query didn't return an error but didn't find the SchemaInfo object
+            response.status(500).send('Proposal does not exist');
+            return;
+        }
+
+        var noVoteUserIndex = proposal.users_who_voted_no.indexOf(user_id);
+        var yesVoteUserIndex = proposal.users_who_voted_yes.indexOf(user_id);
+        if (noVoteUserIndex >-1) {
+           console.log("User has already voted no on this proposal");
+        } else {
+           console.log("User has not yet voted no on this proposal");
+           proposal.users_who_voted_no.push(user_id);
+           console.log("proposal.users_who_voted_no = ", proposal.users_who_voted_no);
+           // If user had previously voted no, remove from users_who_voted_no array
+           if (yesVoteUserIndex >-1) {
+                proposal.users_who_voted_yes.splice(yesVoteUserIndex, 1);
+           }
+        }
+
+        proposal.save();
+        response.send(JSON.stringify(proposal));
+    });
+});
+
 /************************
  * Server Configuartion *
  ************************/

@@ -40,12 +40,13 @@ ddxApp.controller('VoteController', ['$scope', '$rootScope', '$routeParams', '$r
    ********************************/
 
   $scope.VoteController.voteProposal = {};
+  $scope.VoteController.voteProposalIndex = -1;
 
   /* When the user clicks on a proposal, create a dialogue with three tabs: 
    * 1) View the proposal text and vote on it
    * 2) View the proposal discussion
    * 3) View the proposal amendment history */
-  $scope.VoteController.showProposalModal = function(ev, proposal) {
+  $scope.VoteController.showProposalModal = function(ev, proposal, proposal_index) {
     console.log("showProposalModal() called");
     $mdDialog.show({
       scope: $scope.$new(),
@@ -55,6 +56,7 @@ ddxApp.controller('VoteController', ['$scope', '$rootScope', '$routeParams', '$r
       clickOutsideToClose:true,
     });
     $scope.VoteController.voteProposal = proposal;
+    $scope.VoteController.voteProposalIndex = proposal_index;
     $scope.VoteController.loadComments();
     console.log("$scope.VoteController.voteProposal._id = ", $scope.VoteController.voteProposal._id);
   };
@@ -64,25 +66,7 @@ ddxApp.controller('VoteController', ['$scope', '$rootScope', '$routeParams', '$r
       $mdDialog.cancel();
   };
 
-  $scope.VoteController.submitNewProposal = function() {
-    console.log("submitProposal() called");
-
-    var proposal_resource = $resource('/proposals/new');
-    var proposal_data = {
-      title: $scope.VoteController.newProposalTitle,
-      text: $scope.VoteController.newProposalText,
-      description: $scope.VoteController.newProposalDescription,
-    };
-
-    var newProposal = proposal_resource.save(proposal_data, function () {
-        console.log("proposal_resource.save callback()");
-        $mdDialog.cancel();
-        $scope.VoteController.loadProposals();        
-    }, function errorHandling(err) {
-        console.log(err);
-    });
-    console.log("Submitting upload proposal request");      
-  };
+  // Load comments for the discussion history of the proposal being considered
 
   $scope.VoteController.comments = {};
 
@@ -102,5 +86,33 @@ ddxApp.controller('VoteController', ['$scope', '$rootScope', '$routeParams', '$r
       console.log(err);
     });
   };
+
+  // Vote Handling
+
+  $scope.VoteController.voteYes = function(proposal) {
+    console.log("voteYes() called");
+    var vote_yes_resource = $resource('/proposals/vote/yes/:proposal_id', {proposal_id: $scope.VoteController.voteProposal._id});
+    proposal = vote_yes_resource.save({}, function() {
+      console.log("Voting yes on proposal: ", $scope.VoteController.voteProposal._id);
+      // Update local UI here
+      $scope.VoteController.loadProposals();
+      $scope.VoteController.cancel();            
+    }, function errorHandling(err) {
+      console.log(err);
+    });
+  };
+
+  $scope.VoteController.voteNo = function(proposal) {
+    console.log("voteNo() called");
+    var vote_no_resource = $resource('/proposals/vote/no/:proposal_id', {proposal_id: $scope.VoteController.voteProposal._id});
+    proposal = vote_no_resource.save({}, function() {
+      console.log("Voting no on proposal: ", $scope.VoteController.voteProposal._id);
+      // Update local UI here
+      $scope.VoteController.loadProposals();
+      $scope.VoteController.cancel();
+    }, function errorHandling(err) {
+      console.log(err);
+    });
+  };      
 }]);
 

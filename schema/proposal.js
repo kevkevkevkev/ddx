@@ -16,6 +16,8 @@ var proposalSchema = new mongoose.Schema({
     // TODO: Revisit whether separating users into upvoting and downvoting is the best schema
     users_who_upvoted: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who upvoted the proposal
     users_who_downvoted: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who downvoted the proposal
+    users_who_voted_yes: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who voted yes on the proposal
+    users_who_voted_no: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who voted no on the proposal
     comments: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the comments on this proposal
     group: mongoose.Schema.Types.ObjectId // Reference to the ID of the group that this proposal was submitted to
 });

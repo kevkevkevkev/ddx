@@ -18,14 +18,20 @@
                   <div layout-gt-xs="column">
                       <div class="vote-proposal-title" flex-gt-xs="">
                           <label><i>Proposal Title</i></label>
-                          <p>{{VoteController.voteProposal.title}}</p>
                       </div>
+                      <div class="proposal-title-and-details">
+                        <p class="proposal-display-title"><b>{{VoteController.voteProposal.title}}</b></p>
+                        <div class="proposal-display-details">
+                          <p><i>Proposed by: {{VoteController.voteProposal.user_author_name}}</i></p>
+                          <p><i>Group: {{VoteController.voteProposal.group}}</i></p>
+                          <p><i>Threshold for General Election: </i></p>
+                        </div>
+                      </div>                     
                       <div class="vote-proposal-text" flex-gt-xs="">
                           <label><i>Proposal Text</i></label>
                           <p>{{VoteController.voteProposal.text}}</p>
                       </div>                      
                   </div>
-
               </md-content>
             </md-tab>
             <md-tab label="Discussion">
@@ -34,13 +40,13 @@
                     <label><i>Author Description</i></label>
                     <div class="discussion-proposal">
                       <div class="proposal-votes">
-                            <md-button class="md-icon-button" ng-click="VoteController.upvote()">
+                            <md-button class="md-icon-button"">
                               <md-icon md-svg-src="img/icons/upvote_btn.svg" aria-label="Upvote"></md-icon>
                             </md-button>
                             <md-label>
                               {{VoteController.voteProposal.users_who_upvoted.length-VoteController.voteProposal.users_who_downvoted.length}}
                             </md-label>       
-                            <md-button class="md-icon-button" ng-click="VoteController.downvote()">
+                            <md-button class="md-icon-button">
                               <md-icon md-svg-src="img/icons/downvote_btn.svg" aria-label="Downvote"></md-icon>
                             </md-button>            
                       </div>
@@ -65,11 +71,11 @@
                     <div ng-repeat="comment in VoteController.comments" ng-init="commentIndex = $index" class="vote-proposal-discussion-comments">
                       <div class="vote-proposal-discussion-comment">
                         <div class="vote-proposal-discussion-comment-votes">
-                              <md-button class="md-icon-button" ng-click="VoteController.upvoteComment(comment, $index)">
+                              <md-button class="md-icon-button">
                                 <md-icon md-svg-src="img/icons/upvote_btn.svg" aria-label="Upvote"></md-icon>
                               </md-button>
                               <md-label>{{comment.users_who_upvoted.length-comment.users_who_downvoted.length}}</md-label>        
-                              <md-button class="md-icon-button" ng-click="VoteDiscussionController.downvoteComment(comment, $index)">
+                              <md-button class="md-icon-button">
                                 <md-icon md-svg-src="img/icons/downvote_btn.svg" aria-label="Downvote"></md-icon>
                               </md-button>            
                         </div>
