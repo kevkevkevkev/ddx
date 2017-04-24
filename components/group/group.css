@@ -1,0 +1,56 @@
+.group-information-view {
+	display: flex;
+	flex-direction: column;
+}
+
+.group-information-tabs {
+	margin-top: 20px;
+	margin-left: 5%;
+	width: 90%;
+}
+
+.group-information-tabs .md-tab {
+	background-color: #F3F3F3;
+	/*background-color: #F0E5D3;*/
+	border-radius: 15px 15px 0px 0px;
+}
+
+md-tabs.md-default-theme .md-tab.md-active, 
+md-tabs .md-tab.md-active, 
+md-tabs.md-default-theme .md-tab.md-active md-icon,
+md-tabs .md-tab.md-active md-icon, 
+md-tabs.md-default-theme .md-tab.md-focused,
+md-tabs .md-tab.md-focused, md-tabs.md-default-theme .md-tab.md-focused md-icon, 
+md-tabs .md-tab.md-focused md-icon {
+    color: rgb(0, 0, 0);
+}
+
+.md-tabs.md-default-theme.group-tabs md-ink-bar, md-tabs.group-tabs md-ink-bar {
+	color: black;
+    background: black;
+}
+
+.group-information-tab {
+	border-top: 1px solid black;
+}
+
+md-tabs[md-border-bottom] md-tabs-wrapper {
+	border-width: 0px;
+}
+
+.group-information-display-tab {
+	background-color: #F3F3F3;
+	/*background-color: #F0E5D3;*/
+	padding: 0px;
+	border-radius: 0px 15px 15px 15px;
+	border-top: 0px;
+}
+
+.group-information-tabs md-input-container .md-input {
+	background-color: white;
+	border: 1px solid #979797;
+}
+
+.group-information-display-tab > label {
+	text-align: left; 
+}

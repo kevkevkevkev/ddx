@@ -24,7 +24,6 @@
                         <div class="proposal-display-details">
                           <p><i>Proposed by: {{VoteController.voteProposal.user_author_name}}</i></p>
                           <p><i>Group: {{VoteController.voteProposal.group}}</i></p>
-                          <p><i>Threshold for General Election: </i></p>
                         </div>
                       </div>                     
                       <div class="vote-proposal-text" flex-gt-xs="">
@@ -55,7 +54,6 @@
                         <div class="proposal-display-details">
                           <p><i>Proposed by: {{VoteController.voteProposal.user_author_name}}</i></p>
                           <p><i>Group: {{VoteController.voteProposal.group}}</i></p>
-                          <p><i>Threshold for General Election: </i></p>
                         </div>
                       </div>
                     </div>
@@ -103,12 +101,12 @@
     </md-dialog-content>
     <md-dialog-actions layout="row" style="padding: 10px; min-height: 70px;">
       <div class="vote-proposal-buttons">
-        <md-button class="md-fab md-primary vote-no-button" style="background-color: #F2B6AE; margin-right: 20px; margin-left: 20px;" ng-click="VoteController.voteNo(proposal)">   
+        <md-button class="md-fab md-primary vote-no-button" style="background-color: #E7695D; margin-right: 20px; margin-left: 20px;" ng-click="VoteController.voteNo(proposal)">   
           <!-- <md-icon md-svg-src="img/icons/vote_no_button.svg" aria-label="Vote No"></md-icon> -->
           No
         </md-button>
         <span></span> 
-        <md-button class="md-fab md-primary vote-yes-button" style="background-color: #AEF2C5; margin-right: 20px; margin-left: 20px;" ng-click="VoteController.voteYes(proposal)">   
+        <md-button class="md-fab md-primary vote-yes-button" style="background-color: #76B18B; margin-right: 20px; margin-left: 20px;" ng-click="VoteController.voteYes(proposal)">   
           <!-- <md-icon md-svg-src="img/icons/vote_yes_button.svg" aria-label="Vote Yes"></md-icon> -->
           Yes
         </md-button>        

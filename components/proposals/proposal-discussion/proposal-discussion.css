@@ -47,6 +47,7 @@
 
 .proposal-discussion-write-comment-or-amendment .md-tab {
 	background-color: #F3F3F3;
+	/*background-color: #F0E5D3;*/
 	border-radius: 15px 15px 0px 0px;
 }
 
@@ -76,9 +77,18 @@ md-tabs[md-border-bottom] md-tabs-wrapper {
 
 .proposal-discussion-write-comment-tab {
 	background-color: #F3F3F3;
+	/*background-color: #F0E5D3;*/
 	padding: 0px;
 	border-radius: 0px 15px 15px 15px;
 	border-top: 0px;
+}
+
+.proposal-discussion-propose-amendment-tab {
+	background-color: #F3F3F3;
+	/*background-color: #F0E5D3;*/
+	padding: 0px;
+	border-radius: 0px 15px 15px 15px;
+	border-top: 0px;		
 }
 
 .proposal-discussion-write-comment-or-amendment md-input-container .md-input {

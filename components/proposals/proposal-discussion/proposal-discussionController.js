@@ -130,7 +130,8 @@ ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$rou
     var newComment = comment_resource.save(comment_data, function () {
         console.log("comment_resource.save callback()");
         $mdDialog.cancel();
-        $scope.ProposalDiscussionController.loadComments();  
+        $scope.ProposalDiscussionController.loadComments();
+        $scope.ProposalDiscussionController.newCommentText = "";
     }, function errorHandling(err) {
         console.log(err);
     });
