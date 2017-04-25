@@ -19,7 +19,8 @@ var proposalSchema = new mongoose.Schema({
     users_who_voted_no: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who voted no on the proposal
     comments: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the comments on this proposal
     amendments: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the amendments on this proposal
-    group: mongoose.Schema.Types.ObjectId // Reference to the ID of the group that this proposal was submitted to
+    group: mongoose.Schema.Types.ObjectId, // Reference to the ID of the group that this proposal was submitted to
+    date_time: {type: Date, default: Date.now} // The date and time when the proposal was added to the database
 });
 
 // the schema is useless so far

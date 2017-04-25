@@ -13,6 +13,7 @@
       <div class="md-dialog-content">
         <md-content">
           <md-tabs md-dynamic-height="" md-border-bottom="">
+
             <md-tab label="Proposal">
               <md-content class="md-padding">
                   <div layout-gt-xs="column">
@@ -33,6 +34,7 @@
                   </div>
               </md-content>
             </md-tab>
+
             <md-tab label="Discussion">
               <md-content class="md-padding">
                   <div layout-gt-xs="column">
@@ -90,15 +92,44 @@
                   </div>
               </md-content>
             </md-tab>
+
             <md-tab label="Amendment History">
               <md-content class="md-padding">
-                <p>Integer turpis erat, porttitor vitae mi faucibus, laoreet interdum tellus. Curabitur posuere molestie dictum. Morbi eget congue risus, quis rhoncus quam. Suspendisse vitae hendrerit erat, at posuere mi. Cras eu fermentum nunc. Sed id ante eu orci commodo volutpat non ac est. Praesent ligula diam, congue eu enim scelerisque, finibus commodo lectus.</p>
+                  <div layout-gt-xs="column">
+                    <label><i>Enacted Amendments</i></label>              
+                    <div ng-repeat="amendment in VoteController.amendments" ng-init="amendmentIndex = $index" class="vote-proposal-discussion-comments">
+                      <div class="vote-proposal-discussion-comment">                  
+                        <div class="proposal-discussion-comment-votes">
+                              <md-button class="md-icon-button">
+                                <md-icon md-svg-src="img/icons/upvote_btn.svg" aria-label="Upvote"></md-icon>
+                              </md-button>
+                              <md-label>{{amendment.users_who_upvoted.length-amendment.users_who_downvoted.length}}</md-label>        
+                              <md-button class="md-icon-button">
+                                <md-icon md-svg-src="img/icons/downvote_btn.svg" aria-label="Downvote"></md-icon>
+                              </md-button>            
+                        </div>
+                        <div class="proposal-discussion-comment-title-and-details">
+                          <div class="proposal-discussion-comment-display-details">
+                            <p>{{amendment.user_author_name}} <i>proposed an amendment:</i></p>
+                          </div>
+                          <div class="proposal-discussion-amendment-text">
+                            <p>{{amendment.amendment_text}}</p>
+                          </div>          
+                          <div class="proposal-discussion-comment-text">
+                            <p>{{amendment.amendment_description}}</p>
+                          </div>        
+                        </div>
+                      </div>
+                    </div>
+                  </div>  
               </md-content>
             </md-tab>
+
           </md-tabs>
         </md-content>
       </div>
     </md-dialog-content>
+
     <md-dialog-actions layout="row" style="padding: 10px; min-height: 70px;">
       <div class="vote-proposal-buttons">
         <md-button class="md-fab md-primary vote-no-button" style="background-color: #E7695D; margin-right: 20px; margin-left: 20px;" ng-click="VoteController.voteNo(proposal)">   
@@ -112,6 +143,7 @@
         </md-button>        
       </div>
     </md-dialog-actions>
+
   </form>
 </md-dialog>
 

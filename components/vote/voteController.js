@@ -58,6 +58,7 @@ ddxApp.controller('VoteController', ['$scope', '$rootScope', '$routeParams', '$r
     $scope.VoteController.voteProposal = proposal;
     $scope.VoteController.voteProposalIndex = proposal_index;
     $scope.VoteController.loadComments();
+    $scope.VoteController.loadAmendments();
     console.log("$scope.VoteController.voteProposal._id = ", $scope.VoteController.voteProposal._id);
   };
 
@@ -76,6 +77,27 @@ ddxApp.controller('VoteController', ['$scope', '$rootScope', '$routeParams', '$r
       console.log("Retreived comments: ", $scope.VoteController.comments);
       // Sort comments by upvotes
       $scope.VoteController.comments.sort(function(a, b) { 
+        if (a !== b) {
+          return (b.users_who_upvoted.length-b.users_who_downvoted.length)-(a.users_who_upvoted.length-a.users_who_downvoted.length);
+        } else {
+          return a.date_time-b.date_time;
+        }
+      });      
+    }, function errorHandling(err) {
+      console.log(err);
+    });
+  };
+
+  // Load amendments for the amendment history of the proposal being considered
+
+  $scope.VoteController.amendments = {};
+
+  $scope.VoteController.loadAmendments = function () {
+    var amendments_resource = $resource('/proposals/discussion/get_amendments/:proposal_id');
+    $scope.VoteController.amendments = amendments_resource.query({proposal_id: $scope.VoteController.voteProposal._id}, function() {
+      console.log("Retreived amendments: ", $scope.VoteController.amendments);
+      // Sort amendments by upvotes
+      $scope.VoteController.amendments.sort(function(a, b) { 
         if (a !== b) {
           return (b.users_who_upvoted.length-b.users_who_downvoted.length)-(a.users_who_upvoted.length-a.users_who_downvoted.length);
         } else {

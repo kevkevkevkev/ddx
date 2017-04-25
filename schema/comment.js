@@ -12,9 +12,11 @@ var commentSchema = new mongoose.Schema({
     user_author_name: String, // Name of the user who wrote the comment
     user_author_id: mongoose.Schema.Types.ObjectId, // Reference to the ID of the user who wrote the comment
     proposal_id: mongoose.Schema.Types.ObjectId, // Reference to the ID of the proposal to which the comment responds
+    replies: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of replies submitted to this comment
     users_who_upvoted: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who upvoted the comment
     users_who_downvoted: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who downvoted the comment
-    is_comment: Boolean // Boolean to determine whether this is a comment. NOTE: Always set to true
+    is_comment: Boolean, // Boolean to determine whether this is a comment. NOTE: Always set to true
+    date_time: {type: Date, default: Date.now} // The date and time when the comment was added to the database
 });
 
 var Comment = mongoose.model('Comment', commentSchema);

@@ -328,7 +328,7 @@ app.get('/proposals/discussion/get/:proposal_id', function (request, response) {
 });
 
 /*
- * URL /proposals/discussion/get_comments/:proposal_id - Retrieve the comments specified by 
+ * URL /proposals/discussion/get_comments/:proposal_id - Retrieve the comments 
  * associated with the proposal_id received as a request parameter
  */
 app.get('/proposals/discussion/get_comments/:proposal_id', function (request, response) {
@@ -356,6 +356,89 @@ app.get('/proposals/discussion/get_comments/:proposal_id', function (request, re
         console.log("Retrieved comments: ", comments);
         response.end(JSON.stringify(comments));
     });
+});
+
+/*
+ * URL /proposals/discussion/get_amendments/:proposal_id - Retrieve the amendments 
+ * associated with the proposal_id received as a request parameter
+ */
+app.get('/proposals/discussion/get_amendments/:proposal_id', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    var proposal_id = request.params.proposal_id;
+    console.log("Server received request to retrieve amendments associated with proposal id", proposal_id);
+
+    // Retrieve all amendments associated with the proposal_id
+    Amendment.find({proposal_id: proposal_id}).exec(function (err, amendments) {
+        if (err) {
+            // Query returned an error
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (amendments.length === 0) {
+            response.status(200).send("Missing amendments");
+            return;
+        }
+
+        console.log("Retrieved amendments: ", amendments);
+        response.end(JSON.stringify(amendments));
+    });
+});
+
+/*
+ * URL /proposals/discussion/get_comments_and_amendments/:proposal_id - Retrieve the 
+ * comments and amendments associated with the proposal_id received as a request parameter
+ */
+app.get('/proposals/discussion/get_comments_and_amendments/:proposal_id', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    var proposal_id = request.params.proposal_id;
+    console.log("Server received request to retrieve comments and amendments associated with proposal id", proposal_id);
+
+    // Retrieve all comments associated with the proposal_id
+    Comment.find({proposal_id: proposal_id}).exec(function (err, comments) {
+        if (err) {
+            // Query returned an error
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (comments.length === 0) {
+            response.status(200).send("Missing comments");
+            return;
+        }
+
+        console.log("Retrieved comments: ", comments);
+        // Store the retrieved comments in an array
+        var commentArray = JSON.parse(JSON.stringify(comments));
+
+        // Retrieve all amendments associated with the proposal_id
+        Amendment.find({proposal_id: proposal_id}).exec(function (err, amendments) {
+            if (err) {
+                // Query returned an error
+                response.status(400).send(JSON.stringify(err));
+                return;
+            }
+            if (amendments.length === 0) {
+                response.status(200).send("Missing amendments");
+                return;
+            }
+
+            console.log("Retrieved amendments: ", amendments);
+            // Store the retreived amendments in an array
+            var amendmentArray = JSON.parse(JSON.stringify(amendments));
+
+            var combinedArray = commentArray.concat(amendmentArray);
+            response.end(JSON.stringify(combinedArray));
+        });
+    });        
 });
 
 /*****************************************
@@ -617,6 +700,7 @@ app.post('/amendments/new', function (request, response) {
     var amendment_attributes = {
         amendment_text: request.body.text, // Text of the amendment
         amendment_description: request.body.description, // Description of the amendment
+        original_proposal_text: request.body.original_proposal_text, // Text of the original proposal to be amended
         user_author_name: request.session.user.first_name + " " + request.session.user.last_name, // Amendment author name
         user_author_id: request.session.user_id, // Reference to the ID of the user who submitted the amendment
         proposal_id: request.body.proposal_id, // Reference to the ID of the proposal to be amended

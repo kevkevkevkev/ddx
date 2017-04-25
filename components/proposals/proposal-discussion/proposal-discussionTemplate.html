@@ -68,8 +68,8 @@
 	      </md-tab>
 	    </md-tabs>	    	
 	</div>
-	<div ng-repeat="comment in ProposalDiscussionController.comments" ng-init="commentIndex = $index" class="proposal-discussion-comments">
-		<div class="proposal-discussion-comment">
+	<div ng-repeat="comment in ProposalDiscussionController.combined" ng-init="commentIndex = $index" class="proposal-discussion-comments">
+		<div class="proposal-discussion-comment" ng-if="!comment.is_amendment">
 			<div class="proposal-discussion-comment-votes">
 		        <md-button class="md-icon-button" ng-click="ProposalDiscussionController.upvoteComment(comment, $index)">
 		          <md-icon md-svg-src="img/icons/upvote_btn.svg" aria-label="Upvote"></md-icon>
@@ -81,29 +81,32 @@
 			</div>
 			<div class="proposal-discussion-comment-title-and-details">
 				<div class="proposal-discussion-comment-display-details">
-					<p>{{comment.user_author_name}} <i>wrote</i></p>
+					<p>{{comment.user_author_name}} <i>commented:</i></p>
 				</div>
 				<div class="proposal-discussion-comment-text">
 					<p>{{comment.text}}</p>
 				</div>				
 			</div>
 		</div>
-		<div class="proposal-discussion-comment">
+		<div class="proposal-discussion-comment" ng-if="comment.is_amendment">
 			<div class="proposal-discussion-comment-votes">
-		        <md-button class="md-icon-button" ng-click="ProposalDiscussionController.upvoteComment(comment, $index)">
+		        <md-button class="md-icon-button" ng-click="ProposalDiscussionController.upvoteAmendment(comment, $index)">
 		          <md-icon md-svg-src="img/icons/upvote_btn.svg" aria-label="Upvote"></md-icon>
 		        </md-button>
 		        <md-label>{{comment.users_who_upvoted.length-comment.users_who_downvoted.length}}</md-label>				
-		        <md-button class="md-icon-button" ng-click="ProposalDiscussionController.downvoteComment(comment, $index)">
+		        <md-button class="md-icon-button" ng-click="ProposalDiscussionController.downvoteAmendment(comment, $index)">
 		          <md-icon md-svg-src="img/icons/downvote_btn.svg" aria-label="Downvote"></md-icon>
 		        </md-button>		        
 			</div>
 			<div class="proposal-discussion-comment-title-and-details">
 				<div class="proposal-discussion-comment-display-details">
-					<p>{{comment.user_author_name}} <i>wrote</i></p>
+					<p>{{comment.user_author_name}} <i>proposed an amendment:</i></p>
 				</div>
+				<div class="proposal-discussion-amendment-text">
+					<p>{{comment.amendment_text}}</p>
+				</div>					
 				<div class="proposal-discussion-comment-text">
-					<p>{{comment.text}}</p>
+					<p>{{comment.amendment_description}}</p>
 				</div>				
 			</div>
 		</div>		
