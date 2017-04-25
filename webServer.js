@@ -19,7 +19,7 @@
 
 var mongoose = require('mongoose');
 var async = require('async');
-var session = require('express-session');
+var session = require('cookie-session');
 var bodyParser = require('body-parser');
 var multer = require('multer');
 var processFormBody = multer({storage: multer.memoryStorage()}).single('uploadedphoto');
@@ -188,13 +188,15 @@ app.post('/admin/logout', function (request, response) {
         response.status(401).send("No user logged in");
         return;
     } else {
-        request.session.destroy(function (err) {
-            if (err) {
-                response.status(500).send(err);
-                return;
-            }
-            response.send("Logout success");
-        });
+        // request.session.destroy(function (err) {
+        //     if (err) {
+        //         response.status(500).send(err);
+        //         return;
+        //     }
+        //     response.send("Logout success");
+        // });
+        request.session = null;
+        response.send("Logout success");
     }
 });
 
