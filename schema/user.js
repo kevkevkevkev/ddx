@@ -13,7 +13,8 @@ var userSchema = new mongoose.Schema({
     last_name: String,  // Last name of the user.
     description: String,  // A brief user description
     password: String,	// The password of the user
-    date_time: {type: Date, default: Date.now} // The date and time when the user was added to the database
+    date_time: {type: Date, default: Date.now}, // The date and time when the user was added to the database
+	groups: [mongoose.Schema.Types.ObjectId] // Reference array of the IDs of the groups in which the user is a member    
 });
 
 // the schema is useless so far
