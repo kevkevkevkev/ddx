@@ -130,7 +130,6 @@ ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$rou
 
     var newComment = comment_resource.save(comment_data, function () {
         console.log("comment_resource.save callback()");
-        $mdDialog.cancel();
         $scope.ProposalDiscussionController.loadComments();
         $scope.ProposalDiscussionController.newCommentText = "";
     }, function errorHandling(err) {
@@ -143,10 +142,53 @@ ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$rou
    * Drafting and Proposing Amendments on a Proposal Handling *
    ************************************************************/
 
+  $scope.ProposalDiscussionController.submitAmendment = function() {
+    console.log("submitAmendment() called");
 
+    var amendment_resource = $resource('/amendments/new');
+    var amendment_data = {
+      text: $scope.ProposalDiscussionController.amendment.text,
+      description: $scope.ProposalDiscussionController.amendment.description,
+      proposal_id: proposalId
+    };
 
+    var newAmendment = amendment_resource.save(amendment_data, function () {
+        console.log("amendment_resource.save callback()");
+        $scope.ProposalDiscussionController.loadComments();
+        $scope.ProposalDiscussionController.newCommentText = "";
+    }, function errorHandling(err) {
+        console.log(err);
+    });
+    console.log("Submitted upload comment request");      
+  };
 
+  /******************************************
+   * Amendment Upvote and Downvote Handling *
+   ******************************************/  
 
+  // Executes an upvote request
+  $scope.ProposalDiscussionController.upvoteAmendment = function(amendment, amendmentIndex) {
+    console.log("upvote() called on amendment ", amendment);
+    var upvote_resource = $resource('/amendments/upvote/:amendment_id', {amendment_id: amendment._id});
+    amendment = upvote_resource.save({}, function () {
+        $scope.ProposalDiscussionController.amendments[amendmentIndex].users_who_upvoted = amendment.users_who_upvoted;
+        $scope.ProposalDiscussionController.amendments[amendmentIndex].users_who_downvoted = amendment.users_who_downvoted;        
+    }, function errorHandling(err) {
+          console.log(err);
+    });
+  };
+
+  // Executes a downvote request
+  $scope.ProposalDiscussionController.downvoteAmendment = function(amendment, amendmentIndex) {
+    console.log("downvote() called on amendment ", amendment);
+    var downvote_resource = $resource('/amendments/downvote/:comment_id', {amendment_id: amendment._id});
+    amendment = downvote_resource.save({}, function () {
+        $scope.ProposalDiscussionController.amendments[amendmentIndex].users_who_upvoted = amendment.users_who_upvoted;      
+        $scope.ProposalDiscussionController.amendments[amendmentIndex].users_who_downvoted = amendment.users_who_downvoted;
+    }, function errorHandling(err) {
+          console.log(err);
+    });
+  };
 
 }]);
 

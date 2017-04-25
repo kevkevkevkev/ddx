@@ -15,7 +15,8 @@ var amendmentSchema = new mongoose.Schema({
     proposal_id: mongoose.Schema.Types.ObjectId, // Reference to the ID of the proposal to be amended
     users_who_upvoted: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who upvoted the amendment
     users_who_downvoted: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who downvoted the amendment
-    is_enacted: Boolean // Boolean to determine whether this amendment has been enacted
+    is_enacted: Boolean, // Boolean to determine whether this amendment has been enacted
+    is_amendment: Boolean // Boolean to determine whether this is an amendment. NOTE: Always set to true
 });
 
 var Amendment = mongoose.model('Amendment', amendmentSchema);

@@ -14,6 +14,7 @@ var commentSchema = new mongoose.Schema({
     proposal_id: mongoose.Schema.Types.ObjectId, // Reference to the ID of the proposal to which the comment responds
     users_who_upvoted: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who upvoted the comment
     users_who_downvoted: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who downvoted the comment
+    is_comment: Boolean // Boolean to determine whether this is a comment. NOTE: Always set to true
 });
 
 var Comment = mongoose.model('Comment', commentSchema);

@@ -61,7 +61,7 @@
 		                </md-input-container>
 		            </div>		            
 			      	<div layout="row" layout-align="end">
-		        		<md-button type="submit" ng-click="ProposalDiscussionController.submitComment()">Submit</md-button>
+		        		<md-button type="submit" ng-click="ProposalDiscussionController.submitAmendment()">Submit</md-button>
 		      		</div>
 		  		</form>	        	
 	        </div>
@@ -88,5 +88,24 @@
 				</div>				
 			</div>
 		</div>
+		<div class="proposal-discussion-comment">
+			<div class="proposal-discussion-comment-votes">
+		        <md-button class="md-icon-button" ng-click="ProposalDiscussionController.upvoteComment(comment, $index)">
+		          <md-icon md-svg-src="img/icons/upvote_btn.svg" aria-label="Upvote"></md-icon>
+		        </md-button>
+		        <md-label>{{comment.users_who_upvoted.length-comment.users_who_downvoted.length}}</md-label>				
+		        <md-button class="md-icon-button" ng-click="ProposalDiscussionController.downvoteComment(comment, $index)">
+		          <md-icon md-svg-src="img/icons/downvote_btn.svg" aria-label="Downvote"></md-icon>
+		        </md-button>		        
+			</div>
+			<div class="proposal-discussion-comment-title-and-details">
+				<div class="proposal-discussion-comment-display-details">
+					<p>{{comment.user_author_name}} <i>wrote</i></p>
+				</div>
+				<div class="proposal-discussion-comment-text">
+					<p>{{comment.text}}</p>
+				</div>				
+			</div>
+		</div>		
 	</div>
 </div>

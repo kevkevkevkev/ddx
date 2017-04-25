@@ -34,8 +34,8 @@ var fs = require("fs");
 var User = require('./schema/user.js');
 var Proposal = require('./schema/proposal.js');
 var Comment = require('./schema/comment.js');
-var Amendment = require('.schema/amendment.js');
-var Group = require('.schema/group.js')
+var Amendment = require('./schema/amendment.js');
+var Group = require('./schema/group.js')
 var SchemaInfo = require('./schema/schemaInfo.js');
 
 var express = require('express');
@@ -477,6 +477,7 @@ app.post('/comments/new', function (request, response) {
         user_author_name: request.session.user.first_name + " " + request.session.user.last_name, // Comment author name
         user_author_id: request.session.user_id, // Reference to the ID of the user who submitted the comment
         proposal_id: request.body.proposal_id, // Reference to the ID of the proposal to which the comment responds
+        is_comment: true, // Specifies that this object is a comment
     };
 
     function doneCallback(err, newComment) {
@@ -593,6 +594,150 @@ app.post('/comments/downvote/:comment_id', function (request, response) {
 
         comment.save();
         response.send(JSON.stringify(comment));
+    });
+});
+
+
+/********************************************
+ * Amendment Submission and Voting Handling *
+ ********************************************/
+
+/*
+ * URL /amendments/new - Enter a new amendment in the database
+ */
+app.post('/amendments/new', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    console.log("Server received amendment upload request");
+
+    var amendment_attributes = {
+        amendment_text: request.body.text, // Text of the amendment
+        amendment_description: request.body.description, // Description of the amendment
+        user_author_name: request.session.user.first_name + " " + request.session.user.last_name, // Amendment author name
+        user_author_id: request.session.user_id, // Reference to the ID of the user who submitted the amendment
+        proposal_id: request.body.proposal_id, // Reference to the ID of the proposal to be amended
+        is_enacted: false, // Set is_encated to false for new amendments
+        is_amendment: true, // Specify that this object is an amendment
+    };
+
+    function doneCallback(err, newAmendment) {
+        console.log("Created amendment object with ID", newAmendment._id);
+        Proposal.findOne({_id: newAmendment.proposal_id}).exec(function (err, proposal) {
+            if (err) {
+                // Query returned an error.
+                response.status(400).send(JSON.stringify(err));
+                return;
+            }
+            if (proposal === null) {
+                // Query didn't return an error but didn't find the SchemaInfo object
+                response.status(500).send('Proposal does not exist');
+                return;
+            }            
+            proposal.amendments.push(newAmendment._id);
+            proposal.save();
+            response.end(JSON.stringify(newAmendment));
+        });        
+    }
+
+    Amendment.create(amendment_attributes, doneCallback);
+
+});
+
+/*
+ * URL /amendments/upvote/:amendment_id - Adds an upvote to the amendment
+ * specified by :amendment_id and records that the session user upvoted that amendment
+ */
+app.post('/amendments/upvote/:amendment_id', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    console.log("Server received request to upvote amendment with id", request.params.amendment_id);
+    var amendment_id = request.params.amendment_id;
+    var user_id = request.session.user_id;
+
+    // Find the amendment with amendment_id
+    Amendment.findOne({_id: amendment_id}).exec(function (err, amendment) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (amendment === null) {
+            // Query didn't return an error but didn't find the SchemaInfo object
+            response.status(500).send('Amendment does not exist');
+            return;
+        }
+
+        var upvoteUserIndex = amendment.users_who_upvoted.indexOf(user_id);
+        var downvoteUserIndex = amendment.users_who_downvoted.indexOf(user_id);
+        if (upvoteUserIndex >-1) {
+           console.log("User has already upvoted this amendment");
+        } else {
+           console.log("User has not yet upvoted this amendment");
+           amendment.users_who_upvoted.push(user_id);
+           console.log("comment.users_who_upvoted = ", amendment.users_who_upvoted);
+           // If user had previously downvoted, remove from downvote array
+           if (downvoteUserIndex >-1) {
+                amendment.users_who_downvoted.splice(downvoteUserIndex, 1);
+           }
+        }
+
+        amendment.save();
+        response.send(JSON.stringify(amendment));
+    });
+});
+
+/*
+ * URL /amendments/downvote/:amendment_id - Adds downvote to the amendment 
+ * specified by :amendment_id and records that the session user downvoted that amendment
+ */
+app.post('/amendments/downvote/:amendment_id', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    console.log("Server received request to downvote amendment with id", request.params.amendment_id);
+    var amendment_id = request.params.amendment_id;
+    var user_id = request.session.user_id;
+
+    // Find the amendment with amendment_id
+    Amendment.findOne({_id: amendment_id}).exec(function (err, amendment) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (amendment === null) {
+            // Query didn't return an error but didn't find the SchemaInfo object
+            response.status(500).send('Amendment does not exist');
+            return;
+        }
+
+        var upvoteUserIndex = amendment.users_who_upvoted.indexOf(user_id);
+        var downvoteUserIndex = amendment.users_who_downvoted.indexOf(user_id);
+        if (downvoteUserIndex >-1) {
+           console.log("User has already downvoted this amendment");
+        } else {
+           console.log("User has not yet downvoted this amendment");
+           amendment.users_who_downvoted.push(user_id);
+           console.log("amendment.users_who_downvoted = ", amendment.users_who_downvoted);
+           // If user had previously upvoted, remove from upvote array
+           if (upvoteUserIndex >-1) {
+                amendment.users_who_upvoted.splice(upvoteUserIndex, 1);
+           }
+        }
+
+        amendment.save();
+        response.send(JSON.stringify(amendment));
     });
 });
 

@@ -18,6 +18,7 @@ var proposalSchema = new mongoose.Schema({
     users_who_voted_yes: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who voted yes on the proposal
     users_who_voted_no: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who voted no on the proposal
     comments: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the comments on this proposal
+    amendments: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the amendments on this proposal
     group: mongoose.Schema.Types.ObjectId // Reference to the ID of the group that this proposal was submitted to
 });
 
