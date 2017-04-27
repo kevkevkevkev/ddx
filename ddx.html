@@ -60,7 +60,7 @@
           <div class="navbar-brand ddx-logo">DDX</div>
           <div class="container-fluid">
             <div class="nav navbar-nav navbar-right navbar-header options-md-panel-content" ng-app="ddxApp"> 
-                <md-input-container>
+                <md-input-container ng-if="!main.noOneIsLoggedIn">
                   <label>Group</label>
                   <md-select ng-controller="UserGroupsController" ng-model="main.current_group_id">
                     <md-option>All Groups</md-option>

@@ -133,7 +133,7 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
         /* When the user first loads the webpage, if there is no session saved,
          * this listener will direct the user to the login page */
         $rootScope.$on( "$routeChangeStart", function(event, next, current) {
-            localStorageService.clearAll();
+            //localStorageService.clearAll();
             console.log("rootScope called");
           if ($scope.main.noOneIsLoggedIn) {
             // If session saved in local storage, restore session and direct to /proposals
