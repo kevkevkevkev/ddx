@@ -46,6 +46,38 @@ var app = express();
 const mongoURI = process.env.MONGODB_URI || "mongodb://localhost/myapp";
 mongoose.connect(mongoURI);
 
+/**************************
+ * Passport Configuration *
+ **************************/
+
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+
+passport.use(new LocalStrategy({
+    usernameField: 'email_address'
+  },
+  function(username, password, done) {
+    User.findOne({ email_address: username }, function (err, user) {
+      if (err) { return done(err); }
+      // Return if user not found in database
+      if (!user) {
+        return done(null, false, {
+          message: 'User not found'
+        });
+      }
+      // Return if password is wrong
+      if (!user.validPassword(password)) {
+        return done(null, false, {
+          message: 'Password is wrong'
+        });
+      }
+      // If credentials are correct, return the user object
+      return done(null, user);
+    });
+  }
+));
+
+app.use(passport.initialize());
 
 /*************************
  * Session Configuration *
@@ -149,36 +181,37 @@ app.post('/admin/login', function (request, response) {
     var email_address = request.body.email_address;
     var password = request.body.password;
 
-    // Try to find a user with that login_name
-    User.findOne({email_address: email_address, password: password}, function (err, user) {
+    // Use passport local strategy to authenticate from email_address and password stored locally
+    console.log("About to authenticate user");
+    passport.authenticate('local', function(err, user, info){
+        console.log("Authentication successful");
+        var token;
+
+        // If Passport throws/catches an error
         if (err) {
-            // Query returned an error.
-            response.status(400).send(JSON.stringify(err));
-            return;
-        }
-        // If no user found, report an error.
-        if (!user) {
-            response.status(400).send('Missing user');
-            return;
-        }
-        if (user.length === 0) {
-            // Query didn't return an error but didn't find the SchemaInfo object - This
-            // is also an internal error return.
-            console.log("user.length === 0");
-            response.status(400).send('Missing user');
-            return;
+          response.status(404).json(err);
+          return;
         }
 
-        // Create new session, which will be part of the request, so we have access on all routes
-        request.session.email_address = email_address;
-        request.session.user_id = user._id;
-        request.session.user = user;
-
-        // Send session back
-        console.log('user', user);
-        //response.send(session);
-        response.end(JSON.stringify(user));
-    }); 
+        // TODO: Rework this so one call is to retrieve the token, and another is to retrieve the active user (*sigh*)
+        // If a user is found
+        if(user){
+            request.session.email_address = email_address;
+            request.session.user_id = user._id;
+            request.session.user = user;               
+            token = user.generateJwt();
+            user.token = token;
+            console.log('user', user);
+            response.end(JSON.stringify(user));
+            //response.status(200);
+            // response.json({
+            //     "token" : token
+            // });                       
+        } else {
+          // If user is not found
+          response.status(401).json(info);
+        }
+    })(request, response);     
 });
 
 // Logout from the current account
@@ -211,23 +244,141 @@ app.post('/admin/register', function (request, response) {
             response.status(400).send('That user already exists');
             return;
         }
+
+        var user = new User();
+
+        user.email_address = request.body.email_address; // Email Address / Login
+        user.first_name = request.body.first_name; // First name of the user.
+        user.last_name = request.body.last_name;  // Last name of the user.
+        user.description = request.body.description;  // A brief user description
+
+        user.setPassword(request.body.password);    
+
+        user.save(function(err) {
+            var token;
+            token = user.generateJwt();
+            response.status(200);
+            response.json({
+                "token" : token
+            });
+            console.log("Created userObject with ID", user._id);
+            response.end(JSON.stringify(user));        
+        });    
     });
-
-    var user_attributes = {
-        email_address: request.body.email_address, // Email Address / Login
-        first_name: request.body.first_name, // First name of the user.
-        last_name: request.body.last_name,  // Last name of the user.
-        description: request.body.description,  // A brief user description
-        password: request.body.password, // The password of the user
-    };
-
-    User.create(user_attributes, doneCallback);
-
-    function doneCallback(err, newUser) {
-        console.log("Created userObject with ID", newUser._id);
-        response.end(JSON.stringify(newUser));
-    };
 });
+
+/*****************************************
+ * Group Retrieval and Creation Handling *
+ *****************************************/
+
+/*
+ * URL /groups/new - Enter a new group in the database
+ */
+app.post('/groups/new', function (request, response) {
+
+    console.log("Server received group upload request");
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    var members = request.body.members.push(request.session.user_id);
+
+    var group_attributes = {
+        name: request.body.name, // Name of the group
+        description: request.body.description, // Description of the group
+        //members: members, // Reference array of the IDs of the users who are in the group
+        administrators: request.session.user_id // Reference array of the IDs of the administrators of this group        
+    };
+
+    function doneCallback(err, newGroup) {
+        console.log("Created group object with ID", newGroup._id);
+
+        // Add the newly created group to the session user's groups
+        User.findOne({_id: request.session.user._id}, function (err, user) {
+            if (err) {
+                // Query returned an error.
+                response.status(400).send(JSON.stringify(err));
+                return;
+            }
+            if (!user) {
+                // If no user found, report an error.
+                response.status(400).send('Missing user');
+                return;
+            }
+            if (user.length === 0) {
+                // Query didn't return an error but didn't find the SchemaInfo object
+                console.log("user.length === 0");
+                response.status(400).send('Missing user');
+                return;
+            }
+
+            user.groups.push(newGroup._id);
+            user.save();
+            response.end(JSON.stringify(newGroup));
+        });         
+    }
+
+    console.log("Creating group with attributes: ", group_attributes);
+    Group.create(group_attributes, doneCallback);
+});
+
+/*
+ * URL /groups/retrieve - Retrieve the groups associated with the active user
+ */
+app.get('/groups/retrieve', function (request, response) {
+
+    console.log("Server received group retrieval request");
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    // Get the active user to retrieve the list of their groups
+    User.findOne({_id: request.session.user._id}).select('groups').exec(function (err, user) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (!user) {
+            // If no user found, report an error.
+            response.status(400).send('Missing user');
+            return;
+        }
+        if (user.length === 0) {
+            // Query didn't return an error but didn't find the SchemaInfo object
+            console.log("user.length === 0");
+            response.status(400).send('Missing user');
+            return;
+        }
+
+        var groups = user.groups;
+        console.log("Retrieving groups with IDs ", groups);        
+
+        // Retrieve all groups associated with the active user
+        Group.find({_id: groups}).exec(function (err, groups) {
+            if (err) {
+                // Query returned an error.
+                response.status(400).send(JSON.stringify(err));
+                return;
+            }
+            if (groups.length === 0) {
+                // Query didn't return an error but didn't find the SchemaInfo object - This
+                // is also an internal error return.
+                response.status(200).send('Missing groups');
+                return;
+            }
+
+            // We got the object - create an array version of it in JSON
+            var groupsArray = JSON.parse(JSON.stringify(groups));
+            console.log('groups', groups);
+            response.end(JSON.stringify(groups));
+        });        
+    });         
+}); 
 
 
 /**********************************************
@@ -405,22 +556,18 @@ app.get('/proposals/discussion/get_comments_and_amendments/:proposal_id', functi
     var proposal_id = request.params.proposal_id;
     console.log("Server received request to retrieve comments and amendments associated with proposal id", proposal_id);
 
-    // Retrieve all comments associated with the proposal_id
-    Comment.find({proposal_id: proposal_id}).exec(function (err, comments) {
-        if (err) {
-            // Query returned an error
-            response.status(400).send(JSON.stringify(err));
-            return;
-        }
-        if (comments.length === 0) {
-            response.status(200).send("Missing comments");
-            return;
-        }
+    var commentArray = [];
+    var amendmentArray = [];
 
-        console.log("Retrieved comments: ", comments);
-        // Store the retrieved comments in an array
-        var commentArray = JSON.parse(JSON.stringify(comments));
+    function doneAmendmentCallback() {
+        console.log("doneAmendmentCallback() called");
+        var combinedArray = commentArray.concat(amendmentArray);
+        console.log("Retrieved combined array: ", combinedArray);
+        response.end(JSON.stringify(combinedArray));
+    };
 
+    function doneCommentCallback() {
+        console.log("doneCommentCallback() called");
         // Retrieve all amendments associated with the proposal_id
         Amendment.find({proposal_id: proposal_id}).exec(function (err, amendments) {
             if (err) {
@@ -428,19 +575,28 @@ app.get('/proposals/discussion/get_comments_and_amendments/:proposal_id', functi
                 response.status(400).send(JSON.stringify(err));
                 return;
             }
-            if (amendments.length === 0) {
-                response.status(200).send("Missing amendments");
-                return;
-            }
 
             console.log("Retrieved amendments: ", amendments);
             // Store the retreived amendments in an array
-            var amendmentArray = JSON.parse(JSON.stringify(amendments));
-
-            var combinedArray = commentArray.concat(amendmentArray);
-            response.end(JSON.stringify(combinedArray));
+            amendmentArray = JSON.parse(JSON.stringify(amendments));
+            doneAmendmentCallback();
         });
-    });        
+    };
+
+    // Retrieve all comments associated with the proposal_id
+    Comment.find({proposal_id: proposal_id}).exec(function (err, comments) {
+        console.log("Comment.find() called");
+        if (err) {
+            // Query returned an error
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+
+        console.log("Retrieved comments: ", comments);
+        // Store the retrieved comments in an array
+        commentArray = JSON.parse(JSON.stringify(comments));
+        doneCommentCallback();
+    }); 
 });
 
 /*****************************************

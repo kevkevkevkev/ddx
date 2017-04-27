@@ -11,6 +11,7 @@ function OptionsMenuCtrl($mdPanel, $scope, $rootScope) {
   this.options = [
     'My Profile',
     'Proposal Drafts',
+    'My Groups',
     'Logout',
   ];
 

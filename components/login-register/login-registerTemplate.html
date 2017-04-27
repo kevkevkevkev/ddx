@@ -28,7 +28,7 @@
 
 <md-content layout-padding="" ng-if="main.registerView">
     <div>
-        <form name="registerForm">
+        <form name="registerForm" ng-submit="LoginRegisterController.register()">
             <div layout-gt-xs="row">
                 <md-input-container class="register-email_address-input" flex-gt-xs="">
                     <label>Email Address</label>
@@ -71,7 +71,7 @@
             </div>
 
             <div>
-                <md-button type="submit" ng-click="LoginRegisterController.register()">Register Me</md-button>
+                <md-button type="submit">Register Me</md-button>
             </div>
         </form>
     </div>

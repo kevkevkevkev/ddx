@@ -1,0 +1,54 @@
+<md-dialog aria-label="Create New Group" class="proposal-dialogue" md-theme='modal'>
+  <form ng-cloak>
+    <md-toolbar class="proposal-dialogue-toolbar">
+      <div class="md-toolbar-tools">
+        <h2>Create New Group</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="UserGroupsController.cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_white_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <form name="newGroupForm">
+            <div layout-gt-xs="row">
+                <md-input-container class="proposal-title-input" flex-gt-xs="">
+                    <label><i>Group Name</i></label>
+                    <input ng-model="UserGroupsController.newGroupName" required="">
+                </md-input-container>
+            </div>
+
+            <div layout-gt-xs="row">
+                <md-input-container class="proposal-text-input" flex-gt-xs="">
+                    <label><i>Group Description (Write a description of your group)</i></label>
+                    <textarea ng-model="UserGroupsController.newGroupDescription" md-maxlength="400" rows="5" md-select-on-focus=""></textarea>
+                </md-input-container>
+            </div>
+
+            <div layout-gt-xs="row">
+                <md-input-container class="proposal-description-input" flex-gt-xs="">
+                    <label><i>Group Members</i></label>
+                    <textarea ng-model="UserGroupsController.newGroupMembers" md-maxlength="400" rows="5" md-select-on-focus=""></textarea>
+                </md-input-container>
+            </div>            
+        </form>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+      <md-button class="submit-btn" type="submit" ng-click="UserGroupsController.createNewGroup()">
+        Create Group
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
+
+<style>
+  .proposal-title {
+    padding: 10px;
+    font-style: italic;
+  }
+  .proposal-dialogue {
+    width: 80%;
+  }
+</style>

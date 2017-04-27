@@ -59,16 +59,17 @@
         <div class="row">
           <div class="navbar-brand ddx-logo">DDX</div>
           <div class="container-fluid">
-            <div class="nav navbar-nav navbar-right navbar-header options-md-panel-content" ng-controller="OptionsMenuCtrl as ctrl" ng-app="ddxApp">
-                <md-input-container class="group-selection-dropdown">
-                    <label>Group</label>
-                    <md-select ng-model="selectedItem" md-selected-text="getSelectedText()">
-                        <md-optgroup label="items">
-                        <md-option ng-value="item" ng-repeat="item in items">Group {{item}}</md-option>
-                        </md-optgroup>
-                    </md-select>
-                </md-input-container>            
-                <md-button ng-if="!main.noOneIsLoggedIn" class="md-icon-button menu-open-button options-menu-open-button" aria-label="Menu" ng-click="ctrl.showMenu($event)">
+            <div class="nav navbar-nav navbar-right navbar-header options-md-panel-content" ng-app="ddxApp"> 
+                <md-input-container>
+                  <label>Group</label>
+                  <md-select ng-controller="UserGroupsController" ng-model="main.current_group_id">
+                    <md-option>All Groups</md-option>
+                    <md-option ng-repeat="group in UserGroupsController.groups" ng-value="group._id">
+                      {{group.name}}
+                    </md-option>
+                  </md-select>
+                </md-input-container>                       
+                <md-button ng-controller="OptionsMenuCtrl as ctrl" ng-if="!main.noOneIsLoggedIn" class="md-icon-button menu-open-button options-menu-open-button" aria-label="Menu" ng-click="ctrl.showMenu($event)">
                     <md-icon md-svg-icon="img/icons/ic_menu_white_48px.svg"></md-icon>
                 </md-button>
             </div>
@@ -77,7 +78,7 @@
         <ul class="nav nav-tabs" ng-if="!main.noOneIsLoggedIn">
             <li class="inactive"><a data-toggle="tab" href="#vote"> The Floor </a></li>
             <li class="inactive active"><a data-toggle="tab" href="#proposals"> Proposals </a></li>
-            <li class="inactive"><a data-toggle="tab" href="#group"> Group Information </a></li>
+            <li class="inactive"><a data-toggle="tab" ng-click="main.showGroup()"> Group Information </a></li>
         </ul>        
         </nav>        
 

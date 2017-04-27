@@ -1,6 +1,6 @@
 "use strict";
 /*
- *  Defined the Mongoose Schema and return a Model for a Group
+ * Defines the Mongoose Schema and return a Model for a Group
  */
 /* jshint node: true */
 
@@ -10,7 +10,8 @@ var mongoose = require('mongoose');
 var groupSchema = new mongoose.Schema({
     name: String, // Name of the group
     description: String, // Description of the group
-    members: [mongoose.Schema.Types.ObjectId] // Reference array of the IDs of the users who are in the group
+    members: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who are in the group
+    administrators: [mongoose.Schema.Types.ObjectId] // Reference array of the IDs of the administrators of this group
 });
 
 // Create a model using Group

@@ -51,7 +51,7 @@ ddxApp.config(['$routeProvider',
             }).
             when('/group', {
                 templateUrl: 'components/group/groupTemplate.html',
-                controller: 'GroupController'
+                controller: 'UserGroupsController'
             }).                                                                              
             otherwise({
                 redirectTo: '#'
@@ -78,12 +78,14 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
         $scope.main.registerView = false;
         $scope.main.session = {};
         $scope.main.active_user = [];
-        $scope.main.current_group = {};
+        $scope.main.current_group_id = ""; // TODO: Confirm whether this ID is an object or a string
+        $scope.main.group_selected = false;
         $scope.main.test_string = "I hope these controllers can communicate";
 
         /* This listener will execute the associated function when the user has 
          * successfully logged on––it will update the display values. */
         $scope.$on("Logged In", function () {
+            console.log("$scope.main.active_user = ", $scope.main.active_user);
             $scope.main.noOneIsLoggedIn = false;
             // Save the current session in local storage
             var session_resource = $resource('/get-current-session');
@@ -93,7 +95,8 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
             }, function errorHandling(err) {
                 console.log(err);
             });
-            $location.path("/proposals");
+            // $location.path("/proposals");
+            $location.path("/user-groups");
         });
 
         /* When the user clicks logout, call the logout function */ 
@@ -151,5 +154,21 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
                 //$location.path("/proposals");
             }
           }
-        });     
+        }); 
+
+        /* 
+         * When the user clicks on the group information tab:
+         * If no group selected, direct the user to the list of their groups
+         * If a group is selected, direct the user to the information page for that group
+         */
+        $scope.main.showGroup = function() {
+            console.log("showGroup() called");
+            console.log("$scope.main.current_group_id = ", $scope.main.current_group_id);
+            // TODO: Find a better solution for this. This is hacky.
+            if ($scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups") {
+                $location.path("/user-groups"); 
+            } else {
+                $location.path("/group"); 
+            }
+        }    
     }]);
