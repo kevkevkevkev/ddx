@@ -70,6 +70,7 @@ ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams'
    ***************************/
 
   $scope.ProposalsController.newProposal = [];
+  $scope.ProposalsController.newProposalGroupID = "";
   $scope.ProposalsController.newProposalTitle = "";
   $scope.ProposalsController.newProposalText = "";
   $scope.ProposalsController.newProposalDescription = "";
@@ -89,6 +90,7 @@ ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams'
 
   $scope.ProposalsController.cancel = function() {
       console.log("cancel() called");
+      $scope.main.active_tab = "proposals";
       $mdDialog.cancel();
   };
 
@@ -97,6 +99,7 @@ ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams'
 
     var proposal_resource = $resource('/proposals/new');
     var proposal_data = {
+      group: $scope.ProposalsController.newProposalGroupID,
       title: $scope.ProposalsController.newProposalTitle,
       text: $scope.ProposalsController.newProposalText,
       description: $scope.ProposalsController.newProposalDescription,

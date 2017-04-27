@@ -403,13 +403,33 @@ app.post('/proposals/new', function (request, response) {
         description: request.body.description, // The proponent's description of the proposal
         user_author_id: request.session.user_id, // Reference to the ID of the user who submitted the proposal
         user_author_name: request.session.user.first_name + " " + request.session.user.last_name,
-        // TODO: Implement this with group
-        //group: mongoose.Scheme.Types.ObjectId // Reference to the ID of the group that this proposal was submitted to
+        group: request.body.group // Reference to the ID of the group that this proposal was submitted to
     };
 
     function doneCallback(err, newProposal) {
-        console.log("Created proposal object with ID", newProposal._id);
-        response.end(JSON.stringify(newProposal));
+
+        // Retrieve the proposal's group, and add the group's name to the proposal
+        // TODO: Do I need to add the proposal to the group? Perhaps not, because I can search by the proposal
+        Group.findOne({_id: request.body.group}).exec(function (err, group) {
+            if (err) {
+                // Query returned an error.
+                response.status(400).send(JSON.stringify(err));
+                return;
+            }
+            if (group.length === 0) {
+                // Query didn't return an error but didn't find the SchemaInfo object - This
+                // is also an internal error return.
+                response.status(200).send('Missing group');
+                return;
+            }
+
+            newProposal.group_name = group.name;
+            newProposal.save();
+
+            // We got the object - create an array version of it in JSON
+            console.log("Created proposal ", newProposal);
+            response.end(JSON.stringify(newProposal));
+        });         
     }
 
     Proposal.create(proposal_attributes, doneCallback);

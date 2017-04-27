@@ -14,8 +14,8 @@
 			<md-button class="proposal-title-and-details" ng-click="ProposalsController.openProposal(proposal)">
 				<p class="proposal-display-title"><b>{{proposal.title}}</b></p>
 				<div class="proposal-display-details">
-					<p><i>Proposed by: {{proposal.user_author_name}}</i></p>
-					<p><i>Group: {{proposal.group}}</i></p>
+					<p><i>Proposed by:</i> <u>{{proposal.user_author_name}}</u></p>
+					<p><i>Group:</i> {{proposal.group_name}}</p>
 					<p><i>Threshold for General Election: </i></p>
 				</div>
 			</md-button>

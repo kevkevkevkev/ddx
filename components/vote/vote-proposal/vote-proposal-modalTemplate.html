@@ -18,7 +18,7 @@
               <md-content class="md-padding">
                   <div layout-gt-xs="column">
                       <div class="vote-proposal-title" flex-gt-xs="">
-                          <p><b>{{VoteController.voteProposal.title}}</b>, proposed by {{VoteController.voteProposal.user_author_name}} <i>({{VoteController.voteProposal.group}})</i></p>
+                          <p><b>{{VoteController.voteProposal.title}}</b>, proposed by {{VoteController.voteProposal.user_author_name}} <i>({{VoteController.voteProposal.group_name}})</i></p>
                       </div>                 
                       <div class="vote-proposal-text" flex-gt-xs="">
                           <p>{{VoteController.voteProposal.text}}</p>
@@ -46,8 +46,8 @@
                       <div class="proposal-title-and-details">
                         <p class="proposal-display-title"><b>{{VoteController.voteProposal.title}}</b></p>
                         <div class="proposal-display-details">
-                          <p><i>Proposed by: {{VoteController.voteProposal.user_author_name}}</i></p>
-                          <p><i>Group: {{VoteController.voteProposal.group}}</i></p>
+                          <p><i>Proposed by:</i> <u>{{VoteController.voteProposal.user_author_name}}</u></p>
+                          <p><i>Group:</i> {{VoteController.voteProposal.group_name}}</p>
                         </div>
                       </div>
                     </div>

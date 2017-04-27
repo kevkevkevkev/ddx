@@ -9,9 +9,23 @@
         </md-button>
       </div>
     </md-toolbar>
+    <form name="newProposalForm">
     <md-dialog-content>
       <div class="md-dialog-content">
-        <form name="newProposalForm">
+
+<!--         <form name="newProposalForm"> -->
+
+            <div layout-gt-xs="row">
+              <md-input-container>
+              <label>Group</label>
+                <md-select ng-controller="UserGroupsController" ng-model="ProposalsController.newProposalGroupID" required="">
+                  <md-option ng-selected="true" ng-repeat="group in UserGroupsController.groups" ng-value="group._id">
+                    {{group.name}}
+                  </md-option>
+                </md-select>
+              </md-input-container>
+            </div>
+
             <div layout-gt-xs="row">
                 <md-input-container class="proposal-title-input" flex-gt-xs="">
                     <label><i>Proposal Title</i></label>
@@ -22,14 +36,14 @@
             <div layout-gt-xs="row">
                 <md-input-container class="proposal-text-input" flex-gt-xs="">
                     <label><i>Proposal Text (Just proposal, write description or justification below.)</i></label>
-                    <textarea ng-model="ProposalsController.newProposalText" md-maxlength="400" rows="5" md-select-on-focus=""></textarea>
+                    <textarea ng-model="ProposalsController.newProposalText" md-maxlength="400" rows="5" md-select-on-focus="" required=""></textarea>
                 </md-input-container>
             </div>
 
             <div layout-gt-xs="row">
                 <md-input-container class="proposal-description-input" flex-gt-xs="">
                     <label><i>Proposal Description (Make your case! Why should people vote for this?)</i></label>
-                    <textarea ng-model="ProposalsController.newProposalDescription" md-maxlength="400" rows="5" md-select-on-focus=""></textarea>
+                    <textarea ng-model="ProposalsController.newProposalDescription" md-maxlength="400" rows="5" md-select-on-focus="" required=""></textarea>
                 </md-input-container>
             </div>            
 <!-- 
@@ -37,7 +51,7 @@
                 <md-button type="submit" ng-click="ProposalsController.saveProposalDraft()">Save Draft</md-button>
                 <md-button type="submit" ng-click="ProposalsController.submitNewProposal()">Submit</md-button>
             </div> -->
-        </form>
+        <!-- </form> -->
       </div>
     </md-dialog-content>
     <md-dialog-actions layout="row">

@@ -20,6 +20,7 @@ var proposalSchema = new mongoose.Schema({
     comments: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the comments on this proposal
     amendments: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the amendments on this proposal
     group: mongoose.Schema.Types.ObjectId, // Reference to the ID of the group that this proposal was submitted to
+    group_name: String, // Name of the group that this proposal is associated with
     date_time: {type: Date, default: Date.now} // The date and time when the proposal was added to the database
 });
 
