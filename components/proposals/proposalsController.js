@@ -10,6 +10,7 @@ ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams'
   function ($scope, $rootScope, $routeParams, $resource, $location, $mdDialog) {
 
   $scope.ProposalsController = {};
+  $scope.main.active_tab = "proposals";
 
 
   /**********************

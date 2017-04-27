@@ -88,6 +88,7 @@ PanelMenuCtrl.prototype.selectOption = function(option) {
     break;
   case "My Groups":
     console.log("User clicked My Groups");
+    this.$rootScope.$broadcast("Group Information");
     this.$location.path("/user-groups");
     break;
   case "Proposal Drafts":

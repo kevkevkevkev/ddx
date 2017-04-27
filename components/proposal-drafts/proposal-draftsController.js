@@ -10,6 +10,7 @@ ddxApp.controller('ProfileDraftsController', ['$scope', '$rootScope', '$routePar
   function ($scope, $rootScope, $routeParams, $resource, $location, $mdDialog) {
 
   $scope.ProfileDraftsController = {};
+  $scope.main.active_tab = "none";
 
 
   /*****************************

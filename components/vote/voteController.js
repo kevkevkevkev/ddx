@@ -11,6 +11,7 @@ ddxApp.controller('VoteController', ['$scope', '$rootScope', '$routeParams', '$r
   function ($scope, $rootScope, $routeParams, $resource, $location, $mdDialog) {
 
   $scope.VoteController = {};
+  $scope.main.active_tab = "floor";
 
 
   /**********************

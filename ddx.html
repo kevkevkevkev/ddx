@@ -76,9 +76,9 @@
           </div>
         </div>
         <ul class="nav nav-tabs" ng-if="!main.noOneIsLoggedIn">
-            <li class="inactive"><a data-toggle="tab" href="#vote"> The Floor </a></li>
-            <li class="inactive active"><a data-toggle="tab" href="#proposals"> Proposals </a></li>
-            <li class="inactive"><a data-toggle="tab" ng-click="main.showGroup()"> Group Information </a></li>
+            <li id="the_floor_tab" ng-class="{active: main.active_tab === 'floor'}" class="inactive"><a data-toggle="tab" href="#vote"> The Floor </a></li>
+            <li id="proposals_tab" ng-class="{active: main.active_tab === 'proposals'}" class="inactive"><a data-toggle="tab" href="#proposals"> Proposals </a></li>
+            <li id="group_information_tab" ng-class="{active: main.active_tab === 'group'}" class="inactive"><a data-toggle="tab" ng-click="main.showGroup()"> Group Information </a></li>
         </ul>        
         </nav>        
 

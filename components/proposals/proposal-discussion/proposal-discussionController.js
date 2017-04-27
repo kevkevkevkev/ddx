@@ -16,6 +16,7 @@
 ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$routeParams', '$resource', '$location', '$mdDialog',
   function ($scope, $rootScope, $routeParams, $resource, $location, $mdDialog) {
 
+  $scope.main.active_tab = "proposals";
   var proposalId = $routeParams.proposalId;
   $scope.ProposalDiscussionController = {};
   $scope.ProposalDiscussionController.amendment = {};

@@ -9,6 +9,7 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
   function ($scope, $rootScope, $routeParams, $resource, $location, $mdDialog) {
 
   $scope.UserGroupsController = {};
+  $scope.main.active_tab = "group";
 
 
   /********************

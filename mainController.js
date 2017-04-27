@@ -80,6 +80,7 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
         $scope.main.active_user = [];
         $scope.main.current_group_id = ""; // TODO: Confirm whether this ID is an object or a string
         $scope.main.group_selected = false;
+        $scope.main.active_tab = ""; // Controls which tab is displayed as active. -1 means no active tab.
         $scope.main.test_string = "I hope these controllers can communicate";
 
         /* This listener will execute the associated function when the user has 
@@ -97,6 +98,8 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
             });
             // $location.path("/proposals");
             $location.path("/user-groups");
+            $scope.main.active_tab = "group";
+            console.log("$scope.main.active_tab = ", $scope.main.active_tab);
         });
 
         /* When the user clicks logout, call the logout function */ 
@@ -170,5 +173,13 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
             } else {
                 $location.path("/group"); 
             }
-        }    
+        };
+
+        /* When the user on groups, change the tab to group information */ 
+        // TODO: This is hacky. Make this better. 
+        $scope.$on("Group Information", function () {
+            console.log("Group Information broadcast received");
+            $scope.main.active_tab = "group";
+            console.log("$scope.main.active_tab = ", $scope.main.active_tab);
+        });             
     }]);
