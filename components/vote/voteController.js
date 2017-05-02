@@ -13,6 +13,12 @@ ddxApp.controller('VoteController', ['$scope', '$rootScope', '$routeParams', '$r
   $scope.VoteController = {};
   $scope.main.active_tab = "floor";
 
+  // When the user changes group, reload the proposals
+  $scope.$on("Reload Floor Proposals", function () {
+    console.log("Reload Floor Proposals broadcast received, $scope.main.current_group_id = ", $scope.main.current_group_id);
+    $scope.VoteController.loadProposals();
+  });
+
 
   /**********************
    * Proposal Retrieval *
@@ -21,10 +27,17 @@ ddxApp.controller('VoteController', ['$scope', '$rootScope', '$routeParams', '$r
   $scope.VoteController.proposals = [];
 
   $scope.VoteController.loadProposals = function() {
-    // TODO: Switch this to retrieve proposals based on the group ID
-    var proposals_resource = $resource('/proposals/retrieve');
+    
+    console.log("$scope.VoteController.loadProposals() called");
+    var proposals_resource = $resource('/proposals/retrieve/:group_id');
+    var group_id = $scope.main.current_group_id;
+    // TODO: This is hacky. Fix this.
+    if (typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups") {
+      group_id = "all";
+    }
+
     // TODO: Add selection criteria to retrieve only proposals up for vote
-    $scope.VoteController.proposals = proposals_resource.query({}, function() {
+    $scope.VoteController.proposals = proposals_resource.query({group_id: group_id}, function() {
       $scope.VoteController.proposals.sort(function(a, b) { 
           return a.date_time-b.date_time;
       });

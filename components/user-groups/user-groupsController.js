@@ -71,9 +71,10 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
   };
 
   $scope.UserGroupsController.acceptInvitation = function() {
-    var invitation_resource = $resource('/groups/invitation/accept', {group_id: $scope.UserGroupsController.invitation._id});
+    console.log("Accepting invitation for ", $scope.UserGroupsController.invitation._id);
+    var invitation_resource = $resource('/groups/invitation/accept/:group_id', {group_id: $scope.UserGroupsController.invitation._id});
     invitation_resource.save({}, function() {
-
+      $mdDialog.cancel();      
     }, function errorHandling(err) {
       console.log(err);
     });
@@ -166,6 +167,7 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
    ***************************/
 
   $scope.UserGroupsController.invitedMembers = [];
+  $scope.UserGroupsController.newMembersToInvite = "";
 
   /* When the user clicks on the "Invite Members" button, create a dialog
    * that enables the user to select users to invite to the group */
@@ -197,7 +199,28 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
     }, function errorHandling(err) {
         console.log(err);
     });
+
+    // Invite unregistered members to register for DDX and join the group
+    if ($scope.UserGroupsController.newMembersToInvite !== "") {
+      $scope.UserGroupsController.inviteNewMembers();
+    }
     console.log("Submitting create group request");      
+  };
+
+  $scope.UserGroupsController.inviteNewMembers = function() {
+    console.log("inviteNewMembers() called");
+    var new_members_to_invite_array = $scope.UserGroupsController.newMembersToInvite.split(',');
+    var members_resource = $resource('/groups/invite/new-members/:group_id', {group_id: $scope.main.current_group_id});
+    var member_data = {
+      invited_member_emails: new_members_to_invite_array
+    };
+
+    members_resource.save(member_data, function () {
+        console.log("members_resource.save callback()");       
+    }, function errorHandling(err) {
+        console.log(err);
+    });
+
   };
 
   // Checkbox handling
@@ -263,6 +286,8 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
   // Sets the group to that selected by the user in the group dropdown menu
   $scope.UserGroupsController.setGroup = function(group) {
     $scope.main.current_group_id = group._id;
+    if ($scope.main.active_tab === "proposals") { $rootScope.$broadcast("Reload Proposals"); }
+    if ($scope.main.active_tab === "floor") { $rootScope.$broadcast("Reload Floor Proposals"); }
     // If the user is currently on the Group Information tab, change that display to the relevant group
     var url = $location.url();
     if ((url.indexOf('/group') > -1) || (url.indexOf('/user-groups') > -1)) {
@@ -273,6 +298,8 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
   // Sets the group to all
   $scope.UserGroupsController.setGroupToAll = function() {
     $scope.main.current_group_id = "";
+    if ($scope.main.active_tab === "proposals") { $rootScope.$broadcast("Reload Proposals"); }
+    if ($scope.main.active_tab === "floor") { $rootScope.$broadcast("Reload Floor Proposals"); }
     // If the user is currently on the Group Information tab, change that display to the group list
     var url = $location.url();
     if ((url.indexOf('/group') > -1) || (url.indexOf('/user-groups') > -1)) {

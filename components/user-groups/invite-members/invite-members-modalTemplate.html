@@ -13,13 +13,13 @@
     <md-dialog-content class="md-padding autocomplete" layout="column">
 
       <fieldset class="demo-fieldset">
-        <legend class="demo-legend">Select users to invite to your group</legend>
+        <legend class="demo-legend">Select users to invite to your group</legend>      
         <div layout="row" layout-wrap="" flex="">
-        <div flex-xs="" flex="50">
-          <md-checkbox aria-label="Select All" ng-checked="UserGroupsController.isChecked()" md-indeterminate="UserGroupsController.isIndeterminate()" ng-click="UserGroupsController.toggleAll()">
-            <span ng-if="UserGroupsController.isChecked()">Un-</span>Select All
-          </md-checkbox>
-        </div>
+<!--           <div flex-xs="" flex="50">
+            <md-checkbox aria-label="Select All" ng-checked="UserGroupsController.isChecked()" md-indeterminate="UserGroupsController.isIndeterminate()" ng-click="UserGroupsController.toggleAll()">
+              <span ng-if="UserGroupsController.isChecked()">Un-</span>Select All
+            </md-checkbox>
+          </div> -->
           <div class="demo-select-all-checkboxes" flex="100" ng-repeat="user in UserGroupsController.membersToInvite">
             <md-checkbox ng-checked="UserGroupsController.exists(user, UserGroupsController.selectedMembers)" ng-click="UserGroupsController.toggle(user, UserGroupsController.selectedMembers)">
              {{ user.first_name }} {{ user.last_name }}, <i>{{ user.email_address }}</i>
@@ -27,7 +27,12 @@
           </div>
         </div>
       </fieldset>
-
+      <div layout-gt-xs="row">
+          <md-input-container class="proposal-text-input" flex-gt-xs="">
+              <label>If not found, enter the email addresses, separated by commas, of people you would like to invite to register for DDX and join your group</i></label>
+              <textarea ng-model="UserGroupsController.newMembersToInvite" rows="3" md-select-on-focus=""></textarea>
+          </md-input-container>
+      </div>      
     </md-dialog-content>
 
     <md-dialog-actions layout="row">

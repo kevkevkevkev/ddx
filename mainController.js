@@ -180,5 +180,5 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
             console.log("Group Information broadcast received");
             $scope.main.active_tab = "group";
             console.log("$scope.main.active_tab = ", $scope.main.active_tab);
-        });             
+        });
     }]);

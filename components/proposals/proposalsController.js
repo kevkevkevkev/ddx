@@ -12,6 +12,12 @@ ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams'
   $scope.ProposalsController = {};
   $scope.main.active_tab = "proposals";
 
+  // When the user changes group, reload the proposals
+  $scope.$on("Reload Proposals", function () {
+    console.log("Reload Proposals broadcast received, $scope.main.current_group_id = ", $scope.main.current_group_id);
+    $scope.ProposalsController.loadProposals();
+  });
+
 
   /**********************
    * Proposal Retrieval *
@@ -20,9 +26,14 @@ ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams'
   $scope.ProposalsController.proposals = [];
 
   $scope.ProposalsController.loadProposals = function() {
-    // TODO: Switch this to retrieve proposals based on the group ID
-    var proposals_resource = $resource('/proposals/retrieve');
-    $scope.ProposalsController.proposals = proposals_resource.query({}, function() {
+    console.log("loadProposals() called");
+    var proposals_resource = $resource('/proposals/retrieve/:group_id');
+    var group_id = $scope.main.current_group_id;
+    // TODO: This is hacky. Fix this.
+    if (typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups") {
+      group_id = "all";
+    }
+    $scope.ProposalsController.proposals = proposals_resource.query({group_id: group_id}, function() {
       $scope.ProposalsController.proposals.sort(function(a, b) { 
         if (a !== b) {
           return (b.users_who_upvoted.length-b.users_who_downvoted.length)-(a.users_who_upvoted.length-a.users_who_downvoted.length);
@@ -108,6 +119,7 @@ ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams'
     var newProposal = proposal_resource.save(proposal_data, function () {
         console.log("proposal_resource.save callback()");
         $mdDialog.cancel();
+        $scope.main.active_tab = "proposals";
         $scope.ProposalsController.loadProposals();        
     }, function errorHandling(err) {
         console.log(err);
