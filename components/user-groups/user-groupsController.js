@@ -29,7 +29,88 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
     });
   };
 
-  $scope.UserGroupsController.loadGroups();   
+  $scope.UserGroupsController.loadGroups();
+
+  /******************************
+   * Group Invitation Retrieval *
+   ******************************/  
+
+  $scope.UserGroupsController.group_invitations = [];
+
+  $scope.UserGroupsController.loadInvitations = function() {
+    var groups_resource = $resource('/groups/invitations/retrieve');
+    $scope.UserGroupsController.group_invitations = groups_resource.query({}, function() {
+    // TODO: Consider implementing sorting algorithm to arrange groups
+    // $scope.UserGroupsController.groups.sort(function(a, b) {     
+    // });
+    }, function errorHandling(err) {
+        console.log(err);
+    });
+  };
+
+  $scope.UserGroupsController.loadInvitations();
+
+ /************************************
+   * Group Invitation Modal Handling *
+   ***********************************/     
+
+  $scope.UserGroupsController.invitation = {};   
+
+  /* When the user clicks on the "Create New Group" button, create a dialog
+   * that enables the user to enter a title and description and create a new group */
+  $scope.UserGroupsController.showInvitationModal = function(ev, group) {
+    $scope.UserGroupsController.invitation = group;
+    console.log("showGroupModal() called");
+    $mdDialog.show({
+      scope: $scope.$new(),
+      templateUrl: 'components/user-groups/group-invitation/group-invitation-modalTemplate.html',
+      parent: angular.element(document.body),
+      targetEvent: ev,
+      clickOutsideToClose:true,
+    });
+  };
+
+  $scope.UserGroupsController.acceptInvitation = function() {
+    var invitation_resource = $resource('/groups/invitation/accept', {group_id: $scope.UserGroupsController.invitation._id});
+    invitation_resource.save({}, function() {
+
+    }, function errorHandling(err) {
+      console.log(err);
+    });
+  };
+
+
+  /**************************
+   * Group Member Retrieval *
+   **************************/
+
+  $scope.UserGroupsController.members = [];
+
+  $scope.UserGroupsController.getMembers = function()  {
+    console.log("getMembers() called");
+    var members_resource = $resource('/groups/retrieve/members/:group_id', {group_id: $scope.main.current_group_id});
+    $scope.UserGroupsController.members = members_resource.query({}, function() {
+      // TODO: Consider implementing sorting algorithm to arrange members
+      // $scope.UserGroupsController.groups.sort(function(a, b) {     
+      // });
+    }, function errorHandling(err) {
+        console.log(err);
+    });    
+  };
+
+  $scope.UserGroupsController.administrators = [];
+
+  $scope.UserGroupsController.getAdministrators = function()  {
+    console.log("getMembers() called");
+    var administrators_resource = $resource('/groups/retrieve/administrators/:group_id', {group_id: $scope.main.current_group_id});
+    $scope.UserGroupsController.administrators = administrators_resource.query({}, function() {
+      // TODO: Consider implementing sorting algorithm to arrange members
+      // $scope.UserGroupsController.groups.sort(function(a, b) {     
+      // });
+    }, function errorHandling(err) {
+        console.log(err);
+    });    
+  };  
 
 
   /**********************
@@ -41,8 +122,8 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
   $scope.UserGroupsController.newGroupDescription = "";
   $scope.UserGroupsController.newGroupMembers = [];
 
-  /* When the user clicks on the "Submit New Proposal" button, create a dialog
-   * that enables the user to draft and submit a new proposal */
+  /* When the user clicks on the "Create New Group" button, create a dialog
+   * that enables the user to enter a title and description and create a new group */
   $scope.UserGroupsController.showGroupModal = function(ev) {
     console.log("showGroupModal() called");
     $mdDialog.show({
@@ -71,7 +152,6 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
 
     var newGroup = group_resource.save(group_data, function () {
         console.log("group_resource.save callback()");
-
         $mdDialog.cancel();
         $scope.UserGroupsController.loadGroups();        
     }, function errorHandling(err) {
@@ -81,5 +161,123 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
   };
 
 
+  /***************************
+   * Invite Members to Group *
+   ***************************/
+
+  $scope.UserGroupsController.invitedMembers = [];
+
+  /* When the user clicks on the "Invite Members" button, create a dialog
+   * that enables the user to select users to invite to the group */
+  $scope.UserGroupsController.showInviteMembersModal = function(ev) {
+    console.log("showInviteMembersModal() called");
+    $scope.UserGroupsController.loadMembersToInvite();    
+    $mdDialog.show({
+      scope: $scope.$new(),
+      templateUrl: 'components/user-groups/invite-members/invite-members-modalTemplate.html',
+      parent: angular.element(document.body),
+      targetEvent: ev,
+      clickOutsideToClose:false,
+    });
+  };
+
+  $scope.UserGroupsController.inviteMembers = function() {
+    console.log("submitNewGroup() called");
+    var invited_member_emails = $scope.UserGroupsController.selectedMembers.map(function(a) {return a.email_address;});
+    console.log("Requesting to invite $scope.UserGroupsController.invited_member_emails ", invited_member_emails);
+    var members_resource = $resource('/groups/invite/members/:group_id', {group_id: $scope.main.current_group_id});
+    var member_data = {
+      invited_member_emails: invited_member_emails
+    };
+
+    members_resource.save(member_data, function () {
+        console.log("members_resource.save callback()");
+        $mdDialog.cancel();
+        $scope.UserGroupsController.loadGroups();        
+    }, function errorHandling(err) {
+        console.log(err);
+    });
+    console.log("Submitting create group request");      
+  };
+
+  // Checkbox handling
+
+  $scope.UserGroupsController.membersToInvite = [];
+  $scope.UserGroupsController.selectedMembers = [];
+
+  $scope.UserGroupsController.loadMembersToInvite = function()  {
+    console.log("loadMembersToInvite() called");
+    var members_resource = $resource('/users/retrieve/members');
+    // TODO: Add selection criteria to filter users based on active_user's connections
+    $scope.UserGroupsController.membersToInvite = members_resource.query({}, function() {
+      // TODO: Consider implementing sorting algorithm to arrange members
+      // $scope.UserGroupsController.groups.sort(function(a, b) {     
+      // });
+    }, function errorHandling(err) {
+        console.log(err);
+    });    
+  };
+
+  $scope.UserGroupsController.toggle = function (user, list) {
+    var idx = list.indexOf(user);
+    if (idx > -1) {
+      list.splice(idx, 1);
+    }
+    else {
+      list.push(user);
+    }
+  };
+
+  $scope.UserGroupsController.exists = function (user, list) {
+    return list.indexOf(user) > -1;
+  };
+
+  $scope.UserGroupsController.isIndeterminate = function() {
+    return ($scope.UserGroupsController.selectedMembers.length !== 0 &&
+        $scope.UserGroupsController.selectedMembers.length !== $scope.UserGroupsController.membersToInvite.length);
+  };
+
+  $scope.UserGroupsController.isChecked = function() {
+    return $scope.UserGroupsController.selectedMembers.length === $scope.UserGroupsController.membersToInvite.length;
+  }
+
+  $scope.UserGroupsController.toggleAll = function() {
+    if ($scope.UserGroupsController.selectedMembers.length === $scope.UserGroupsController.membersToInvite.length) {
+      $scope.UserGroupsController.selectedMembers = [];
+    } else if ($scope.UserGroupsController.selectedMembers.length === 0 || $scope.UserGroupsController.selectedMembers.length > 0) {
+      $scope.UserGroupsController.selectedMembers = $scope.UserGroupsController.membersToInvite.slice(0);
+    }
+  };
+
+
+
+  /***********************
+   * Navigation Handling *
+   ***********************/
+
+  $scope.UserGroupsController.openGroup = function(group) {
+    $scope.main.current_group_id = group._id;
+    $location.path("/group");
+  };
+
+  // Sets the group to that selected by the user in the group dropdown menu
+  $scope.UserGroupsController.setGroup = function(group) {
+    $scope.main.current_group_id = group._id;
+    // If the user is currently on the Group Information tab, change that display to the relevant group
+    var url = $location.url();
+    if ((url.indexOf('/group') > -1) || (url.indexOf('/user-groups') > -1)) {
+      $location.path("/group");
+    }   
+  };
+
+  // Sets the group to all
+  $scope.UserGroupsController.setGroupToAll = function() {
+    $scope.main.current_group_id = "";
+    // If the user is currently on the Group Information tab, change that display to the group list
+    var url = $location.url();
+    if ((url.indexOf('/group') > -1) || (url.indexOf('/user-groups') > -1)) {
+      $location.path("/user-groups");
+    }   
+  };  
 }]);
 

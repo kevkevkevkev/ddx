@@ -59,12 +59,12 @@
         <div class="row">
           <div class="navbar-brand ddx-logo">DDX</div>
           <div class="container-fluid">
-            <div class="nav navbar-nav navbar-right navbar-header options-md-panel-content" ng-app="ddxApp"> 
+            <div class="nav navbar-nav navbar-right navbar-header options-md-panel-content group-dropdown" ng-app="ddxApp"> 
                 <md-input-container ng-if="!main.noOneIsLoggedIn">
-                  <label>Group</label>
+                  <label style="color: white;">Group</label>
                   <md-select ng-controller="UserGroupsController" ng-model="main.current_group_id">
-                    <md-option>All Groups</md-option>
-                    <md-option ng-repeat="group in UserGroupsController.groups" ng-value="group._id">
+                    <md-option ng-click="UserGroupsController.setGroupToAll()">All Groups</md-option>
+                    <md-option ng-repeat="group in UserGroupsController.groups" ng-value="group._id" ng-click="UserGroupsController.setGroup(group)">
                       {{group.name}}
                     </md-option>
                   </md-select>

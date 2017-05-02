@@ -11,7 +11,8 @@ var groupSchema = new mongoose.Schema({
     name: String, // Name of the group
     description: String, // Description of the group
     members: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the users who are in the group
-    administrators: [mongoose.Schema.Types.ObjectId] // Reference array of the IDs of the administrators of this group
+    administrators: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the administrators of this group
+    invited_members: [String] // Array of the email_address of the Users invited to join this group
 });
 
 // Create a model using Group

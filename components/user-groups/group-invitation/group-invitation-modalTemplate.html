@@ -1,0 +1,52 @@
+<md-dialog aria-label="Submit New Proposal" class="proposal-dialogue" md-theme='modal'>
+  <form ng-cloak>
+    <md-toolbar class="proposal-dialogue-toolbar">
+      <div class="md-toolbar-tools">
+        <h2>Invitation to Join Group</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="UserGroupsController.cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_white_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <md-content class="md-padding">
+            <div layout-gt-xs="column">
+                <div class="vote-proposal-title" flex-gt-xs="">
+                    <p><b>{{UserGroupsController.invitation.name}}</b>, administered by {{UserGroupsController.invitation.administrators}} </p>
+                </div>                 
+                <div class="vote-proposal-text" flex-gt-xs="">
+                    <p>{{UserGroupsController.invitation.description}}</p>
+                </div>                      
+            </div>
+        </md-content>
+      </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row" style="padding: 10px; min-height: 70px;">
+      <div class="vote-proposal-buttons">
+        <md-button class="md-fab md-primary vote-no-button" style="background-color: #E7695D; margin-right: 20px; margin-left: 20px;" ng-click="UserGroupsController.declineInvitation()">   
+          <!-- <md-icon md-svg-src="img/icons/vote_no_button.svg" aria-label="Vote No"></md-icon> -->
+          No
+        </md-button>
+        <span></span> 
+        <md-button class="md-fab md-primary vote-yes-button" style="background-color: #76B18B; margin-right: 20px; margin-left: 20px;" ng-click="UserGroupsController.acceptInvitation()">   
+          <!-- <md-icon md-svg-src="img/icons/vote_yes_button.svg" aria-label="Vote Yes"></md-icon> -->
+          Yes
+        </md-button>        
+      </div>
+    </md-dialog-actions>
+
+  </form>
+</md-dialog>
+
+<style>
+  .proposal-title {
+    padding: 10px;
+    font-style: italic;
+  }
+  .proposal-dialogue {
+    width: 80%;
+  }
+</style>

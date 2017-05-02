@@ -78,3 +78,7 @@ md-select.md-default-theme .md-select-icon, md-select .md-select-icon {
 md-select.md-default-theme .md-select-value, md-select .md-select-value {
     border-bottom-color: rgba(255, 255, 255, .1);
 }
+
+group-dropdown > md-select.md-default-theme .md-select-value.md-select-placeholder, md-select .md-select-value.md-select-placeholder {
+	color: white;
+}

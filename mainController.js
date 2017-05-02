@@ -33,10 +33,10 @@ ddxApp.config(['$routeProvider',
                 templateUrl: 'components/vote/voteTemplate.html',
                 controller: 'VoteController'
             }).
-            when('/group', {
-                templateUrl: 'components/group/groupTemplate.html',
-                controller: 'GroupController'
-            }).
+            // when('/group', {
+            //     templateUrl: 'components/group/groupTemplate.html',
+            //     controller: 'GroupController'
+            // }).
             when('/user-groups', {
                 templateUrl: 'components/user-groups/user-groupsTemplate.html',
                 controller: 'UserGroupsController'

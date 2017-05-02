@@ -314,6 +314,8 @@ app.post('/groups/new', function (request, response) {
                 return;
             }
 
+            newGroup.members.push(request.session.user_id);
+            newGroup.save();
             user.groups.push(newGroup._id);
             user.save();
             response.end(JSON.stringify(newGroup));
@@ -365,6 +367,71 @@ app.get('/groups/retrieve', function (request, response) {
                 response.status(400).send(JSON.stringify(err));
                 return;
             }
+            if (!groups) {
+                response.status(400).send("Missing groups");
+                return;
+            }
+            if (groups.length === 0) {
+                // Query didn't return an error but didn't find the SchemaInfo object - This
+                // is also an internal error return.
+                response.status(200).send('Missing groups');
+                return;
+            }
+
+            // We got the object - create an array version of it in JSON
+            var groupsArray = JSON.parse(JSON.stringify(groups));
+            console.log('groups', groups);
+            response.end(JSON.stringify(groups));
+        });        
+    });         
+});
+
+/*
+ * URL /groups/invitations/retrieve - Retrieve the groups that the user
+ * has been invited to join
+ */
+app.get('/groups/invitations/retrieve', function (request, response) {
+
+    console.log("Server received group invitation retrieval request");
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    // Get the active user to retrieve the list of their groups
+    User.findOne({_id: request.session.user._id}).select('group_invitations').exec(function (err, user) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (!user) {
+            // If no user found, report an error.
+            response.status(400).send('Missing user');
+            return;
+        }
+        if (user.length === 0) {
+            // Query didn't return an error but didn't find the SchemaInfo object
+            console.log("user.length === 0");
+            response.status(400).send('Missing user');
+            return;
+        }
+
+        var group_invitations = user.group_invitations;
+        console.log("Retrieving groups with IDs ", group_invitations);        
+
+        // Retrieve all groups associated with the active user
+        Group.find({_id: group_invitations}).exec(function (err, groups) {
+            if (err) {
+                // Query returned an error.
+                response.status(400).send(JSON.stringify(err));
+                return;
+            }
+            if (!groups) {
+                response.status(400).send("Missing groups");
+                return;
+            }
             if (groups.length === 0) {
                 // Query didn't return an error but didn't find the SchemaInfo object - This
                 // is also an internal error return.
@@ -380,6 +447,274 @@ app.get('/groups/retrieve', function (request, response) {
     });         
 }); 
 
+/*
+ * URL /groups/retrieve/members/:group_id - Retrieve the members associated with group_id
+ */
+app.get('/groups/retrieve/members/:group_id', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    var group_id = request.params.group_id;
+    console.log("Server received group member request for group with id ", group_id);    
+
+    // Retrieve the members of the group with group_id
+    Group.findOne({_id: group_id}).select('members').exec(function (err, group) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (!group) {
+            // If no group found, report an error.
+            response.status(400).send('Missing group');
+            return;
+        }
+
+        var member_ids = group.members;
+        console.log("Retrieving members with IDs ", member_ids);        
+
+        // Retrieve all members associated with the group
+        User.find({_id: member_ids}).exec(function (err, members) {
+            if (err) {
+                // Query returned an error.
+                response.status(400).send(JSON.stringify(err));
+                return;
+            }
+            if (members.length === 0) {
+                // Query didn't return an error but didn't find the SchemaInfo object - This
+                // is also an internal error return.
+                response.status(200).send('Missing members');
+                return;
+            }
+
+            // We got the object - create an array version of it in JSON
+            console.log('Retrieved members ', members);
+            response.end(JSON.stringify(members));
+        });        
+    });         
+}); 
+
+
+/*
+ * URL /groups/retrieve/administrators/:group_id - Retrieve the members associated with group_id
+ */
+app.get('/groups/retrieve/administrators/:group_id', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    var group_id = request.params.group_id;
+    console.log("Server received group administrator request for group with id ", group_id);    
+
+    // Retrieve the administrators of the group with group_id
+    Group.findOne({_id: group_id}).select('administrators').exec(function (err, group) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (!group) {
+            // If no group found, report an error.
+            response.status(400).send('Missing group');
+            return;
+        }
+
+        var admin_ids = group.administrators;
+        console.log("Retrieving administrators with IDs ", admin_ids);        
+
+        // Retrieve all administrators associated with the group
+        User.find({_id: admin_ids}).exec(function (err, administrators) {
+            if (err) {
+                // Query returned an error.
+                response.status(400).send(JSON.stringify(err));
+                return;
+            }
+            if (administrators.length === 0) {
+                // Query didn't return an error but didn't find the SchemaInfo object - This
+                // is also an internal error return.
+                response.status(200).send('Missing members');
+                return;
+            }
+
+            // We got the object - create an array version of it in JSON
+            console.log('Retrieved administrators ', administrators);
+            response.end(JSON.stringify(administrators));
+        });        
+    });         
+}); 
+
+/*
+ * URL /groups/invite/members/:group_id - Add the members specified by the IDs
+ * contained in the body parameter invited_members to join the group specified by
+ * group_id
+ */
+app.post('/groups/invite/members/:group_id', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    var group_id = request.params.group_id;
+    var invited_member_emails = request.body.invited_member_emails;
+    console.log("Server received request to invite users with the email addresses ", invited_member_emails, " to join group with id ", group_id);    
+
+    // Retrieve the array of invited members from group with group_id
+    Group.findOne({_id: group_id}).select('invited_members').exec(function (err, group) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (!group) {
+            // If no group found, report an error.
+            response.status(400).send('Missing group');
+            return;
+        }
+
+        console.log("Retrieving invited members ", group.invited_members);
+
+        // Add the invited_member_emails to the invited_members array for this group
+        // TODO: On the front end, do not give the user the option to invite members who have already been invited
+        for (var i = 0; i < invited_member_emails.length; i++) {
+            if (!(group.invited_members.indexOf(invited_member_emails[i]) > -1)) {
+                
+                group.invited_members.push(invited_member_emails[i]);
+                
+                // Add the group_id to the group_invitations of the invited user
+                User.findOne({email_address: invited_member_emails[i]}).select('group_invitations').exec(function (err, user) {
+                    if (err) {
+                        // Query returned an error.
+                        response.status(400).send(JSON.stringify(err));
+                        return;
+                    }
+                    if (!user) {
+                        // If no user found, report an error.
+                        response.status(400).send('Missing group');
+                        return;
+                    }
+
+                    // Add group_id to user.group_invitations if its not already there
+                    if (!(user.group_invitations.indexOf(group_id) > -1)) {
+                        user.group_invitations.push(group_id);
+                    }
+                    user.save();
+                });
+            }            
+        }
+        group.save();
+
+        // Return the group with the newly added members
+        console.log('invited_members now contains ', group.invited_members);
+        response.end(JSON.stringify(group));       
+    });         
+});
+
+/*
+ * URL /groups/invitation/accept - Add the session user to the group identified by
+ * the body parameter group_id, then remove that user from the array of invited users
+ * and remove the group_id from the user's array of group invitations
+ */
+app.post('/groups/invitation/accept', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    var group_id = request.params.group_id;
+    console.log("Server received accept group invitation request for group with id ", group_id);    
+
+    // Retrieve the array of invited members from group with group_id
+    Group.findOne({_id: group_id}).select('invited_members members').exec(function (err, group) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (!group) {
+            // If no group found, report an error.
+            response.status(400).send('Missing group');
+            return;
+        }
+
+        console.log("Retrieving invited members ", group.invited_members, " removing from group");
+        
+
+
+        // Add the invited_member_emails to the invited_members array for this group
+        // TODO: On the front end, do not give the user the option to invite members who have already been invited
+        for (var i = 0; i < invited_member_emails.length; i++) {
+            if (!(group.invited_members.indexOf(invited_member_emails[i]) > -1)) {
+                
+                group.invited_members.push(invited_member_emails[i]);
+                
+                // Add the group_id to the group_invitations of the invited user
+                User.findOne({email_address: invited_member_emails[i]}).select('group_invitations').exec(function (err, user) {
+                    if (err) {
+                        // Query returned an error.
+                        response.status(400).send(JSON.stringify(err));
+                        return;
+                    }
+                    if (!user) {
+                        // If no user found, report an error.
+                        response.status(400).send('Missing group');
+                        return;
+                    }
+
+                    // Add group_id to user.group_invitations if its not already there
+                    if (!(user.group_invitations.indexOf(group_id) > -1)) {
+                        user.group_invitations.push(group_id);
+                    }
+                    user.save();
+                });
+            }            
+        }
+        group.save();
+
+        // Return the group with the newly added members
+        console.log('invited_members now contains ', group.invited_members);
+        response.end(JSON.stringify(group));       
+    });         
+});
+
+/*
+ * URL /users/retrieve/members - Retrieve the users that the active user is
+ * connected to
+ */
+app.get('/users/retrieve/members', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    console.log("Server received request to retrieve users");
+
+    // Retrieve all users 
+    // TODO: Add search criteria to limit search to users that the active user is connected to
+    User.find({}).exec(function (err, users) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (users.length === 0) {
+            // Query didn't return an error but didn't find the SchemaInfo object
+            response.status(200).send('Missing users');
+            return;
+        }
+
+        // We got the object - create an array version of it in JSON
+        console.log('Retrieved users ', users);
+        response.end(JSON.stringify(users));
+    });             
+}); 
 
 /**********************************************
  * Proposal Submission and Retrieval Handling *
@@ -403,7 +738,8 @@ app.post('/proposals/new', function (request, response) {
         description: request.body.description, // The proponent's description of the proposal
         user_author_id: request.session.user_id, // Reference to the ID of the user who submitted the proposal
         user_author_name: request.session.user.first_name + " " + request.session.user.last_name,
-        group: request.body.group // Reference to the ID of the group that this proposal was submitted to
+        group: request.body.group, // Reference to the ID of the group that this proposal was submitted to
+        status: 0 // Set status to 0: Under Discussion
     };
 
     function doneCallback(err, newProposal) {

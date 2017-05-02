@@ -1,0 +1,49 @@
+<md-dialog aria-label="Invite Members" class="proposal-dialogue" md-theme='modal'>
+  <form ng-cloak>
+    <md-toolbar class="proposal-dialogue-toolbar">
+      <div class="md-toolbar-tools">
+        <h2>Invite Members</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="UserGroupsController.cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_white_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content class="md-padding autocomplete" layout="column">
+
+      <fieldset class="demo-fieldset">
+        <legend class="demo-legend">Select users to invite to your group</legend>
+        <div layout="row" layout-wrap="" flex="">
+        <div flex-xs="" flex="50">
+          <md-checkbox aria-label="Select All" ng-checked="UserGroupsController.isChecked()" md-indeterminate="UserGroupsController.isIndeterminate()" ng-click="UserGroupsController.toggleAll()">
+            <span ng-if="UserGroupsController.isChecked()">Un-</span>Select All
+          </md-checkbox>
+        </div>
+          <div class="demo-select-all-checkboxes" flex="100" ng-repeat="user in UserGroupsController.membersToInvite">
+            <md-checkbox ng-checked="UserGroupsController.exists(user, UserGroupsController.selectedMembers)" ng-click="UserGroupsController.toggle(user, UserGroupsController.selectedMembers)">
+             {{ user.first_name }} {{ user.last_name }}, <i>{{ user.email_address }}</i>
+            </md-checkbox>
+          </div>
+        </div>
+      </fieldset>
+
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <md-button class="submit-btn" type="submit" ng-click="UserGroupsController.inviteMembers()">
+        Invite Selected Users
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
+
+<style>
+  .proposal-title {
+    padding: 10px;
+    font-style: italic;
+  }
+  .proposal-dialogue {
+    width: 80%;
+  }
+</style>
