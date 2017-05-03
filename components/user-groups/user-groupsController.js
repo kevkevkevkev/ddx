@@ -74,7 +74,10 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
     console.log("Accepting invitation for ", $scope.UserGroupsController.invitation._id);
     var invitation_resource = $resource('/groups/invitation/accept/:group_id', {group_id: $scope.UserGroupsController.invitation._id});
     invitation_resource.save({}, function() {
+      $scope.UserGroupsController.loadGroups(); 
+      $scope.UserGroupsController.loadInvitations();  
       $mdDialog.cancel();      
+      $route.reload();   
     }, function errorHandling(err) {
       console.log(err);
     });
@@ -154,7 +157,8 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
     var newGroup = group_resource.save(group_data, function () {
         console.log("group_resource.save callback()");
         $mdDialog.cancel();
-        $scope.UserGroupsController.loadGroups();        
+        $scope.UserGroupsController.loadGroups();
+        $route.reload();        
     }, function errorHandling(err) {
         console.log(err);
     });
@@ -288,6 +292,7 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
     $scope.main.current_group_id = group._id;
     if ($scope.main.active_tab === "proposals") { $rootScope.$broadcast("Reload Proposals"); }
     if ($scope.main.active_tab === "floor") { $rootScope.$broadcast("Reload Floor Proposals"); }
+    //if ($scope.main.active_tab === "group") { }
     // If the user is currently on the Group Information tab, change that display to the relevant group
     var url = $location.url();
     if ((url.indexOf('/group') > -1) || (url.indexOf('/user-groups') > -1)) {

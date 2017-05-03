@@ -48,6 +48,20 @@ ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams'
 
   $scope.ProposalsController.loadProposals();
 
+  $scope.ProposalsController.getVotingMembers = function(proposal) {
+   console.log("getVotingMembers() called");
+    var proposals_resource = $resource('/groups/retrieve/members-count/:group_id');
+    var group_id = proposal.group;
+
+    var votingMembers = proposals_resource.query({group_id: group_id}, function() {
+
+    }, function errorHandling(err) {
+        console.log(err);
+    });
+
+    return votingMembers.length;
+  };
+
   /********************************
    * Upvote and Downvote Handling *
    ********************************/  

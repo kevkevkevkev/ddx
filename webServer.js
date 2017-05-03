@@ -253,12 +253,16 @@ app.post('/admin/register', function (request, response) {
         user.description = request.body.description;  // A brief user description
         user.group_invitations = [];
 
+        console.log("Searching for groups that the user has been invited to join");
         // Find any groups that the user has been invited to join
-        Group.find({invited_members: user.email_address}).select('_id').exec(function(err, groups){
+        Group.find({invited_members: request.body.email_address}).select('_id').exec(function(err, groups){
+            console.log("The user has been invited to join ", groups);
             // Add the _id of each group to the user's group_invitations array
             for (var i = 0; i < groups.length; i++) {
                 user.group_invitations.push(groups[i]._id);
             }
+            console.log("user.group_invitations now =", user.group_invitations);
+            user.save();
         });
 
         user.setPassword(request.body.password);    
@@ -383,7 +387,8 @@ app.get('/groups/retrieve', function (request, response) {
             if (groups.length === 0) {
                 // Query didn't return an error but didn't find the SchemaInfo object - This
                 // is also an internal error return.
-                response.status(200).send('Missing groups');
+                var empty_array = [];
+                response.status(200).send(JSON.stringify(empty_array));
                 return;
             }
 
@@ -394,6 +399,39 @@ app.get('/groups/retrieve', function (request, response) {
         });        
     });         
 });
+
+/*
+ * URL /groups/retrieve/members-count/:group_id - Retrieve the number of members
+ * in the group specified by group_id
+ */
+app.get('/groups/retrieve/members-count/:group_id', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    var group_id = request.params.group_id;
+    console.log("Server received request to retrieve the number of members in the group with _id ", group_id);    
+
+    // Retrieve the members of the group with group_id
+    Group.findOne({_id: group_id}).select('members').exec(function (err, group) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (!group) {
+            // If no group found, report an error.
+            response.status(400).send('Missing group');
+            return;
+        }
+
+        var member_ids = group.members;
+        console.log("Retrieving the array of members with IDs ", member_ids);
+        response.end(JSON.stringify(member_ids));       
+    });         
+}); 
 
 /*
  * URL /groups/invitations/retrieve - Retrieve the groups that the user
@@ -428,7 +466,7 @@ app.get('/groups/invitations/retrieve', function (request, response) {
         }
 
         var group_invitations = user.group_invitations;
-        console.log("Retrieving groups with IDs ", group_invitations);        
+        console.log("Retrieving invitations to groups with IDs ", group_invitations);        
 
         // Retrieve all groups associated with the active user
         Group.find({_id: group_invitations}).exec(function (err, groups) {
@@ -441,17 +479,18 @@ app.get('/groups/invitations/retrieve', function (request, response) {
                 response.status(400).send("Missing groups");
                 return;
             }
-            if (groups.length === 0) {
+            if (!groups.length) {
                 // Query didn't return an error but didn't find the SchemaInfo object - This
                 // is also an internal error return.
-                response.status(200).send('Missing groups');
+                var empty_array = [];
+                response.status(200).send(JSON.stringify(empty_array));
                 return;
             }
 
             // We got the object - create an array version of it in JSON
-            var groupsArray = JSON.parse(JSON.stringify(groups));
-            console.log('groups', groups);
-            response.end(JSON.stringify(groups));
+            var group_invitations_array = JSON.parse(JSON.stringify(groups));
+            console.log('group_invitations_array', group_invitations_array);
+            response.send(group_invitations_array);
         });        
     });         
 }); 
@@ -663,8 +702,8 @@ app.post('/groups/invite/new-members/:group_id', function (request, response) {
         for (var i = 0; i < invited_member_emails.length; i++) {
             if (!(group.invited_members.indexOf(invited_member_emails[i]) > -1)) {
                 
-                group.invited_members.push(invited_member_emails[i]);
-                          
+                group.invited_members.push(invited_member_emails[i]);                
+            }            
         }
         group.save();
 
@@ -815,7 +854,15 @@ app.post('/proposals/new', function (request, response) {
                 return;
             }
 
+
             newProposal.group_name = group.name;
+            newProposal.floor_threshold_divisor = group.floor_threshold_divisor; 
+            newProposal.amendment_threshold_divisor = group.amendment_threshold_divisor;
+            newProposal.enactment_divisor = group.enactment_divisor;
+            newProposal.max_discussion_time = group.max_discussion_time;
+            newProposal.min_discussion_time = group.min_discussion_time;
+            newProposal.voting_time = group.voting_time;
+            newProposal.voting_members = group.members;
             newProposal.save();
 
             // We got the object - create an array version of it in JSON

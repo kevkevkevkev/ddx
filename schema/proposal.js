@@ -22,7 +22,14 @@ var proposalSchema = new mongoose.Schema({
     group: mongoose.Schema.Types.ObjectId, // Reference to the ID of the group that this proposal was submitted to
     group_name: String, // Name of the group that this proposal is associated with
     date_time: {type: Date, default: Date.now}, // The date and time when the proposal was added to the database
-    status: Number // Status of proposal: 0 = Under Discussion, 1 = On the Floor, 2 = Approved, 3 = Rejected
+    status: {type: Number, default: 0}, // Status of proposal: 0 = Under Discussion, 1 = On the Floor, 2 = Approved, 3 = Rejected
+    floor_threshold_divisor: Number, // number of voters divided by this number will bring a proposal to the floor
+    amendment_threshold_divisor: Number, // number of voters divided by this number will approve an amendment
+    enactment_divisor: Number, // number of voters divided by this number will enact a proposal
+    max_discussion_time: Number, // number of hours a proposal has to reach the floor before its rejected
+    min_discussion_time: Number, // number of hours a proposal must wait before moving to the floor
+    voting_time: Number, // number of hours a proposal appears on the floor    
+    voting_members: [mongoose.Schema.Types.ObjectId] // IDs of the members authorized to vote on this proposal
 });
 
 // Create a model using the schema
