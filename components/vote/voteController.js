@@ -29,7 +29,7 @@ ddxApp.controller('VoteController', ['$scope', '$rootScope', '$routeParams', '$r
   $scope.VoteController.loadProposals = function() {
     
     console.log("$scope.VoteController.loadProposals() called");
-    var proposals_resource = $resource('/proposals/retrieve/:group_id');
+    var proposals_resource = $resource('/proposals/retrieve/:group_id/:status');
     var group_id = $scope.main.current_group_id;
     // TODO: This is hacky. Fix this.
     if (typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups") {
@@ -37,7 +37,7 @@ ddxApp.controller('VoteController', ['$scope', '$rootScope', '$routeParams', '$r
     }
 
     // TODO: Add selection criteria to retrieve only proposals up for vote
-    $scope.VoteController.proposals = proposals_resource.query({group_id: group_id}, function() {
+    $scope.VoteController.proposals = proposals_resource.query({group_id: group_id, status: 1}, function() {
       $scope.VoteController.proposals.sort(function(a, b) { 
           return a.date_time-b.date_time;
       });

@@ -24,6 +24,7 @@ var bodyParser = require('body-parser');
 var multer = require('multer');
 var processFormBody = multer({storage: multer.memoryStorage()}).single('uploadedphoto');
 var fs = require("fs");
+var moment = require('moment');
 
 
 /**************************
@@ -772,6 +773,9 @@ app.post('/groups/invitation/accept/:group_id', function (request, response) {
 
         group.save();
 
+        // Add the group_id to the session user's groups
+        request.session.user.groups.push(group_id);        
+
         // Return the group with the newly added members
         console.log('members now contains ', group.members);
         response.send(JSON.stringify(group));       
@@ -859,7 +863,7 @@ app.post('/proposals/new', function (request, response) {
             newProposal.floor_threshold_divisor = group.floor_threshold_divisor; 
             newProposal.amendment_threshold_divisor = group.amendment_threshold_divisor;
             newProposal.enactment_divisor = group.enactment_divisor;
-            newProposal.max_discussion_time = group.max_discussion_time;
+            newProposal.setMaxDiscussionTime(group.max_discussion_time);
             newProposal.min_discussion_time = group.min_discussion_time;
             newProposal.voting_time = group.voting_time;
             newProposal.voting_members = group.members;
@@ -875,9 +879,9 @@ app.post('/proposals/new', function (request, response) {
 });
 
 /*
- * URL /proposals/retrieve/:group_id - Retrieve the active proposals associated with a group
+ * URL /proposals/retrieve/:group_id/:status - Retrieve the proposals associated with a group
  */
-app.get('/proposals/retrieve/:group_id', function (request, response) {
+app.get('/proposals/retrieve/:group_id/:status', function (request, response) {
 
     if (!request.session.email_address) {
         response.status(401).send("No user logged in");
@@ -885,13 +889,14 @@ app.get('/proposals/retrieve/:group_id', function (request, response) {
     }
 
     var group_id = request.params.group_id;
-    console.log("Server received request to retrieve proposals for group", group_id);    
+    var status = request.params.status;
+    //console.log("Server received request to retrieve proposals for group", group_id);    
 
     // If no group selected, retrieval all proposals to which the user has access
     if (typeof group_id === "undefined" || group_id === "all") {
         var groups = request.session.user.groups;
-        console.log("group_id === undefined, retrieving all proposals for the groups with ids", groups);
-        Proposal.find({group: groups}).exec(function (err, proposals) {
+        //console.log("group_id === undefined, retrieving all proposals for the groups with ids", groups);
+        Proposal.find({group: groups, status: status}).exec(function (err, proposals) {
             if (err) {
                 // Query returned an error.
                 response.status(400).send(JSON.stringify(err));
@@ -900,7 +905,8 @@ app.get('/proposals/retrieve/:group_id', function (request, response) {
             if (proposals.length === 0) {
                 // Query didn't return an error but didn't find the SchemaInfo object - This
                 // is also an internal error return.
-                response.status(200).send('Missing proposals');
+                var empty_array = [];
+                response.status(200).send(JSON.stringify(empty_array));
                 return;
             }
 
@@ -911,7 +917,7 @@ app.get('/proposals/retrieve/:group_id', function (request, response) {
         });
     // Otherwise, retrieve the proposals associated with the selected group        
     } else {
-        console.log("group_id is defined, retrieving proposals for that group");
+        //console.log("group_id is defined, retrieving proposals for that group");
         // Retrieve all proposals with TODO: add group / active query qualifiers
         Proposal.find({group: group_id}).exec(function (err, proposals) {
             if (err) {
@@ -928,7 +934,7 @@ app.get('/proposals/retrieve/:group_id', function (request, response) {
 
             // We got the object - create an array version of it in JSON
             var proposalsArray = JSON.parse(JSON.stringify(proposals));
-            console.log('proposals', proposals);
+            //console.log('proposals', proposals);
             response.end(JSON.stringify(proposals));
         });        
     };
@@ -946,7 +952,7 @@ app.get('/proposals/discussion/get/:proposal_id', function (request, response) {
     }
 
     var proposal_id = request.params.proposal_id;
-    console.log("Server received request to retrieve proposal with id", proposal_id);
+    //console.log("Server received request to retrieve proposal with id", proposal_id);
 
     // Retrieve all proposals with TODO: add group / active query qualifiers
     Proposal.findOne({_id: proposal_id}).exec(function (err, proposal) {
@@ -961,7 +967,7 @@ app.get('/proposals/discussion/get/:proposal_id', function (request, response) {
             return;
         }
 
-        console.log('Retrieved proposal:', proposal);
+        //console.log('Retrieved proposal:', proposal);
         response.end(JSON.stringify(proposal));        
     });
 });
@@ -978,7 +984,7 @@ app.get('/proposals/discussion/get_comments/:proposal_id', function (request, re
     }
 
     var proposal_id = request.params.proposal_id;
-    console.log("Server received request to retrieve comments associated with proposal id", proposal_id);
+    //console.log("Server received request to retrieve comments associated with proposal id", proposal_id);
 
     // Retrieve all comments associated with the proposal_id
     Comment.find({proposal_id: proposal_id}).exec(function (err, comments) {
@@ -992,7 +998,7 @@ app.get('/proposals/discussion/get_comments/:proposal_id', function (request, re
             return;
         }
 
-        console.log("Retrieved comments: ", comments);
+        //console.log("Retrieved comments: ", comments);
         response.end(JSON.stringify(comments));
     });
 });
@@ -1416,9 +1422,32 @@ app.post('/amendments/upvote/:amendment_id', function (request, response) {
                 amendment.users_who_downvoted.splice(downvoteUserIndex, 1);
            }
         }
+        console.log("About to search this amendment's proposal");
+        // Then find the proposal and determine if the amendment shall be enacted
+        Proposal.findOne({_id: amendment.proposal_id}).exec(function (err, proposal) {
+            console.log("Searched for proposal");
+            if (err) {
+                response.status(400).send(JSON.stringify(err));
+                return;
+            }
+            if (proposal === null) {
+                response.status(500).send('Proposal does not exist');
+                return;
+            }
 
-        amendment.save();
-        response.send(JSON.stringify(amendment));
+            var num_voters = proposal.voting_members.length;
+            var req_votes = (num_voters/proposal.amendment_threshold_divisor);
+            console.log("**** This amendment requires ", req_votes, "upvotes to enact. It currently has", amendment.users_who_upvoted.length, "votes");
+            if (amendment.users_who_upvoted.length >= req_votes) {
+                console.log("This amendment has recieved enough upvotes to enact");
+                proposal.text = amendment.amendment_text;
+                amendment.is_enacted = true;
+                amendment.time_enacted = Date.now();
+                proposal.save();
+            }
+            amendment.save();
+            response.send(JSON.stringify(amendment));
+        });
     });
 });
 

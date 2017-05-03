@@ -27,13 +27,13 @@ ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams'
 
   $scope.ProposalsController.loadProposals = function() {
     console.log("loadProposals() called");
-    var proposals_resource = $resource('/proposals/retrieve/:group_id');
+    var proposals_resource = $resource('/proposals/retrieve/:group_id/:status');
     var group_id = $scope.main.current_group_id;
     // TODO: This is hacky. Fix this.
     if (typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups") {
       group_id = "all";
     }
-    $scope.ProposalsController.proposals = proposals_resource.query({group_id: group_id}, function() {
+    $scope.ProposalsController.proposals = proposals_resource.query({group_id: group_id, status: 0}, function() {
       $scope.ProposalsController.proposals.sort(function(a, b) { 
         if (a !== b) {
           return (b.users_who_upvoted.length-b.users_who_downvoted.length)-(a.users_who_upvoted.length-a.users_who_downvoted.length);

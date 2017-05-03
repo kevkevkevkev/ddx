@@ -24,6 +24,7 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
 		// TODO: Consider implementing sorting algorithm to arrange groups
 		// $scope.UserGroupsController.groups.sort(function(a, b) {   	
 		// });
+    console.log("$scope.UserGroupsController.groups =", $scope.UserGroupsController.groups);
     }, function errorHandling(err) {
         console.log(err);
     });
@@ -74,10 +75,10 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
     console.log("Accepting invitation for ", $scope.UserGroupsController.invitation._id);
     var invitation_resource = $resource('/groups/invitation/accept/:group_id', {group_id: $scope.UserGroupsController.invitation._id});
     invitation_resource.save({}, function() {
+      $scope.main.saveSession();
       $scope.UserGroupsController.loadGroups(); 
       $scope.UserGroupsController.loadInvitations();  
-      $mdDialog.cancel();      
-      $route.reload();   
+      $mdDialog.cancel();       
     }, function errorHandling(err) {
       console.log(err);
     });
@@ -157,8 +158,7 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
     var newGroup = group_resource.save(group_data, function () {
         console.log("group_resource.save callback()");
         $mdDialog.cancel();
-        $scope.UserGroupsController.loadGroups();
-        $route.reload();        
+        $scope.UserGroupsController.loadGroups();   
     }, function errorHandling(err) {
         console.log(err);
     });

@@ -3,7 +3,7 @@
 /* Copyright © 2017 Kevin O'Connell. All rights reserved. */
 
 var ddxApp = angular.module('ddxApp', ['ngRoute', 'ngMaterial', 'ngResource', 
-    'ngMessages', 'LocalStorageModule']);
+    'ngMessages', 'LocalStorageModule', 'angularMoment']);
 
 ddxApp.config(['$locationProvider', function($locationProvider) {
   $locationProvider.hashPrefix('');
@@ -71,7 +71,7 @@ ddxApp.config(['localStorageServiceProvider', function(localStorageServiceProvid
 
 
 ddxApp.controller('MainController', ['$scope', '$rootScope', '$location', 
-    '$http', '$resource', '$mdDialog', 'localStorageService', '$mdPanel',
+    '$http', '$resource', '$mdDialog', 'localStorageService', '$mdPanel', 'moment',
       function ($scope, $rootScope, $location, $http, $resource, $mdDialog, localStorageService, $mdPanel) {
         $scope.main = {};
         $scope.main.noOneIsLoggedIn = true;
@@ -82,6 +82,18 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
         $scope.main.active_tab = ""; // Controls which tab is displayed as active. -1 means no active tab.
         $scope.main.test_string = "I hope these controllers can communicate";
 
+        $scope.main.saveSession = function() {
+
+            // Save the current session in local storage
+            var session_resource = $resource('/get-current-session');
+            var current_session = session_resource.get({}, function () {
+                console.log("setting current_session to ", current_session);
+                localStorageService.set('session', current_session);
+            }, function errorHandling(err) {
+                console.log(err);
+            });            
+        }
+
         /* This listener will execute the associated function when the user has 
          * successfully logged on––it will update the display values. */
         $scope.$on("Logged In", function () {
@@ -90,13 +102,7 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
             console.log("$scope.main.current_group_id = ", $scope.main.current_group_id);            
             $scope.main.noOneIsLoggedIn = false;
             // Save the current session in local storage
-            var session_resource = $resource('/get-current-session');
-            var current_session = session_resource.get({}, function () {
-                console.log("setting current_session to ", current_session);
-                localStorageService.set('session', current_session);
-            }, function errorHandling(err) {
-                console.log(err);
-            });
+            $scope.main.saveSession();
             $location.path("/proposals");
             //$location.path("/user-groups");
             //$scope.main.active_tab = "group";
@@ -188,19 +194,9 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
         });
 
         // Returns the date of the proposal in a readable format
-        $scope.main.getDate = function(proposal) {
-            //console.log("getDate(): parsing date for proposal", proposal);
-            var dateString = "";
-            var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-            var date = new Date(proposal.date_time);
+        $scope.main.getDate = function(date_time) {
 
-            //console.log("About to concat string for date", date);
-            if (Object.prototype.toString.call(date) === "[object Date]") {
-                if ( !isNaN( date.getTime() ) ) {
-                    dateString = days[date.getDay()].concat(", ").concat(date.getMonth()).concat("/").concat(date.getDay()).concat(" at ").concat(date.getHours()).concat(":").concat(date.getMinutes());
-                }
-            }
-
-            return dateString;
+            var date = moment(date_time);       
+            return date.format("dddd, MMMM Do, [at] h:mm a");
         }        
     }]);

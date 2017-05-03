@@ -16,7 +16,7 @@
 			<div class="proposal-display-details">
 				<p><i>Proposed by:</i> <u>{{ProposalDiscussionController.proposal.user_author_name}}</u> <i>on {{main.getDate(ProposalDiscussionController.proposal)}}</i></p>
 				<p><i>Group:</i> {{ProposalDiscussionController.proposal.group_name}}</p>
-				<p><i>Threshold for General Election: </i></p>
+				<p><i>Threshold for General Election:</i> {{(ProposalDiscussionController.proposal.voting_members.length/ProposalDiscussionController.proposal.floor_threshold_divisor) | number:0 }} upvotes by {{main.getDate(ProposalDiscussionController.proposal.max_discussion_time)}}</p>
 			</div>
 		</div>
 	</div>
@@ -81,7 +81,7 @@
 			</div>
 			<div class="proposal-discussion-comment-title-and-details">
 				<div class="proposal-discussion-comment-display-details">
-					<p><u>{{comment.user_author_name}}</u> commented <i> on {{main.getDate(comment)}}:</i></p>
+					<p><u>{{comment.user_author_name}}</u> commented <i> on {{main.getDate(comment.date_time)}}:</i></p>
 				</div>
 				<div class="proposal-discussion-comment-text">
 					<p>{{comment.text}}</p>
@@ -100,7 +100,8 @@
 			</div>
 			<div class="proposal-discussion-comment-title-and-details">
 				<div class="proposal-discussion-comment-display-details">
-					<p>{{comment.user_author_name}} proposed an amendment <i>on {{main.getDate(comment)}}:</i></p>
+					<p ng-if="comment.is_enacted"><b>ENACTED</b> on <i>{{main.getDate(comment.time_enacted)}}</i></p>
+					<p>{{comment.user_author_name}} proposed an amendment on <i>{{main.getDate(comment.date_time)}}:</i></p>
 				</div>
 				<div class="proposal-discussion-amendment-text">
 					<p>{{comment.amendment_text}}</p>

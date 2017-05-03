@@ -14,9 +14,9 @@
 			<md-button class="proposal-title-and-details" ng-click="ProposalsController.openProposal(proposal)">
 				<p class="proposal-display-title"><b>{{proposal.title}}</b></p>
 				<div class="proposal-display-details">
-					<p><i>Proposed by:</i> <u>{{proposal.user_author_name}}</u> <i>on {{main.getDate(proposal)}}</i></p>
+					<p><i>Proposed by:</i> <u>{{proposal.user_author_name}}</u> <i>on {{main.getDate(proposal.date_time)}}</i></p>
 					<p><i>Group:</i> {{proposal.group_name}}</p>
-					<p><i>Threshold for General Election:</i> {{(proposal.voting_members.length/proposal.floor_threshold_divisor) | number:0 }} upvotes</p>
+					<p><i>Threshold for General Election:</i> {{(proposal.voting_members.length/proposal.floor_threshold_divisor) | number:0 }} upvotes by {{main.getDate(proposal.max_discussion_time)}}</p>
 				</div>
 			</md-button>
 		</div>

@@ -200,7 +200,11 @@ ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$rou
     amendment = upvote_resource.save({}, function () {
         $scope.ProposalDiscussionController.combined[amendmentIndex].users_who_upvoted = amendment.users_who_upvoted;
         $scope.ProposalDiscussionController.combined[amendmentIndex].users_who_downvoted = amendment.users_who_downvoted; 
-        // TODO: Implement functionality to replace original proposal with amendment if threshold reached               
+        // TODO: Implement functionality to replace original proposal with amendment if threshold reached
+        if (amendment.is_enacted === true) {
+          console.log("amendment is_enacted, reloading proposal");
+            $scope.ProposalDiscussionController.loadProposal();
+        }               
     }, function errorHandling(err) {
           console.log(err);
     });
