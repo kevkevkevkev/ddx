@@ -888,6 +888,53 @@ app.get('/proposals/retrieve/:group_id/:status', function (request, response) {
         return;
     }
 
+    // TODO: This is HACKY AF. Replace with an interval function ASAP.
+    // Every time a user requests to retrieve the proposals, iterate through all existing proposals
+    // to determine if they should be reclassified as enacted, rejected, etc.
+    Proposal.find({}).exec(function (err, proposals) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (proposals.length === 0) {
+            // Query didn't return an error but didn't find the SchemaInfo object - This
+            // is also an internal error return.
+            var empty_array = [];
+            response.status(200).send(JSON.stringify(empty_array));
+            return;
+        }
+
+        var proposalArray = JSON.parse(JSON.stringify(proposals));
+        // Iterate through each proposal and determine if it should be moved
+        async.each(proposalArray, function (proposal, proposal_done) {
+            Proposal.findOne({_id: proposal._id}).exec(function(err, curr_proposal) {
+
+                // 1: Determine if proposal should be moved from discussion to the floor
+                var num_voters = curr_proposal.voting_members.length;
+                var req_votes = (num_voters/curr_proposal.floor_threshold_divisor);
+                console.log("**** This proposal requires ", req_votes, "upvotes to enact. It currently has", curr_proposal.users_who_upvoted.length, "votes");
+                if ((curr_proposal.users_who_upvoted.length >= req_votes) && (curr_proposal.status === 0)) {
+                    console.log("This proposal has recieved enough upvotes to move to the floor");
+                    curr_proposal.status = 1;
+                    curr_proposal.date_time = Date.now();
+                    curr_proposal.save();
+                }
+
+                // 2: Determine if proposal should be moved from the floor to accepted or rejected
+                
+            });
+            proposal_done();
+        /* Finally, report an error if necessary or return the photoArray */
+        }, function (err) {
+            if (err) {
+                response.status(500).send(JSON.stringify(err));
+            } else {
+                console.log('Updated proposals', proposalArray);
+            }
+        });            
+    });
+
     var group_id = request.params.group_id;
     var status = request.params.status;
     //console.log("Server received request to retrieve proposals for group", group_id);    
