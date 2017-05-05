@@ -651,7 +651,7 @@ app.post('/groups/invite/members/:group_id', function (request, response) {
                   from: 'DDX <postmaster@invite.ddx.exchange>',
                   to: invited_member_emails[i],
                   subject: 'DDX Invitation',
-                  text: 'Hello! \n You have been invited to join the group', group.name, "on Direct Democracy Exchange. \n Visit www.ddx.exchange to login or register, and visit the Group Information tab to accept the invitation."
+                  text: 'Hello! \n You have been invited to join a group on Direct Democracy Exchange. \n Visit www.ddx.exchange to login or register, and visit the Group Information tab to accept the invitation.'
                 };     
 
                 mailgun.messages().send(data, function (error, body) {
@@ -707,7 +707,7 @@ app.post('/groups/invite/new-members/:group_id', function (request, response) {
     console.log("Server received request to invite new users with the email addresses ", invited_member_emails, " to join group with id ", group_id);    
 
     // Retrieve the array of invited members from group with group_id
-    Group.findOne({_id: group_id}).select('invited_members').exec(function (err, group) {
+    Group.findOne({_id: group_id}).select('invited_members name').exec(function (err, group) {
         if (err) {
             // Query returned an error.
             response.status(400).send(JSON.stringify(err));
@@ -734,7 +734,7 @@ app.post('/groups/invite/new-members/:group_id', function (request, response) {
                   from: 'DDX <postmaster@invite.ddx.exchange>',
                   to: invited_member_emails[i],
                   subject: 'DDX Invitation',
-                  text: 'Hello! \n You have been invited to join the group', group.name, "on Direct Democracy Exchange. \n Visit www.ddx.exchange to login or register, and visit the Group Information tab to accept the invitation."
+                  text: 'Hello! \n You have been invited to join a group on Direct Democracy Exchange. \n Visit www.ddx.exchange to login or register, and visit the Group Information tab to accept the invitation.'
                 };     
 
                 mailgun.messages().send(data, function (error, body) {
