@@ -944,6 +944,10 @@ app.get('/proposals/retrieve/:group_id/:status', function (request, response) {
             response.status(400).send(JSON.stringify(err));
             return;
         }
+        if (!proposals) {
+            response.status(400).send('Missing proposals');
+            return;
+        }
         if (proposals.length === 0) {
             // Query didn't return an error but didn't find the SchemaInfo object - This
             // is also an internal error return.
