@@ -24,6 +24,9 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
 		// TODO: Consider implementing sorting algorithm to arrange groups
 		// $scope.UserGroupsController.groups.sort(function(a, b) {   	
 		// });
+    if (!(typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups")) {
+      $scope.UserGroupsController.loadSelectedGroup();   
+    }    
     console.log("$scope.UserGroupsController.groups =", $scope.UserGroupsController.groups);
     }, function errorHandling(err) {
         console.log(err);
@@ -31,6 +34,24 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
   };
 
   $scope.UserGroupsController.loadGroups();
+
+  /***************************
+   * Load the Selected Group *
+   ***************************/ 
+
+  $scope.UserGroupsController.selectedGroup = {};
+
+  $scope.UserGroupsController.loadSelectedGroup = function() {
+    console.log("loadSelectedGroup() called");
+    var selectedIndex = 0;
+    for (var i = 0; i < $scope.UserGroupsController.groups.length; i++) {
+      if ($scope.UserGroupsController.groups[i]._id === $scope.main.current_group_id) {
+        selectedIndex = i;
+        break;
+      }
+    }
+    $scope.UserGroupsController.selectedGroup = $scope.UserGroupsController.groups[selectedIndex];
+  };
 
   /******************************
    * Group Invitation Retrieval *
@@ -276,8 +297,6 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
     }
   };
 
-
-
   /***********************
    * Navigation Handling *
    ***********************/
@@ -310,6 +329,64 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
     if ((url.indexOf('/group') > -1) || (url.indexOf('/user-groups') > -1)) {
       $location.path("/user-groups");
     }   
-  };  
+  };
+
+  /**************************
+   * Load Enacted Proposals *
+   **************************/
+
+  $scope.UserGroupsController.enactedProposals = [];
+
+  $scope.UserGroupsController.loadEnactedProposals = function() {
+    
+    console.log("$scope.UserGroupsController.loadEnactedProposals() called");
+    var proposals_resource = $resource('/proposals/retrieve/:group_id/:status');
+    var group_id = $scope.main.current_group_id;
+    // TODO: This is hacky. Fix this.
+    if (typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups") {
+      group_id = "all";
+    }
+
+    $scope.UserGroupsController.enactedProposals = proposals_resource.query({group_id: group_id, status: 2}, function() {
+      $scope.UserGroupsController.enactedProposals.sort(function(a, b) { 
+          return a.date_time-b.date_time;
+      });
+    }, function errorHandling(err) {
+        console.log(err);
+    });
+  };
+
+  if (!(typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups")) {
+    $scope.UserGroupsController.loadEnactedProposals();
+  }
+
+  /***************************
+   * Load Rejected Proposals *
+   ***************************/
+
+  $scope.UserGroupsController.rejectedProposals = [];
+
+  $scope.UserGroupsController.loadRejectedProposals = function() {
+    
+    console.log("$scope.UserGroupsController.loadRejectedProposals() called");
+    var proposals_resource = $resource('/proposals/retrieve/:group_id/:status');
+    var group_id = $scope.main.current_group_id;
+    // TODO: This is hacky. Fix this.
+    if (typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups") {
+      group_id = "all";
+    }
+
+    $scope.UserGroupsController.rejectedProposals = proposals_resource.query({group_id: group_id, status: 3}, function() {
+      $scope.UserGroupsController.rejectedProposals.sort(function(a, b) { 
+          return a.date_time-b.date_time;
+      });
+    }, function errorHandling(err) {
+        console.log(err);
+    });
+  };
+
+  if (!(typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups")) {
+    $scope.UserGroupsController.loadRejectedProposals();
+  }  
 }]);
 

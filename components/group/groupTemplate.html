@@ -8,7 +8,23 @@
 		    </md-tab-label>
           	<md-tab-body>       
 		        <div class="group-information-display-tab" style="padding: 25px; text-align: center;">
-		        <p>Placeholder</p>
+					<p ng-if="UserGroupsController.enactedProposals.length===0">This group has not yet enacted any proposals</p>
+					<div ng-repeat="proposal in UserGroupsController.enactedProposals" ng-init="sectionIndex = $index" class="vote-proposal-col">
+						<div class="vote-proposal">
+							<div class="vote-proposal-user-vote">
+						        <md-button class="md-icon-button vote-oval-button" aria-label="Vote" ng-click="VoteController.showProposalModal($event, proposal, $index)">		
+									<md-icon md-svg-src="img/icons/yes_oval_icon.svg" aria-label="Vote"></md-icon>				
+						        </md-button>						        
+							</div>
+							<md-button class="vote-proposal-title-and-details" ng-click="VoteController.showProposalModal($event, proposal)">
+								<p class="vote-proposal-display-title"><b>{{proposal.title}}</b></p>
+								<div class="vote-proposal-display-details">
+									<p><i>Proposed by:</i> <u>{{proposal.user_author_name}}</u></p>
+									<p><i>Group:</i> {{proposal.group_name}}</p>
+								</div>
+							</md-button>
+						</div>
+					</div>		        
 		        </div>
 	        </md-tab-body>
 	      </md-tab>
@@ -19,7 +35,23 @@
 		    </md-tab-label>
           	<md-tab-body>       
 		        <div class="group-information-display-tab" style="padding: 25px; text-align: center;">
-		        <p>Placeholder</p>
+					<p ng-if="UserGroupsController.rejectedProposals.length===0">This group has not yet rejected any proposals</p>
+					<div ng-repeat="proposal in UserGroupsController.rejectedProposals" ng-init="sectionIndex = $index" class="vote-proposal-col">
+						<div class="vote-proposal">
+							<div class="vote-proposal-user-vote">
+						        <md-button class="md-icon-button vote-oval-button" aria-label="Vote" ng-click="VoteController.showProposalModal($event, proposal, $index)">		
+									<md-icon md-svg-src="img/icons/no_oval_icon.svg" aria-label="Vote"></md-icon>				
+						        </md-button>						        
+							</div>
+							<md-button class="vote-proposal-title-and-details" ng-click="VoteController.showProposalModal($event, proposal)">
+								<p class="vote-proposal-display-title"><b>{{proposal.title}}</b></p>
+								<div class="vote-proposal-display-details">
+									<p><i>Proposed by:</i> <u>{{proposal.user_author_name}}</u></p>
+									<p><i>Group:</i> {{proposal.group_name}}</p>
+								</div>
+							</md-button>
+						</div>
+					</div>
 		        </div>
 	        </md-tab-body>
 	      </md-tab>
@@ -62,8 +94,12 @@
 		       Constitution
 		    </md-tab-label>
           	<md-tab-body>       
-		        <div class="group-information-display-tab" style="padding: 25px; text-align: center;">
-		        <p>Placeholder</p>
+		        <div class="group-information-display-tab" style="padding: 25px; text-align: left;">
+		        <p><b>Form of Government:</b> Direct Democracy – Every member can submit proposals, propose amendments, and vote on proposals that go to the floor.</p>
+		        <p><b>Floor Threshold:</b> 1/{{UserGroupsController.selectedGroup.floor_threshold_divisor}} of members must upvote a proposal for it to reach the floor</p>
+		        <p><b>Amendment Threshold:</b> 1/{{UserGroupsController.selectedGroup.amendment_threshold_divisor}} of members must upvote an amendment for it to alter the text of a proposal</p>
+		        <p><b>Minimum Discussion Time:</b> A proposal must remain under discussion for {{UserGroupsController.selectedGroup.min_discussion_time}} hours before it can go to the floor.</p>
+		        <p><b>Maximum Discussion Time:</b> If a proposal does not go to the floor after {{UserGroupsController.selectedGroup.max_discussion_time}} hours of discussion, it will be rejected.</p>
 		        </div>
 	        </md-tab-body>
 	      </md-tab>	      	           

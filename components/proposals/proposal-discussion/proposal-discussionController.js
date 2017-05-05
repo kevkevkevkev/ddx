@@ -13,8 +13,8 @@
  * 7) Submitting comments to comments of proposals
  * 8) Upvoting and downvoting comments to comments (which does not affect their display)
  */
-ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$routeParams', '$resource', '$location', '$mdDialog',
-  function ($scope, $rootScope, $routeParams, $resource, $location, $mdDialog) {
+ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$routeParams', '$resource', '$location', '$mdDialog', '$mdToast',
+  function ($scope, $rootScope, $routeParams, $resource, $location, $mdDialog, $mdToast) {
 
   $scope.main.active_tab = "proposals";
   var proposalId = $routeParams.proposalId;
@@ -194,7 +194,7 @@ ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$rou
    ******************************************/  
 
   // Executes an upvote request
-  $scope.ProposalDiscussionController.upvoteAmendment = function(amendment, amendmentIndex) {
+  $scope.ProposalDiscussionController.upvoteAmendment = function(amendment, amendmentIndex, ev) {
     console.log("upvote() called on amendment ", amendment);
     var upvote_resource = $resource('/amendments/upvote/:amendment_id', {amendment_id: amendment._id});
     amendment = upvote_resource.save({}, function () {
@@ -204,6 +204,7 @@ ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$rou
         if (amendment.is_enacted === true) {
           console.log("amendment is_enacted, reloading proposal");
             $scope.ProposalDiscussionController.loadProposal();
+            $scope.ProposalDiscussionController.showSimpleToast(ev);
         }               
     }, function errorHandling(err) {
           console.log(err);
@@ -221,6 +222,49 @@ ddxApp.controller('ProposalDiscussionController', ['$scope', '$rootScope', '$rou
           console.log(err);
     });
   };
+
+  /******************
+   * Toast Handling *
+   ******************/
+
+  var last = {
+    bottom: false,
+    top: false,
+    left: false,
+    right: true
+  };
+
+  $scope.ProposalDiscussionController.toastPosition = angular.extend({},last);
+
+  $scope.ProposalDiscussionController.getToastPosition = function() {
+    sanitizePosition();
+
+    return Object.keys($scope.ProposalDiscussionController.toastPosition)
+      .filter(function(pos) { return $scope.ProposalDiscussionController.toastPosition[pos]; })
+      .join(' ');
+  };
+
+  function sanitizePosition() {
+    var current = $scope.ProposalDiscussionController.toastPosition;
+
+    if ( current.bottom && last.top ) current.top = false;
+    if ( current.top && last.bottom ) current.bottom = false;
+    if ( current.right && last.left ) current.left = false;
+    if ( current.left && last.right ) current.right = false;
+
+    last = angular.extend({},current);
+  }
+
+  $scope.ProposalDiscussionController.showSimpleToast = function(ev) {
+    var pinTo = $scope.ProposalDiscussionController.getToastPosition();
+
+    $mdToast.show(
+      $mdToast.simple()
+        .textContent('Amendment Enacted!')
+        .position(pinTo )
+        .hideDelay(10000)
+    );
+  };   
 
 }]);
 

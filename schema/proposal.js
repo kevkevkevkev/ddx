@@ -29,16 +29,25 @@ var proposalSchema = new mongoose.Schema({
     enactment_divisor: Number, // number of voters divided by this number will enact a proposal
     max_discussion_time: Date, // number of hours a proposal has to reach the floor before its rejected
     min_discussion_time: Date, // number of hours a proposal must wait before moving to the floor
-    voting_time: Date, // number of hours a proposal appears on the floor    
+    voting_time: Number, // number of hours a proposal appears on the floor
+    voting_closes: Date, // time when voting on a proposal closes
     voting_members: [mongoose.Schema.Types.ObjectId] // IDs of the members authorized to vote on this proposal
 });
 
 proposalSchema.methods.setMaxDiscussionTime = function(hours) {
     console.log("***** setMaxDiscussionTime() called *****");
     var date_time_moment = moment(this.date_time);
-    console.log("multiplying this.date_time,", date_time_moment, ",by hours,", hours);
+    console.log("Adding to this.date_time,", date_time_moment, ", hours,", hours);
     this.max_discussion_time = date_time_moment.add(hours, 'h').toDate();
     console.log("this.max_discussion_time = ", this.max_discussion_time);
+};
+
+proposalSchema.methods.setVotingCloses = function() {
+    console.log("***** setVotingCloses() called *****");
+    var date_time_moment = moment(Date.now());
+    console.log("Adding to this.date_time,", date_time_moment, ", hours,", this.voting_time);
+    this.voting_closes = date_time_moment.add(this.voting_time, 'h').toDate();
+    console.log("this.max_discussion_time = ", this.voting_closes);
 };
 
 // Create a model using the schema

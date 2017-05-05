@@ -90,7 +90,7 @@
 		</div>
 		<div class="proposal-discussion-comment" ng-if="comment.is_amendment">
 			<div class="proposal-discussion-comment-votes">
-		        <md-button class="md-icon-button" ng-click="ProposalDiscussionController.upvoteAmendment(comment, $index)">
+		        <md-button class="md-icon-button" ng-click="ProposalDiscussionController.upvoteAmendment(comment, $index, $event)">
 		          <md-icon md-svg-src="img/icons/upvote_btn.svg" aria-label="Upvote"></md-icon>
 		        </md-button>
 		        <md-label>{{comment.users_who_upvoted.length-comment.users_who_downvoted.length}}</md-label>				
@@ -101,6 +101,7 @@
 			<div class="proposal-discussion-comment-title-and-details">
 				<div class="proposal-discussion-comment-display-details">
 					<p ng-if="comment.is_enacted"><b>ENACTED</b> on <i>{{main.getDate(comment.time_enacted)}}</i></p>
+					<p ng-if="!comment.is_enacted"> <i>{{(ProposalDiscussionController.proposal.voting_members.length/ProposalDiscussionController.proposal.amendment_threshold_divisor) | number:0 }} upvote(s) will enact this amendment</i></p>
 					<p>{{comment.user_author_name}} proposed an amendment on <i>{{main.getDate(comment.date_time)}}:</i></p>
 				</div>
 				<div class="proposal-discussion-amendment-text">

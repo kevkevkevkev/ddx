@@ -27,6 +27,15 @@ var fs = require("fs");
 var moment = require('moment');
 
 
+/*************************
+ * Mailgun Configuration *
+ *************************/
+
+var api_key = 'key-48f8af9da82aa3feeb7ac03e59eac156';
+var domain = 'invite.ddx.exchange';
+var mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
+
+
 /**************************
  * Database Configuration *
  **************************/
@@ -631,9 +640,23 @@ app.post('/groups/invite/members/:group_id', function (request, response) {
         // Add the invited_member_emails to the invited_members array for this group
         // TODO: On the front end, do not give the user the option to invite members who have already been invited
         for (var i = 0; i < invited_member_emails.length; i++) {
+            // If the user has not already been invited to join the group
             if (!(group.invited_members.indexOf(invited_member_emails[i]) > -1)) {
                 
                 group.invited_members.push(invited_member_emails[i]);
+
+                // Send an email to the user notifying them that they have been invited to join DDX
+                console.log("******** Sending invitation email to", invited_member_emails[i]);
+                var data = {
+                  from: 'Excited User <postmaster@invite.ddx.exchange>',
+                  to: invited_member_emails[i],
+                  subject: 'Hello',
+                  text: 'Testing some Mailgun awesomness!'
+                };     
+
+                mailgun.messages().send(data, function (error, body) {
+                  console.log(body);
+                });  
                 
                 // Add the group_id to the group_invitations of the invited user
                 User.findOne({email_address: invited_member_emails[i]}).select('group_invitations').exec(function (err, user) {
@@ -650,7 +673,7 @@ app.post('/groups/invite/members/:group_id', function (request, response) {
 
                     // Add group_id to user.group_invitations if its not already there
                     if (!(user.group_invitations.indexOf(group_id) > -1)) {
-                        user.group_invitations.push(group_id);
+                        user.group_invitations.push(group_id);                      
                     }
                     user.save();
                 });
@@ -764,11 +787,35 @@ app.post('/groups/invitation/accept/:group_id', function (request, response) {
             }
 
             // Remove group_id from the user's invitation array
-            user.group_invitations.splice(user.group_invitations.indexOf(group_id));
+            user.group_invitations.splice(user.group_invitations.indexOf(group_id), 1);
 
             // Add group_id to the user's groups array
             user.groups.push(group_id);
             user.save();
+        });
+
+        // Retrieve the proposals associated with this group and update the voting_members array
+        Proposal.find({group: group._id}).select('_id').exec(function(err, proposals){
+            if (err) {
+                // Query returned an error.
+                response.status(400).send(JSON.stringify(err));
+                return;
+            }
+            if (!proposals) {
+                // If no user proposals, report an error.
+                response.status(400).send('Missing proposals');
+                return;
+            }
+
+            var proposalsArray = JSON.parse(JSON.stringify(proposals));
+
+            async.each(proposalsArray, function (proposal, proposal_done) {
+                Proposal.findOne({_id: proposal._id}).select('voting_members').exec(function(err, curr_proposal){
+                    curr_proposal.voting_members.push(request.session.user._id);
+                    curr_proposal.save();
+                });
+                proposal_done();
+            });
         });
 
         group.save();
@@ -900,8 +947,9 @@ app.get('/proposals/retrieve/:group_id/:status', function (request, response) {
         if (proposals.length === 0) {
             // Query didn't return an error but didn't find the SchemaInfo object - This
             // is also an internal error return.
-            var empty_array = [];
-            response.status(200).send(JSON.stringify(empty_array));
+            // var empty_array = [];
+            // response.status(200).send(JSON.stringify(empty_array));
+            response.status(200).send('Missing object');
             return;
         }
 
@@ -910,21 +958,44 @@ app.get('/proposals/retrieve/:group_id/:status', function (request, response) {
         async.each(proposalArray, function (proposal, proposal_done) {
             Proposal.findOne({_id: proposal._id}).exec(function(err, curr_proposal) {
 
-                // 1: Determine if proposal should be moved from discussion to the floor
-                var num_voters = curr_proposal.voting_members.length;
-                var req_votes = (num_voters/curr_proposal.floor_threshold_divisor);
-                console.log("**** This proposal requires ", req_votes, "upvotes to enact. It currently has", curr_proposal.users_who_upvoted.length, "votes");
-                if ((curr_proposal.users_who_upvoted.length >= req_votes) && (curr_proposal.status === 0)) {
-                    console.log("This proposal has recieved enough upvotes to move to the floor");
-                    curr_proposal.status = 1;
-                    curr_proposal.date_time = Date.now();
-                    curr_proposal.save();
+                // If a proposal is under discussion:
+                if (proposal.status === 0) {
+                    // A: Determine if proposal should be moved from discussion to the floor
+                    var num_voters = curr_proposal.voting_members.length;
+                    var req_votes = (num_voters/curr_proposal.floor_threshold_divisor);
+                    console.log("**** This proposal requires ", req_votes, "upvotes to move to the floor. It currently has", curr_proposal.users_who_upvoted.length, "votes");
+                    if (curr_proposal.users_who_upvoted.length >= req_votes) {
+                        console.log("This proposal has recieved enough upvotes to move to the floor");
+                        curr_proposal.status = 1;
+                        curr_proposal.setVotingCloses();
+                        curr_proposal.save();
+                    } else {
+                        // B: If proposal's discussion time has elapsed, move it to rejected 
+                        var max_discussion_moment = moment(curr_proposal.max_discussion_time);
+                        var now_moment = moment();
+                        if (max_discussion_moment.isBefore(now_moment)) {
+                            console.log("This proposal has not received enough upvotes in time. It is getting moved to rejected");
+                            curr_proposal.status = 3;
+                            curr_proposal.save();
+                        }
+                    }
                 }
 
-                // 2: Determine if proposal should be moved from the floor to accepted or rejected
-                
+                // If a proposal is on the floor
+                if (proposal.status === 1) {
+                    // If the proposals' time has expired:
+                    if (moment(curr_proposal.voting_closes).isBefore(moment(Date.now))) {
+                        if (proposal.users_who_voted_yes.length > proposal.users_who_voted_no.length) {
+                            console.log("This proposal has been enacted");
+                            proposal.status = 2;
+                        } else {
+                            console.log("This proposal has been rejected");
+                            proposal.status = 3;
+                        }
+                    }
+                }
+                proposal_done();
             });
-            proposal_done();
         /* Finally, report an error if necessary or return the photoArray */
         }, function (err) {
             if (err) {
@@ -949,11 +1020,16 @@ app.get('/proposals/retrieve/:group_id/:status', function (request, response) {
                 response.status(400).send(JSON.stringify(err));
                 return;
             }
+            if (!proposals) {
+                response.status(400).send(JSON.stringify(err));
+                return;
+            }
             if (proposals.length === 0) {
                 // Query didn't return an error but didn't find the SchemaInfo object - This
                 // is also an internal error return.
-                var empty_array = [];
-                response.status(200).send(JSON.stringify(empty_array));
+                // var empty_array = [];
+                // response.status(200).send(JSON.stringify(empty_array));
+                response.status(200).send('Missing object');
                 return;
             }
 
@@ -966,7 +1042,7 @@ app.get('/proposals/retrieve/:group_id/:status', function (request, response) {
     } else {
         //console.log("group_id is defined, retrieving proposals for that group");
         // Retrieve all proposals with TODO: add group / active query qualifiers
-        Proposal.find({group: group_id}).exec(function (err, proposals) {
+        Proposal.find({group: group_id, status: status}).exec(function (err, proposals) {
             if (err) {
                 // Query returned an error.
                 response.status(400).send(JSON.stringify(err));
@@ -975,7 +1051,8 @@ app.get('/proposals/retrieve/:group_id/:status', function (request, response) {
             if (proposals.length === 0) {
                 // Query didn't return an error but didn't find the SchemaInfo object - This
                 // is also an internal error return.
-                response.status(200).send('Missing proposals');
+                var empty_array = [];
+                response.status(200).send(JSON.stringify(empty_array));
                 return;
             }
 
@@ -1041,7 +1118,8 @@ app.get('/proposals/discussion/get_comments/:proposal_id', function (request, re
             return;
         }
         if (comments.length === 0) {
-            response.status(200).send("Missing comments");
+            var empty_array = [];
+            response.status(200).send(JSON.stringify(empty_array));
             return;
         }
 
@@ -1072,7 +1150,8 @@ app.get('/proposals/discussion/get_amendments/:proposal_id', function (request, 
             return;
         }
         if (amendments.length === 0) {
-            response.status(200).send("Missing amendments");
+            var empty_array = [];
+            response.status(200).send(JSON.stringify(empty_array)); 
             return;
         }
 
@@ -1183,7 +1262,7 @@ app.post('/proposals/upvote/:proposal_id', function (request, response) {
                 proposal.users_who_downvoted.splice(downvoteUserIndex, 1);
            }
         }
-
+        console.log("proposal.users_who_upvoted = ", proposal.users_who_upvoted);        
         proposal.save();
         response.send(JSON.stringify(proposal));
     });
@@ -1594,6 +1673,18 @@ app.post('/proposals/vote/yes/:proposal_id', function (request, response) {
            }
         }
 
+        // If every user in the group has voted, determine the outcome immediately
+        if ((proposal.users_who_voted_yes.length + proposal.users_who_voted_no.length) === proposal.voting_members.length) {
+            console.log("Every eligible member has voted on this proposal");
+            if (proposal.users_who_voted_yes.length > proposal.users_who_voted_no.length) {
+                console.log("This proposal has been enacted");
+                proposal.status = 2;
+            } else {
+                console.log("This proposal has been rejected");
+                proposal.status = 3;
+            }
+        }
+
         proposal.save();
         response.send(JSON.stringify(proposal));
     });
@@ -1641,6 +1732,18 @@ app.post('/proposals/vote/no/:proposal_id', function (request, response) {
                 proposal.users_who_voted_yes.splice(yesVoteUserIndex, 1);
            }
         }
+
+        // If every user in the group has voted, determine the outcome immediately
+        if ((proposal.users_who_voted_yes.length + proposal.users_who_voted_no.length) === proposal.voting_members.length) {
+            console.log("Every eligible member has voted on this proposal");
+            if (proposal.users_who_voted_yes.length > proposal.users_who_voted_no.length) {
+                console.log("This proposal has been enacted");
+                proposal.status = 2;
+            } else {
+                console.log("This proposal has been rejected");
+                proposal.status = 3;
+            }
+        }        
 
         proposal.save();
         response.send(JSON.stringify(proposal));

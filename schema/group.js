@@ -22,9 +22,9 @@ var groupSchema = new mongoose.Schema({
     floor_threshold_divisor: {type: Number, default: 3}, // number of voters divided by this number will bring a proposal to the floor
     amendment_threshold_divisor: {type: Number, default: 4}, // number of voters divided by this number will approve an amendment
     enactment_divisor: {type: Number, default: 2}, // number of voters divided by this number will enact a proposal
-    max_discussion_time: {type: Number, default: 168}, // number of hours a proposal has to reach the floor before its rejected
-    min_discussion_time: {type: Number, default: 4 }, // number of hours a proposal must wait before moving to the floor
-    voting_time: {type: Number, default: 96} // number of hours a proposal appears on the floor
+    max_discussion_time: {type: Number, default: 1}, // number of hours a proposal has to reach the floor before its rejected
+    min_discussion_time: {type: Number, default: 1 }, // number of hours a proposal must wait before moving to the floor
+    voting_time: {type: Number, default: 1} // number of hours a proposal appears on the floor
 });
 
 // Create a model using Group
