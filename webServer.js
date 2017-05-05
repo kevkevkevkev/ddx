@@ -623,7 +623,7 @@ app.post('/groups/invite/members/:group_id', function (request, response) {
     console.log("Server received request to invite users with the email addresses ", invited_member_emails, " to join group with id ", group_id);    
 
     // Retrieve the array of invited members from group with group_id
-    Group.findOne({_id: group_id}).select('invited_members').exec(function (err, group) {
+    Group.findOne({_id: group_id}).select('invited_members name').exec(function (err, group) {
         if (err) {
             // Query returned an error.
             response.status(400).send(JSON.stringify(err));
@@ -648,10 +648,10 @@ app.post('/groups/invite/members/:group_id', function (request, response) {
                 // Send an email to the user notifying them that they have been invited to join DDX
                 console.log("******** Sending invitation email to", invited_member_emails[i]);
                 var data = {
-                  from: 'Excited User <postmaster@invite.ddx.exchange>',
+                  from: 'DDX <postmaster@invite.ddx.exchange>',
                   to: invited_member_emails[i],
-                  subject: 'Hello',
-                  text: 'Testing some Mailgun awesomness!'
+                  subject: 'DDX Invitation',
+                  text: 'Hello! \n You have been invited to join the group', group.name, "on Direct Democracy Exchange. \n Visit www.ddx.exchange to login or register, and visit the Group Information tab to accept the invitation."
                 };     
 
                 mailgun.messages().send(data, function (error, body) {
@@ -726,7 +726,20 @@ app.post('/groups/invite/new-members/:group_id', function (request, response) {
         for (var i = 0; i < invited_member_emails.length; i++) {
             if (!(group.invited_members.indexOf(invited_member_emails[i]) > -1)) {
                 
-                group.invited_members.push(invited_member_emails[i]);                
+                group.invited_members.push(invited_member_emails[i]);
+
+                // Send an email to the user notifying them that they have been invited to join DDX
+                console.log("******** Sending invitation email to", invited_member_emails[i]);
+                var data = {
+                  from: 'DDX <postmaster@invite.ddx.exchange>',
+                  to: invited_member_emails[i],
+                  subject: 'DDX Invitation',
+                  text: 'Hello! \n You have been invited to join the group', group.name, "on Direct Democracy Exchange. \n Visit www.ddx.exchange to login or register, and visit the Group Information tab to accept the invitation."
+                };     
+
+                mailgun.messages().send(data, function (error, body) {
+                  console.log(body);
+                });  
             }            
         }
         group.save();
