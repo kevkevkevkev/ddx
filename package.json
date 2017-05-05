@@ -28,6 +28,7 @@
     "express-session": "^1.15.2",
     "faker": "^4.1.0",
     "jsonwebtoken": "^7.4.0",
+    "mailgun-js": "^0.10.1",
     "moment": "^2.18.1",
     "mongoose": "^4.9.3",
     "multer": "^1.3.0",
