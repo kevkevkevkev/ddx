@@ -651,7 +651,7 @@ app.post('/groups/invite/members/:group_id', function (request, response) {
                   from: 'DDX <postmaster@invite.ddx.exchange>',
                   to: invited_member_emails[i],
                   subject: 'DDX Invitation',
-                  text: 'Hello! \n You have been invited to join a group on Direct Democracy Exchange. \n Visit www.ddx.exchange to login or register, and visit the Group Information tab to accept the invitation.'
+                  text: ' Hello! \n\n You have been invited to join a group on Direct Democracy Exchange. \n\n Visit www.ddx.exchange to login or register, and visit the Group Information tab to accept the invitation.'
                 };     
 
                 mailgun.messages().send(data, function (error, body) {
@@ -734,7 +734,7 @@ app.post('/groups/invite/new-members/:group_id', function (request, response) {
                   from: 'DDX <postmaster@invite.ddx.exchange>',
                   to: invited_member_emails[i],
                   subject: 'DDX Invitation',
-                  text: 'Hello! \n You have been invited to join a group on Direct Democracy Exchange. \n Visit www.ddx.exchange to login or register, and visit the Group Information tab to accept the invitation.'
+                  text: ' Hello! \n\n You have been invited to join a group on Direct Democracy Exchange. \n\n Visit www.ddx.exchange to login or register, and visit the Group Information tab to accept the invitation.'
                 };     
 
                 mailgun.messages().send(data, function (error, body) {
