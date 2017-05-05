@@ -31,7 +31,7 @@ var moment = require('moment');
  * Mailgun Configuration *
  *************************/
 
-var api_key = 'key-48f8af9da82aa3feeb7ac03e59eac156';
+var api_key = 'key-ece022f0c8744e81048d3135494b164b';
 var domain = 'invite.ddx.exchange';
 var mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
 
