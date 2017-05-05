@@ -935,80 +935,80 @@ app.get('/proposals/retrieve/:group_id/:status', function (request, response) {
         return;
     }
 
-    // // TODO: This is HACKY AF. Replace with an interval function ASAP.
-    // // Every time a user requests to retrieve the proposals, iterate through all existing proposals
-    // // to determine if they should be reclassified as enacted, rejected, etc.
-    // Proposal.find({}).exec(function (err, proposals) {
-    //     if (err) {
-    //         // Query returned an error.
-    //         response.status(400).send(JSON.stringify(err));
-    //         return;
-    //     }
-    //     if (!proposals) {
-    //         response.status(400).send('Missing proposals');
-    //         return;
-    //     }
-    //     if (proposals.length === 0) {
-    //         // Query didn't return an error but didn't find the SchemaInfo object - This
-    //         // is also an internal error return.
-    //         // var empty_array = [];
-    //         // response.status(200).send(JSON.stringify(empty_array));
-    //         response.status(200).send('Missing object');
-    //         return;
-    //     }
+    // TODO: This is HACKY AF. Replace with an interval function ASAP.
+    // Every time a user requests to retrieve the proposals, iterate through all existing proposals
+    // to determine if they should be reclassified as enacted, rejected, etc.
+    Proposal.find({}).exec(function (err, proposals) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (!proposals) {
+            response.status(400).send('Missing proposals');
+            return;
+        }
+        if (proposals.length === 0) {
+            // Query didn't return an error but didn't find the SchemaInfo object - This
+            // is also an internal error return.
+            // var empty_array = [];
+            // response.status(200).send(JSON.stringify(empty_array));
+            response.status(200).send('Missing object');
+            return;
+        }
 
-    //     var proposalArray = JSON.parse(JSON.stringify(proposals));
-    //     // Iterate through each proposal and determine if it should be moved
-    //     async.each(proposalArray, function (proposal, proposal_done) {
-    //         Proposal.findOne({_id: proposal._id}).exec(function(err, curr_proposal) {
+        var proposalArray = JSON.parse(JSON.stringify(proposals));
+        // Iterate through each proposal and determine if it should be moved
+        async.each(proposalArray, function (proposal, proposal_done) {
+            Proposal.findOne({_id: proposal._id}).exec(function(err, curr_proposal) {
 
-    //             // If a proposal is under discussion:
-    //             if (proposal.status === 0) {
-    //                 // A: Determine if proposal should be moved from discussion to the floor
-    //                 var num_voters = curr_proposal.voting_members.length;
-    //                 var req_votes = (num_voters/curr_proposal.floor_threshold_divisor);
-    //                 console.log("**** This proposal requires ", req_votes, "upvotes to move to the floor. It currently has", curr_proposal.users_who_upvoted.length, "votes");
-    //                 if (curr_proposal.users_who_upvoted.length >= req_votes) {
-    //                     console.log("This proposal has recieved enough upvotes to move to the floor");
-    //                     curr_proposal.status = 1;
-    //                     curr_proposal.setVotingCloses();
-    //                     curr_proposal.save();
-    //                 } else {
-    //                     // B: If proposal's discussion time has elapsed, move it to rejected 
-    //                     var max_discussion_moment = moment(curr_proposal.max_discussion_time);
-    //                     var now_moment = moment();
-    //                     if (max_discussion_moment.isBefore(now_moment)) {
-    //                         console.log("This proposal has not received enough upvotes in time. It is getting moved to rejected");
-    //                         curr_proposal.status = 3;
-    //                         curr_proposal.save();
-    //                     }
-    //                 }
-    //             }
+                // If a proposal is under discussion:
+                if (proposal.status === 0) {
+                    // A: Determine if proposal should be moved from discussion to the floor
+                    var num_voters = curr_proposal.voting_members.length;
+                    var req_votes = (num_voters/curr_proposal.floor_threshold_divisor);
+                    console.log("**** This proposal requires ", req_votes, "upvotes to move to the floor. It currently has", curr_proposal.users_who_upvoted.length, "votes");
+                    if (curr_proposal.users_who_upvoted.length >= req_votes) {
+                        console.log("This proposal has recieved enough upvotes to move to the floor");
+                        curr_proposal.status = 1;
+                        curr_proposal.setVotingCloses();
+                        curr_proposal.save();
+                    } else {
+                        // B: If proposal's discussion time has elapsed, move it to rejected 
+                        var max_discussion_moment = moment(curr_proposal.max_discussion_time);
+                        var now_moment = moment();
+                        if (max_discussion_moment.isBefore(now_moment)) {
+                            console.log("This proposal has not received enough upvotes in time. It is getting moved to rejected");
+                            curr_proposal.status = 3;
+                            curr_proposal.save();
+                        }
+                    }
+                }
 
-    //             // If a proposal is on the floor
-    //             if (proposal.status === 1) {
-    //                 // If the proposals' time has expired:
-    //                 if (moment(curr_proposal.voting_closes).isBefore(moment(Date.now))) {
-    //                     if (proposal.users_who_voted_yes.length > proposal.users_who_voted_no.length) {
-    //                         console.log("This proposal has been enacted");
-    //                         proposal.status = 2;
-    //                     } else {
-    //                         console.log("This proposal has been rejected");
-    //                         proposal.status = 3;
-    //                     }
-    //                 }
-    //             }
-    //             proposal_done();
-    //         });
-    //     /* Finally, report an error if necessary or return the photoArray */
-    //     }, function (err) {
-    //         if (err) {
-    //             response.status(500).send(JSON.stringify(err));
-    //         } else {
-    //             console.log('Updated proposals', proposalArray);
-    //         }
-    //     });            
-    // });
+                // If a proposal is on the floor
+                if (proposal.status === 1) {
+                    // If the proposals' time has expired:
+                    if (moment(curr_proposal.voting_closes).isBefore(moment(Date.now))) {
+                        if (proposal.users_who_voted_yes.length > proposal.users_who_voted_no.length) {
+                            console.log("This proposal has been enacted");
+                            proposal.status = 2;
+                        } else {
+                            console.log("This proposal has been rejected");
+                            proposal.status = 3;
+                        }
+                    }
+                }
+                proposal_done();
+            });
+        /* Finally, report an error if necessary or return the photoArray */
+        }, function (err) {
+            if (err) {
+                response.status(500).send(JSON.stringify(err));
+            } else {
+                console.log('Updated proposals', proposalArray);
+            }
+        });            
+    });
 
     var group_id = request.params.group_id;
     var status = request.params.status;
