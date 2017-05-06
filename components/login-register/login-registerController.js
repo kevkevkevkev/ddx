@@ -20,7 +20,7 @@ ddxApp.controller('LoginRegisterController', ['$scope', '$rootScope', '$routePar
       console.log("Submitting login() request");
       var login_resource = $resource('/admin/login');
       var login_data = {
-        email_address: $scope.LoginRegisterController.email_addressTextInput, 
+        email_address: $scope.LoginRegisterController.email_addressTextInput.toLowerCase(), 
         password: $scope.LoginRegisterController.passwordTextInput
       };
       
@@ -39,7 +39,7 @@ ddxApp.controller('LoginRegisterController', ['$scope', '$rootScope', '$routePar
 
       var register_resource = $resource('/admin/register');
       var register_data = {
-        email_address: $scope.LoginRegisterController.email_addressTextInput, 
+        email_address: $scope.LoginRegisterController.email_addressTextInput.toLowerCase(), 
         password: $scope.LoginRegisterController.confirmPasswordTextInput, 
         first_name: $scope.LoginRegisterController.firstNameInput, 
         last_name: $scope.LoginRegisterController.lastNameInput, 

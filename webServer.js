@@ -188,7 +188,7 @@ app.post('/restore-session', function(request, response) {
  */
 app.post('/admin/login', function (request, response) {
 
-    var email_address = request.body.email_address;
+    var email_address = request.body.email_address.toLowerCase();
     var password = request.body.password;
 
     // Use passport local strategy to authenticate from email_address and password stored locally
@@ -257,7 +257,7 @@ app.post('/admin/register', function (request, response) {
 
         var user = new User();
 
-        user.email_address = request.body.email_address; // Email Address / Login
+        user.email_address = request.body.email_address.toLowerCase(); // Email Address / Login
         user.first_name = request.body.first_name; // First name of the user.
         user.last_name = request.body.last_name;  // Last name of the user.
         user.description = request.body.description;  // A brief user description
@@ -643,13 +643,13 @@ app.post('/groups/invite/members/:group_id', function (request, response) {
             // If the user has not already been invited to join the group
             if (!(group.invited_members.indexOf(invited_member_emails[i]) > -1)) {
                 
-                group.invited_members.push(invited_member_emails[i]);
+                group.invited_members.push(invited_member_emails[i].toLowerCase());
 
                 // Send an email to the user notifying them that they have been invited to join DDX
-                console.log("******** Sending invitation email to", invited_member_emails[i]);
+                console.log("******** Sending invitation email to", invited_member_emails[i].toLowerCase());
                 var data = {
                   from: 'DDX <postmaster@invite.ddx.exchange>',
-                  to: invited_member_emails[i],
+                  to: invited_member_emails[i].toLowerCase(),
                   subject: 'DDX Invitation',
                   text: ' Hello! \n\n You have been invited to join a group on Direct Democracy Exchange. \n\n Visit www.ddx.exchange to login or register, and visit the Group Information tab to accept the invitation.'
                 };     
@@ -659,7 +659,7 @@ app.post('/groups/invite/members/:group_id', function (request, response) {
                 });  
                 
                 // Add the group_id to the group_invitations of the invited user
-                User.findOne({email_address: invited_member_emails[i]}).select('group_invitations').exec(function (err, user) {
+                User.findOne({email_address: invited_member_emails[i].toLowerCase()}).select('group_invitations').exec(function (err, user) {
                     if (err) {
                         // Query returned an error.
                         response.status(400).send(JSON.stringify(err));
@@ -724,9 +724,9 @@ app.post('/groups/invite/new-members/:group_id', function (request, response) {
         // Add the invited_member_emails to the invited_members array for this group
         // TODO: On the front end, do not give the user the option to invite members who have already been invited
         for (var i = 0; i < invited_member_emails.length; i++) {
-            if (!(group.invited_members.indexOf(invited_member_emails[i]) > -1)) {
+            if (!(group.invited_members.indexOf(invited_member_emails[i].toLowerCase()) > -1)) {
                 
-                group.invited_members.push(invited_member_emails[i]);
+                group.invited_members.push(invited_member_emails[i].toLowerCase());
 
                 // Send an email to the user notifying them that they have been invited to join DDX
                 console.log("******** Sending invitation email to", invited_member_emails[i]);
