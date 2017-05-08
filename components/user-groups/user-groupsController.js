@@ -61,8 +61,10 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
   $scope.UserGroupsController.group_invitations = [];
 
   $scope.UserGroupsController.loadInvitations = function() {
+    console.log("loadInvitations() called");
     var groups_resource = $resource('/groups/invitations/retrieve');
     $scope.UserGroupsController.group_invitations = groups_resource.query({}, function() {
+      $scope.main.active_user.group_invitations = $scope.UserGroupsController.group_invitations;
     // TODO: Consider implementing sorting algorithm to arrange groups
     // $scope.UserGroupsController.groups.sort(function(a, b) {     
     // });

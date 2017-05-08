@@ -675,6 +675,7 @@ app.post('/groups/invite/members/:group_id', function (request, response) {
                     if (!(user.group_invitations.indexOf(group_id) > -1)) {
                         user.group_invitations.push(group_id);                      
                     }
+                    console.log("user now =", user);
                     user.save();
                 });
             }            
