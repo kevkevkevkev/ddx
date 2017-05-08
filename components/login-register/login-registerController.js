@@ -58,4 +58,8 @@ ddxApp.controller('LoginRegisterController', ['$scope', '$rootScope', '$routePar
     $scope.LoginRegisterController.switchToRegisterView = function() {
       $scope.main.registerView = true;
     };
+
+    $scope.LoginRegisterController.switchToLoginView = function() {
+      $scope.main.registerView = false;
+    };    
   }]);

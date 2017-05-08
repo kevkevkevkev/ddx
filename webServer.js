@@ -1044,9 +1044,9 @@ app.get('/proposals/retrieve/:group_id/:status', function (request, response) {
             if (proposals.length === 0) {
                 // Query didn't return an error but didn't find the SchemaInfo object - This
                 // is also an internal error return.
-                // var empty_array = [];
-                // response.status(200).send(JSON.stringify(empty_array));
-                response.status(200).send('Missing object');
+                var empty_array = [];
+                response.status(200).send(JSON.stringify(empty_array));
+                //response.status(200).send('Missing object');
                 return;
             }
 

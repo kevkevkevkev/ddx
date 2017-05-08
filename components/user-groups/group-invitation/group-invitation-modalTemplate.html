@@ -26,15 +26,8 @@
 
     <md-dialog-actions layout="row" style="padding: 10px; min-height: 70px;">
       <div class="vote-proposal-buttons">
-        <md-button class="md-fab md-primary vote-no-button" style="background-color: #E7695D; margin-right: 20px; margin-left: 20px;" ng-click="UserGroupsController.declineInvitation()">   
-          <!-- <md-icon md-svg-src="img/icons/vote_no_button.svg" aria-label="Vote No"></md-icon> -->
-          No
-        </md-button>
-        <span></span> 
-        <md-button class="md-fab md-primary vote-yes-button" style="background-color: #76B18B; margin-right: 20px; margin-left: 20px;" ng-click="UserGroupsController.acceptInvitation()">   
-          <!-- <md-icon md-svg-src="img/icons/vote_yes_button.svg" aria-label="Vote Yes"></md-icon> -->
-          Yes
-        </md-button>        
+        <md-button type="button" class="login-btn" style="margin-right: 20px; margin-left: 20px;" ng-click="UserGroupsController.declineInvitation()">Decline</md-button>
+        <md-button type="button" class="login-btn" style="margin-right: 20px; margin-left: 20px;" ng-click="UserGroupsController.acceptInvitation()">Join</md-button>      
       </div>
     </md-dialog-actions>
 

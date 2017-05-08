@@ -21,8 +21,8 @@
     </form>
 
     <div class="login-register-buttons">
-        <button class="login-btn" type="button" ng-model="loginBtn" ng-click="LoginRegisterController.login()">Login</button>
-        <button class="login-btn" type="button" ng-model="registerBtn" ng-click="LoginRegisterController.switchToRegisterView()">Register</button>
+        <md-button type="button" class="login-btn" ng-model="loginBtn" ng-click="LoginRegisterController.login()">Login</md-button>
+        <md-button type="button" class="login-btn" ng-model="registerBtn" ng-click="LoginRegisterController.switchToRegisterView()">Register</md-button>        
     </div>
 </div>
 
@@ -65,13 +65,14 @@
 
             <div layout-gt-xs="row">
                 <md-input-container class="register-description-input" flex-gt-xs="">
-                    <label>Description</label>
+                    <label>Bio (optional): Write a brief description of yourself that other members of the DDX community will see when they view your profile.</label>
                     <textarea ng-model="LoginRegisterController.descriptionInput" md-maxlength="200" rows="5" md-select-on-focus=""></textarea>
                 </md-input-container>
             </div>
 
             <div>
-                <md-button type="submit">Register Me</md-button>
+                <md-button type="button" class="login-btn" ng-click="LoginRegisterController.switchToLoginView()">Back</md-button>
+                <md-button type="submit" class="login-btn">Register Me</md-button>
             </div>
         </form>
     </div>

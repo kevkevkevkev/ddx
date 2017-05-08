@@ -79,6 +79,7 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
         $scope.main.session = {};
         $scope.main.active_user = [];
         $scope.main.current_group_id = ""; // TODO: Confirm whether this ID is an object or a string
+        $scope.main.user_groups = [];
         $scope.main.active_tab = ""; // Controls which tab is displayed as active. -1 means no active tab.
         $scope.main.test_string = "I hope these controllers can communicate";
 
@@ -103,7 +104,11 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
             $scope.main.noOneIsLoggedIn = false;
             // Save the current session in local storage
             $scope.main.saveSession();
-            $location.path("/proposals");
+            if ($scope.main.active_user.groups.length > 0) {
+               $location.path("/proposals");
+            } else {
+                $location.path("/user-groups");
+            }
             //$location.path("/user-groups");
             //$scope.main.active_tab = "group";
             console.log("$scope.main.active_tab = ", $scope.main.active_tab);

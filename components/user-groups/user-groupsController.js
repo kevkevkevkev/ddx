@@ -5,8 +5,8 @@
 /*
  * Manages the display of groups, viewing information about groups, and creating new groups
  */
-ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams', '$resource', '$location', '$mdDialog',
-  function ($scope, $rootScope, $routeParams, $resource, $location, $mdDialog) {
+ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams', '$resource', '$location', '$mdDialog', '$window', '$route',
+  function ($scope, $rootScope, $routeParams, $resource, $location, $mdDialog, $window, $route) {
 
   $scope.UserGroupsController = {};
   $scope.main.active_tab = "group";
@@ -24,6 +24,7 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
 		// TODO: Consider implementing sorting algorithm to arrange groups
 		// $scope.UserGroupsController.groups.sort(function(a, b) {   	
 		// });
+    $scope.main.user_groups = $scope.UserGroupsController.groups;
     if (!(typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups")) {
       $scope.UserGroupsController.loadSelectedGroup();   
     }    
@@ -124,6 +125,10 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
     });    
   };
 
+  if (!(typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups")) {
+   $scope.UserGroupsController.getMembers();
+  };
+
   $scope.UserGroupsController.administrators = [];
 
   $scope.UserGroupsController.getAdministrators = function()  {
@@ -179,7 +184,10 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
     var newGroup = group_resource.save(group_data, function () {
         console.log("group_resource.save callback()");
         $mdDialog.cancel();
-        $scope.UserGroupsController.loadGroups();   
+        $scope.UserGroupsController.loadGroups();
+        //$scope.UserGroupsController.groups.push(newGroup);
+        $scope.UserGroupsController.openGroup(newGroup);
+
     }, function errorHandling(err) {
         console.log(err);
     });
