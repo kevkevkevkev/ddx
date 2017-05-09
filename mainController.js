@@ -79,6 +79,7 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
         $scope.main.session = {};
         $scope.main.active_user = [];
         $scope.main.current_group_id = ""; // TODO: Confirm whether this ID is an object or a string
+        $scope.main.current_group = {};
         $scope.main.user_groups = [];
         $scope.main.active_tab = ""; // Controls which tab is displayed as active. -1 means no active tab.
         $scope.main.test_string = "I hope these controllers can communicate";
@@ -194,6 +195,7 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
         // TODO: This is hacky. Make this better. 
         $scope.$on("Group Information", function () {
             console.log("Group Information broadcast received");
+            $scope.main.current_group_id = "";
             $scope.main.active_tab = "group";
             console.log("$scope.main.active_tab = ", $scope.main.active_tab);
         });

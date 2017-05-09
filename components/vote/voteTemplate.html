@@ -1,6 +1,6 @@
 <div class="vote-proposals">
 	<label ng-if="VoteController.proposals.length > 0">Select a proposal to vote</label>
-	<p ng-if="VoteController.proposals.length === 0" style="margin-top: 15px;">There are not currently any proposals up for a vote. Please check back later.</p>
+	<p ng-if="VoteController.proposals.length === 0" style="margin-top: 15px; margin-left: 20px;">There are not currently any proposals up for a vote. Please check back later.</p>
 	<div ng-repeat="proposal in VoteController.proposals" ng-init="sectionIndex = $index" class="vote-proposal-col">
 		<div class="vote-proposal">
 			<div class="vote-proposal-user-vote">

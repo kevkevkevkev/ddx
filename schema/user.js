@@ -29,7 +29,8 @@ var userSchema = new mongoose.Schema({
     date_time: {type: Date, default: Date.now}, // The date and time when the user was added to the database
     groups: [mongoose.Schema.Types.ObjectId], // Reference array of the IDs of the groups in which the user is a member
     group_invitations: [mongoose.Schema.Types.ObjectId], // IDs of the groups to which the user has been invited to join
-    connections: [mongoose.Schema.Types.ObjectId] // IDs of the users to whom the user is connected
+    connections: [mongoose.Schema.Types.ObjectId], // IDs of the users to whom the user is connected
+    drafts: [mongoose.Schema.Types.ObjectId] // IDs of the user's proposal drafts
 });
 
 userSchema.methods.setPassword = function(password){

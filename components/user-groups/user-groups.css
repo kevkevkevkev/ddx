@@ -2,3 +2,18 @@
 	color: white;
 	background-color: #6091DB;
 }
+
+.user-groups-create-group-button {
+	border-radius: 10px;
+	border-color: grey;
+	border-style: solid;
+	border-width: .01px;
+	padding: 2px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.user-groups-list-display {
+	margin-left: 20px;
+	margin-top: 5px;
+}

@@ -1,5 +1,5 @@
 <div class="proposals">
-	<md-button ng-click="ProposalsController.showProposalModal($event)">+ Submit New Proposal</md-button>
+	<md-button class="proposals-submit-proposal-button" ng-click="ProposalsController.showProposalModal($event)">+ Submit New Proposal</md-button>
 	<p ng-if="ProposalsController.proposals.length === 0" style="margin-left: 5%; margin-top: 15px;">There are not currently any proposals up for discussion. Click on "Submit New Proposal" to offer a new proposal and get the discussion started!</p>
 	<div ng-repeat="proposal in ProposalsController.proposals" ng-init="sectionIndex = $index" class="proposal_col">
 		<div class="proposal">

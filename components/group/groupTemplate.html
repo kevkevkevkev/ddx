@@ -1,4 +1,10 @@
 <div class="group-information-view">
+	<div class="group-information-title">
+		<p>{{main.current_group.name}}</p>
+	</div>
+	<div class="group-information-description">
+		<p>{{main.current_group.description}}</p>
+	</div>	
 	<div class="group-information-tabs" md-theme='modal'>
 	    <md-tabs md-dynamic-height="true" md-stretch-tabs="always" md-selected="selectedIndex" md-border-bottom="" md-autoselect="">
 	      <md-tab id="proposal-discussion-tab" ng-disabled="tab.disabled" label="Members" ng-click="UserGroupsController.getMembers()">
@@ -8,7 +14,7 @@
 		    </md-tab-label>
           	<md-tab-body>       
 		        <div class="group-information-display-tab" style="padding: 25px; text-align: left;">
-					<md-button ng-click="UserGroupsController.showInviteMembersModal($event)">+ Invite Members</md-button>
+					<md-button class="group-information-invite-members-button" ng-click="UserGroupsController.showInviteMembersModal($event)">+ Invite Members</md-button>
 				    <md-list-item class="md-2-line" ng-repeat="member in UserGroupsController.members" ng-click="">
 				      <div class="md-list-item-text" layout="column">
 				        <h3><b>{{ member.first_name }} {{ member.last_name }}</b></h3>

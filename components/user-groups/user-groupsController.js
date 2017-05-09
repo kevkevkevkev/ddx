@@ -311,17 +311,40 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
    * Navigation Handling *
    ***********************/
 
+  // Retrieve the current group from the server
+  var loadGroup = function() {
+    console.log("loadGroup() called");
+    var group_resource = $resource('/groups/retrieve/group/:group_id', {group_id: $scope.main.current_group_id});
+    $scope.main.current_group = group_resource.get({}, function() {
+      console.log("$scope.main.current_group = ", $scope.main.current_group);
+
+    }, function errorHandling(err) {
+        console.log(err);
+    });
+
+  }
+
   $scope.UserGroupsController.openGroup = function(group) {
+    console.log("openGroup() called");
     $scope.main.current_group_id = group._id;
+    loadGroup();
+    $scope.UserGroupsController.getMembers();
     $location.path("/group");
   };
 
   // Sets the group to that selected by the user in the group dropdown menu
   $scope.UserGroupsController.setGroup = function(group) {
+    console.log("setGroup() called");
     $scope.main.current_group_id = group._id;
     if ($scope.main.active_tab === "proposals") { $rootScope.$broadcast("Reload Proposals"); }
     if ($scope.main.active_tab === "floor") { $rootScope.$broadcast("Reload Floor Proposals"); }
-    //if ($scope.main.active_tab === "group") { }
+
+    // If the user has a group selected, load that group
+    if (!(typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups")) {
+      loadGroup();
+      $scope.UserGroupsController.getMembers();
+    }
+
     // If the user is currently on the Group Information tab, change that display to the relevant group
     var url = $location.url();
     if ((url.indexOf('/group') > -1) || (url.indexOf('/user-groups') > -1)) {

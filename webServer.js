@@ -606,6 +606,40 @@ app.get('/groups/retrieve/administrators/:group_id', function (request, response
     });         
 }); 
 
+
+/*
+ * URL /groups/retrieve/group/:group_id - Retrieve the group
+ * identified by group_id
+ */
+app.get('/groups/retrieve/group/:group_id', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    var group_id = request.params.group_id;
+    console.log("Server received group name request for group with id ", group_id);    
+
+    // Retrieve the administrators of the group with group_id
+    Group.findOne({_id: group_id}).exec(function (err, group) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (!group) {
+            // If no group found, report an error.
+            response.status(400).send('Missing group');
+            return;
+        }
+
+        console.log("Retrieved group ", group);
+        response.end(JSON.stringify(group));
+    });         
+}); 
+
+
 /*
  * URL /groups/invite/members/:group_id - Add the members specified by the IDs
  * contained in the body parameter invited_member_emails to join the group specified by

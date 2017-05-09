@@ -3,6 +3,20 @@
 	flex-direction: column;
 }
 
+.group-information-title {
+	/*margin-top: 20px;
+	margin-left: 5%;*/
+
+	margin-left: 20px;
+	margin-top: 5px;
+	font-size: 2em;
+}
+
+.group-information-description {
+	margin-left: 25px;
+	margin-bottom: 10px;
+}
+
 .group-information-tabs {
 	margin-top: 20px;
 	margin-left: 5%;
@@ -53,4 +67,14 @@ md-tabs[md-border-bottom] md-tabs-wrapper {
 
 .group-information-display-tab > label {
 	text-align: left; 
+}
+
+.group-information-invite-members-button {
+	border-radius: 10px;
+	border-color: grey;
+	border-style: solid;
+	border-width: .01px;
+	padding: 2px;
+	padding-left: 10px;
+	padding-right: 10px;
 }
