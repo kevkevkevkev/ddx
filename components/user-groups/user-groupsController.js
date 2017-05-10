@@ -113,37 +113,37 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
    * Group Member Retrieval *
    **************************/
 
-  $scope.UserGroupsController.members = [];
+  // $scope.UserGroupsController.members = [];
 
-  $scope.UserGroupsController.getMembers = function()  {
-    console.log("getMembers() called");
-    var members_resource = $resource('/groups/retrieve/members/:group_id', {group_id: $scope.main.current_group_id});
-    $scope.UserGroupsController.members = members_resource.query({}, function() {
-      // TODO: Consider implementing sorting algorithm to arrange members
-      // $scope.UserGroupsController.groups.sort(function(a, b) {     
-      // });
-    }, function errorHandling(err) {
-        console.log(err);
-    });    
-  };
+  // $scope.UserGroupsController.getMembers = function()  {
+  //   console.log("getMembers() called");
+  //   var members_resource = $resource('/groups/retrieve/members/:group_id', {group_id: $scope.main.current_group_id});
+  //   $scope.UserGroupsController.members = members_resource.query({}, function() {
+  //     // TODO: Consider implementing sorting algorithm to arrange members
+  //     // $scope.UserGroupsController.groups.sort(function(a, b) {     
+  //     // });
+  //   }, function errorHandling(err) {
+  //       console.log(err);
+  //   });    
+  // };
 
-  if (!(typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups")) {
-   $scope.UserGroupsController.getMembers();
-  };
+  // if (!(typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups")) {
+  //  $scope.UserGroupsController.getMembers();
+  // };
 
-  $scope.UserGroupsController.administrators = [];
+  // $scope.UserGroupsController.administrators = [];
 
-  $scope.UserGroupsController.getAdministrators = function()  {
-    console.log("getMembers() called");
-    var administrators_resource = $resource('/groups/retrieve/administrators/:group_id', {group_id: $scope.main.current_group_id});
-    $scope.UserGroupsController.administrators = administrators_resource.query({}, function() {
-      // TODO: Consider implementing sorting algorithm to arrange members
-      // $scope.UserGroupsController.groups.sort(function(a, b) {     
-      // });
-    }, function errorHandling(err) {
-        console.log(err);
-    });    
-  };  
+  // $scope.UserGroupsController.getAdministrators = function()  {
+  //   console.log("getMembers() called");
+  //   var administrators_resource = $resource('/groups/retrieve/administrators/:group_id', {group_id: $scope.main.current_group_id});
+  //   $scope.UserGroupsController.administrators = administrators_resource.query({}, function() {
+  //     // TODO: Consider implementing sorting algorithm to arrange members
+  //     // $scope.UserGroupsController.groups.sort(function(a, b) {     
+  //     // });
+  //   }, function errorHandling(err) {
+  //       console.log(err);
+  //   });    
+  // };  
 
 
   /**********************
@@ -311,24 +311,79 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
    * Navigation Handling *
    ***********************/
 
+  // Retrieve from the server the proposals this group has rejected
+  var loadRejected = function() {
+    var proposals_resource = $resource('/proposals/retrieve/:group_id/:status');
+    var group_id = $scope.main.current_group_id;
+    $scope.main.current_group.rejected_proposal_objects = proposals_resource.query({group_id: group_id, status: 3}, function() {
+      $scope.main.current_group.rejected_proposal_objects.sort(function(a, b) { 
+          return a.date_time-b.date_time;
+      });
+    }, function errorHandling(err) {
+        console.log(err);
+    });    
+  };
+
+  // Retrieve from the server the proposals this group has enacted
+  var loadEnacted = function() {
+    var proposals_resource = $resource('/proposals/retrieve/:group_id/:status');
+    var group_id = $scope.main.current_group_id;
+    $scope.main.current_group.enacted_proposal_objects = proposals_resource.query({group_id: group_id, status: 2}, function() {
+      $scope.main.current_group.enacted_proposal_objects.sort(function(a, b) { 
+          return a.date_time-b.date_time;
+      });
+    }, function errorHandling(err) {
+        console.log(err);
+    });    
+  };
+
+  // Retrieve from the server the administrators of the current group
+  var loadAdmins = function() {
+    var administrators_resource = $resource('/groups/retrieve/administrators/:group_id', {group_id: $scope.main.current_group_id});
+    $scope.main.current_group.administrator_objects = administrators_resource.query({}, function() {
+      // TODO: Consider implementing sorting algorithm to arrange members
+      // $scope.UserGroupsController.groups.sort(function(a, b) {     
+      // });
+    }, function errorHandling(err) {
+        console.log(err);
+    }); 
+  }
+
+  // Retrieve the members of the current group from the server
+  var loadMembers = function() {
+    var members_resource = $resource('/groups/retrieve/members/:group_id', {group_id: $scope.main.current_group_id});
+    $scope.main.current_group.member_objects = members_resource.query({}, function() {
+      // Sort members by their first name
+      $scope.main.current_group.member_objects.sort(function(a, b) {
+        if(a.first_name < b.first_name) return -1;
+        if(a.first_name > b.first_name) return 1;
+        return 0;
+      });
+    }, function errorHandling(err) {
+        console.log(err);
+    });       
+  };
+
   // Retrieve the current group from the server
   var loadGroup = function() {
     console.log("loadGroup() called");
     var group_resource = $resource('/groups/retrieve/group/:group_id', {group_id: $scope.main.current_group_id});
     $scope.main.current_group = group_resource.get({}, function() {
       console.log("$scope.main.current_group = ", $scope.main.current_group);
-
+      loadMembers();
+      loadAdmins();
+      loadEnacted();
+      loadRejected();
     }, function errorHandling(err) {
         console.log(err);
     });
-
   }
 
   $scope.UserGroupsController.openGroup = function(group) {
     console.log("openGroup() called");
     $scope.main.current_group_id = group._id;
     loadGroup();
-    $scope.UserGroupsController.getMembers();
+    //$scope.UserGroupsController.getMembers();
     $location.path("/group");
   };
 
@@ -364,62 +419,62 @@ ddxApp.controller('UserGroupsController', ['$scope', '$rootScope', '$routeParams
     }   
   };
 
-  /**************************
-   * Load Enacted Proposals *
-   **************************/
+  // /**************************
+  //  * Load Enacted Proposals *
+  //  **************************/
 
-  $scope.UserGroupsController.enactedProposals = [];
+  // $scope.UserGroupsController.enactedProposals = [];
 
-  $scope.UserGroupsController.loadEnactedProposals = function() {
+  // $scope.UserGroupsController.loadEnactedProposals = function() {
     
-    console.log("$scope.UserGroupsController.loadEnactedProposals() called");
-    var proposals_resource = $resource('/proposals/retrieve/:group_id/:status');
-    var group_id = $scope.main.current_group_id;
-    // TODO: This is hacky. Fix this.
-    if (typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups") {
-      group_id = "all";
-    }
+  //   console.log("$scope.UserGroupsController.loadEnactedProposals() called");
+  //   var proposals_resource = $resource('/proposals/retrieve/:group_id/:status');
+  //   var group_id = $scope.main.current_group_id;
+  //   // TODO: This is hacky. Fix this.
+  //   if (typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups") {
+  //     group_id = "all";
+  //   }
 
-    $scope.UserGroupsController.enactedProposals = proposals_resource.query({group_id: group_id, status: 2}, function() {
-      $scope.UserGroupsController.enactedProposals.sort(function(a, b) { 
-          return a.date_time-b.date_time;
-      });
-    }, function errorHandling(err) {
-        console.log(err);
-    });
-  };
+  //   $scope.UserGroupsController.enactedProposals = proposals_resource.query({group_id: group_id, status: 2}, function() {
+  //     $scope.UserGroupsController.enactedProposals.sort(function(a, b) { 
+  //         return a.date_time-b.date_time;
+  //     });
+  //   }, function errorHandling(err) {
+  //       console.log(err);
+  //   });
+  // };
 
-  if (!(typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups")) {
-    $scope.UserGroupsController.loadEnactedProposals();
-  }
+  // if (!(typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups")) {
+  //   $scope.UserGroupsController.loadEnactedProposals();
+  // }
 
-  /***************************
-   * Load Rejected Proposals *
-   ***************************/
+  // **************************
+  //  * Load Rejected Proposals *
+  //  **************************
 
-  $scope.UserGroupsController.rejectedProposals = [];
+  // $scope.UserGroupsController.rejectedProposals = [];
 
-  $scope.UserGroupsController.loadRejectedProposals = function() {
+  // $scope.UserGroupsController.loadRejectedProposals = function() {
     
-    console.log("$scope.UserGroupsController.loadRejectedProposals() called");
-    var proposals_resource = $resource('/proposals/retrieve/:group_id/:status');
-    var group_id = $scope.main.current_group_id;
-    // TODO: This is hacky. Fix this.
-    if (typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups") {
-      group_id = "all";
-    }
+  //   console.log("$scope.UserGroupsController.loadRejectedProposals() called");
+  //   var proposals_resource = $resource('/proposals/retrieve/:group_id/:status');
+  //   var group_id = $scope.main.current_group_id;
+  //   // TODO: This is hacky. Fix this.
+  //   if (typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups") {
+  //     group_id = "all";
+  //   }
 
-    $scope.UserGroupsController.rejectedProposals = proposals_resource.query({group_id: group_id, status: 3}, function() {
-      $scope.UserGroupsController.rejectedProposals.sort(function(a, b) { 
-          return a.date_time-b.date_time;
-      });
-    }, function errorHandling(err) {
-        console.log(err);
-    });
-  };
+  //   $scope.UserGroupsController.rejectedProposals = proposals_resource.query({group_id: group_id, status: 3}, function() {
+  //     $scope.UserGroupsController.rejectedProposals.sort(function(a, b) { 
+  //         return a.date_time-b.date_time;
+  //     });
+  //   }, function errorHandling(err) {
+  //       console.log(err);
+  //   });
+  // };
 
-  if (!(typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups")) {
-    $scope.UserGroupsController.loadRejectedProposals();
-  }  
+  // if (!(typeof group_id === undefined || $scope.main.current_group_id === "" || $scope.main.current_group_id === "All Groups")) {
+  //   $scope.UserGroupsController.loadRejectedProposals();
+  // }  
 }]);
 

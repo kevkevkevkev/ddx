@@ -7,7 +7,7 @@
 	</div>	
 	<div class="group-information-tabs" md-theme='modal'>
 	    <md-tabs md-dynamic-height="true" md-stretch-tabs="always" md-selected="selectedIndex" md-border-bottom="" md-autoselect="">
-	      <md-tab id="proposal-discussion-tab" ng-disabled="tab.disabled" label="Members" ng-click="UserGroupsController.getMembers()">
+	      <md-tab id="proposal-discussion-tab" ng-disabled="tab.disabled" label="Members">
 		    <md-tab-label>
 		      <md-icon md-svg-icon="img/icons/members_icon.svg"></md-icon>
 		       Members
@@ -15,12 +15,18 @@
           	<md-tab-body>       
 		        <div class="group-information-display-tab" style="padding: 25px; text-align: left;">
 					<md-button class="group-information-invite-members-button" ng-click="UserGroupsController.showInviteMembersModal($event)">+ Invite Members</md-button>
-				    <md-list-item class="md-2-line" ng-repeat="member in UserGroupsController.members" ng-click="">
+<!-- 				    <md-list-item class="md-2-line" ng-repeat="member in UserGroupsController.members" ng-click="">
 				      <div class="md-list-item-text" layout="column">
 				        <h3><b>{{ member.first_name }} {{ member.last_name }}</b></h3>
 				        <h4>{{ member.description }}</h4>
 				      </div>
-				    </md-list-item>
+				    </md-list-item> -->
+				    <md-list-item class="md-2-line" ng-repeat="member in main.current_group.member_objects">
+				      <div class="md-list-item-text" layout="column">
+				        <h3><b>{{ member.first_name }} {{ member.last_name }}</b></h3>
+				        <h4>{{ member.description }}</h4>
+				      </div>
+				    </md-list-item>				    
 		        </div>
 	        </md-tab-body>
 	      </md-tab>
@@ -31,8 +37,8 @@
 		    </md-tab-label>
           	<md-tab-body>       
 		        <div class="group-information-display-tab" style="padding: 25px; text-align: center;">
-					<p ng-if="UserGroupsController.enactedProposals.length===0">This group has not yet enacted any proposals</p>
-					<div ng-repeat="proposal in UserGroupsController.enactedProposals" ng-init="sectionIndex = $index" class="vote-proposal-col">
+					<p ng-if="main.current_group.enacted_proposal_objects.length===0">This group has not yet enacted any proposals</p>
+					<div ng-repeat="proposal in main.current_group.enacted_proposal_objects" ng-init="sectionIndex = $index" class="vote-proposal-col">
 						<div class="vote-proposal">
 							<div class="vote-proposal-user-vote">
 						        <md-button class="md-icon-button vote-oval-button" aria-label="Vote" ng-click="VoteController.showProposalModal($event, proposal, $index)">		
@@ -58,8 +64,8 @@
 		    </md-tab-label>
           	<md-tab-body>       
 		        <div class="group-information-display-tab" style="padding: 25px; text-align: center;">
-					<p ng-if="UserGroupsController.rejectedProposals.length===0">This group has not yet rejected any proposals</p>
-					<div ng-repeat="proposal in UserGroupsController.rejectedProposals" ng-init="sectionIndex = $index" class="vote-proposal-col">
+					<p ng-if="main.current_group.rejected_proposal_objects.length===0">This group has not yet rejected any proposals</p>
+					<div ng-repeat="proposal in main.current_group.rejected_proposal_objects" ng-init="sectionIndex = $index" class="vote-proposal-col">
 						<div class="vote-proposal">
 							<div class="vote-proposal-user-vote">
 						        <md-button class="md-icon-button vote-oval-button" aria-label="Vote" ng-click="VoteController.showProposalModal($event, proposal, $index)">		
@@ -78,14 +84,14 @@
 		        </div>
 	        </md-tab-body>
 	      </md-tab>
-	      <md-tab id="proposal-discussion-tab" ng-disabled="tab.disabled" label="Administrators" ng-click="UserGroupsController.getAdministrators()">
+	      <md-tab id="proposal-discussion-tab" ng-disabled="tab.disabled" label="Administrators">
 		    <md-tab-label>
 		      <md-icon md-svg-icon="img/icons/administrator_icon.svg"></md-icon>
 		       Administrators
 		    </md-tab-label>
           	<md-tab-body>       
 		        <div class="group-information-display-tab" style="padding: 25px; text-align: left;">
-				    <md-list-item class="md-2-line" ng-repeat="administrator in UserGroupsController.administrators" ng-click="">
+				    <md-list-item class="md-2-line" ng-repeat="administrator in main.current_group.administrator_objects" ng-click="">
 				      <div class="md-list-item-text" layout="column">
 				        <h3><b>{{ administrator.first_name }} {{ administrator.last_name }}</b></h3>
 				        <h4>{{ administrator.description }}</h4>
@@ -102,10 +108,10 @@
           	<md-tab-body>       
 		        <div class="group-information-display-tab" style="padding: 25px; text-align: left;">
 		        <p><b>Form of Government:</b> Direct Democracy – Every member can submit proposals, propose amendments, and vote on proposals that go to the floor.</p>
-		        <p><b>Floor Threshold:</b> 1/{{UserGroupsController.selectedGroup.floor_threshold_divisor}} of members must upvote a proposal for it to reach the floor</p>
-		        <p><b>Amendment Threshold:</b> 1/{{UserGroupsController.selectedGroup.amendment_threshold_divisor}} of members must upvote an amendment for it to alter the text of a proposal</p>
-		        <p><b>Minimum Discussion Time:</b> A proposal must remain under discussion for {{UserGroupsController.selectedGroup.min_discussion_time}} hours before it can go to the floor.</p>
-		        <p><b>Maximum Discussion Time:</b> If a proposal does not go to the floor after {{UserGroupsController.selectedGroup.max_discussion_time}} hours of discussion, it will be rejected.</p>
+		        <p><b>Floor Threshold:</b> 1/{{main.current_group.floor_threshold_divisor}} of members must upvote a proposal for it to reach the floor</p>
+		        <p><b>Amendment Threshold:</b> 1/{{main.current_group.amendment_threshold_divisor}} of members must upvote an amendment for it to alter the text of a proposal</p>
+		        <p><b>Minimum Discussion Time:</b> A proposal must remain under discussion for {{main.current_group.min_discussion_time}} hours before it can go to the floor.</p>
+		        <p><b>Maximum Discussion Time:</b> If a proposal does not go to the floor after {{main.current_group.max_discussion_time}} hours of discussion, it will be rejected.</p>
 		        </div>
 	        </md-tab-body>
 	      </md-tab>	      	           
