@@ -47,6 +47,7 @@ var Comment = require('./schema/comment.js');
 var Amendment = require('./schema/amendment.js');
 var Group = require('./schema/group.js')
 var SchemaInfo = require('./schema/schemaInfo.js');
+var Draft = require('./schema/draft.js');
 
 var express = require('express');
 var app = express();
@@ -1268,6 +1269,184 @@ app.get('/proposals/discussion/get_comments_and_amendments/:proposal_id', functi
         doneCommentCallback();
     }); 
 });
+
+
+/************************************************
+ * Proposal Draft Saving and Retrieval Handling *
+ ************************************************/
+
+/*
+ * URL /drafts/new - Enter a new proposal draft in the database
+ */
+app.post('/drafts/new', function (request, response) {
+
+    console.log("Server received proposal draft upload request");
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    var draft_attributes = {
+        title: request.body.title, // Draft proposal title
+        text: request.body.text, // Text of the draft proposal
+        description: request.body.description, // The author's description of the draft proposal
+        user_author_id: request.session.user_id, // Reference to the ID of the user who wrote the draft proposal
+        group: request.body.group // Reference to the ID of the group that this draft proposal may be submitted to
+    };
+
+    function doneCallback(err, newDraft) {
+
+        // We got the object - create an array version of it in JSON
+        console.log("Created draft ", newDraft);
+        response.end(JSON.stringify(newDraft));         
+    };
+
+    Draft.create(draft_attributes, doneCallback);
+});
+
+/*
+ * URL /drafts/retrieve - Retrieve the proposal drafts associated with the active user
+ */
+app.get('/drafts/retrieve', function (request, response) {
+
+    if (!request.session.email_address) {
+        response.status(401).send("No user logged in");
+        return;
+    }
+
+    // TODO: This is HACKY AF. Replace with an interval function ASAP.
+    // Every time a user requests to retrieve the proposals, iterate through all existing proposals
+    // to determine if they should be reclassified as enacted, rejected, etc.
+    Proposal.find({}).exec(function (err, proposals) {
+        if (err) {
+            // Query returned an error.
+            response.status(400).send(JSON.stringify(err));
+            return;
+        }
+        if (!proposals) {
+            response.status(400).send('Missing proposals');
+            return;
+        }
+        if (proposals.length === 0) {
+            // Query didn't return an error but didn't find the SchemaInfo object - This
+            // is also an internal error return.
+            // var empty_array = [];
+            // response.status(200).send(JSON.stringify(empty_array));
+            response.status(200).send('Missing object');
+            return;
+        }
+
+        var proposalArray = JSON.parse(JSON.stringify(proposals));
+        // Iterate through each proposal and determine if it should be moved
+        async.each(proposalArray, function (proposal, proposal_done) {
+            Proposal.findOne({_id: proposal._id}).exec(function(err, curr_proposal) {
+
+                // If a proposal is under discussion:
+                if (proposal.status === 0) {
+                    // A: Determine if proposal should be moved from discussion to the floor
+                    var num_voters = curr_proposal.voting_members.length;
+                    var req_votes = (num_voters/curr_proposal.floor_threshold_divisor);
+                    console.log("**** This proposal requires ", req_votes, "upvotes to move to the floor. It currently has", curr_proposal.users_who_upvoted.length, "votes");
+                    if (curr_proposal.users_who_upvoted.length >= req_votes) {
+                        console.log("This proposal has recieved enough upvotes to move to the floor");
+                        curr_proposal.status = 1;
+                        curr_proposal.setVotingCloses();
+                        curr_proposal.save();
+                    } else {
+                        // B: If proposal's discussion time has elapsed, move it to rejected 
+                        var max_discussion_moment = moment(curr_proposal.max_discussion_time);
+                        var now_moment = moment();
+                        if (max_discussion_moment.isBefore(now_moment)) {
+                            console.log("This proposal has not received enough upvotes in time. It is getting moved to rejected");
+                            curr_proposal.status = 3;
+                            curr_proposal.save();
+                        }
+                    }
+                }
+
+                // If a proposal is on the floor
+                if (proposal.status === 1) {
+                    // If the proposals' time has expired:
+                    if (moment(curr_proposal.voting_closes).isBefore(moment(Date.now))) {
+                        if (proposal.users_who_voted_yes.length > proposal.users_who_voted_no.length) {
+                            console.log("This proposal has been enacted");
+                            proposal.status = 2;
+                        } else {
+                            console.log("This proposal has been rejected");
+                            proposal.status = 3;
+                        }
+                    }
+                }
+                proposal_done();
+            });
+        /* Finally, report an error if necessary or return the photoArray */
+        }, function (err) {
+            if (err) {
+                response.status(500).send(JSON.stringify(err));
+            } else {
+                console.log('Updated proposals', proposalArray);
+            }
+        });            
+    });
+
+    var group_id = request.params.group_id;
+    var status = request.params.status;
+    //console.log("Server received request to retrieve proposals for group", group_id);    
+
+    // If no group selected, retrieval all proposals to which the user has access
+    if (typeof group_id === "undefined" || group_id === "all") {
+        var groups = request.session.user.groups;
+        //console.log("group_id === undefined, retrieving all proposals for the groups with ids", groups);
+        Proposal.find({group: groups, status: status}).exec(function (err, proposals) {
+            if (err) {
+                // Query returned an error.
+                response.status(400).send(JSON.stringify(err));
+                return;
+            }
+            if (!proposals) {
+                response.status(400).send(JSON.stringify(err));
+                return;
+            }
+            if (proposals.length === 0) {
+                // Query didn't return an error but didn't find the SchemaInfo object - This
+                // is also an internal error return.
+                var empty_array = [];
+                response.status(200).send(JSON.stringify(empty_array));
+                //response.status(200).send('Missing object');
+                return;
+            }
+
+            // We got the object - create an array version of it in JSON
+            var proposalsArray = JSON.parse(JSON.stringify(proposals));
+            console.log('proposals', proposals);
+            response.end(JSON.stringify(proposals));
+        });
+    // Otherwise, retrieve the proposals associated with the selected group        
+    } else {
+        //console.log("group_id is defined, retrieving proposals for that group");
+        // Retrieve all proposals with TODO: add group / active query qualifiers
+        Proposal.find({group: group_id, status: status}).exec(function (err, proposals) {
+            if (err) {
+                // Query returned an error.
+                response.status(400).send(JSON.stringify(err));
+                return;
+            }
+            if (proposals.length === 0) {
+                // Query didn't return an error but didn't find the SchemaInfo object - This
+                // is also an internal error return.
+                var empty_array = [];
+                response.status(200).send(JSON.stringify(empty_array));
+                return;
+            }
+
+            // We got the object - create an array version of it in JSON
+            var proposalsArray = JSON.parse(JSON.stringify(proposals));
+            //console.log('proposals', proposals);
+            response.end(JSON.stringify(proposals));
+        });        
+    };
+});    
 
 /*****************************************
  * Proposal Upvote and Downvote Handling *

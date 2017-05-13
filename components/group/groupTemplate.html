@@ -15,12 +15,6 @@
           	<md-tab-body>       
 		        <div class="group-information-display-tab" style="padding: 25px; text-align: left;">
 					<md-button class="group-information-invite-members-button" ng-click="UserGroupsController.showInviteMembersModal($event)">+ Invite Members</md-button>
-<!-- 				    <md-list-item class="md-2-line" ng-repeat="member in UserGroupsController.members" ng-click="">
-				      <div class="md-list-item-text" layout="column">
-				        <h3><b>{{ member.first_name }} {{ member.last_name }}</b></h3>
-				        <h4>{{ member.description }}</h4>
-				      </div>
-				    </md-list-item> -->
 				    <md-list-item class="md-2-line" ng-repeat="member in main.current_group.member_objects">
 				      <div class="md-list-item-text" layout="column">
 				        <h3><b>{{ member.first_name }} {{ member.last_name }}</b></h3>

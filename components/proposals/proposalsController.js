@@ -134,11 +134,39 @@ ddxApp.controller('ProposalsController', ['$scope', '$rootScope', '$routeParams'
         console.log("proposal_resource.save callback()");
         $mdDialog.cancel();
         $scope.main.active_tab = "proposals";
+        $scope.ProposalsController.newProposalTitle = "";
+        $scope.ProposalsController.newProposalText = "";
+        $scope.ProposalsController.newProposalDescription = "";
         $scope.ProposalsController.loadProposals();        
     }, function errorHandling(err) {
         console.log(err);
     });
     console.log("Submitting upload proposal request");      
+  };
+
+  $scope.ProposalsController.saveProposalDraft = function() {
+    console.log("saveProposalDraft() called");
+
+    var draft_resource = $resource('/drafts/new');
+    var draft_data = {
+      group: $scope.ProposalsController.newProposalGroupID,
+      title: $scope.ProposalsController.newProposalTitle,
+      text: $scope.ProposalsController.newProposalText,
+      description: $scope.ProposalsController.newProposalDescription,
+    };
+
+    var newDraft = draft_resource.save(draft_data, function () {
+        console.log("draft_resource.save callback()");
+        $mdDialog.cancel();
+        $scope.main.active_tab = "proposals";
+        $scope.ProposalsController.newProposalTitle = "";
+        $scope.ProposalsController.newProposalText = "";
+        $scope.ProposalsController.newProposalDescription = "";
+        $scope.ProposalsController.loadProposals();        
+    }, function errorHandling(err) {
+        console.log(err);
+    });
+    console.log("Submitting upload proposal request");   
   };
 
 
