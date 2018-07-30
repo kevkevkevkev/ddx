@@ -12,8 +12,6 @@ var schemaInfo = new Schema({
     load_date_time: {type: Date, default: Date.now},
 });
 
-// the schema is useless so far
-// we need to create a model using it
 var SchemaInfo = mongoose.model('SchemaInfo', schemaInfo);
 
 // make this available 

@@ -1,6 +1,6 @@
 'use strict';
 
-/* Copyright © 2017 Kevin O'Connell. All rights reserved. */
+/* Copyright © 2018 Kevin O'Connell. All rights reserved. */
 
 var ddxApp = angular.module('ddxApp', ['ngRoute', 'ngMaterial', 'ngResource', 
     'ngMessages', 'LocalStorageModule', 'angularMoment']);
@@ -78,7 +78,7 @@ ddxApp.controller('MainController', ['$scope', '$rootScope', '$location',
         $scope.main.registerView = false;
         $scope.main.session = {};
         $scope.main.active_user = [];
-        $scope.main.current_group_id = ""; // TODO: Confirm whether this ID is an object or a string
+        $scope.main.current_group_id = ""; 
         $scope.main.current_group = {};
         $scope.main.user_groups = [];
         $scope.main.active_tab = ""; // Controls which tab is displayed as active. -1 means no active tab.

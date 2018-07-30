@@ -1,5 +1,5 @@
 "use strict";
-/* Copyright © 2017 Kevin O'Connell. All rights reserved. */
+/* Copyright © 2018 Kevin O'Connell. All rights reserved. */
 
 /* jshint node: true */
 
@@ -143,7 +143,7 @@ app.get('/get-current-session', function(request, response) {
  * user.
  */
  // TODO: Speak with an experienced developer about how to improve security here. Salting passwords? 
- // TODO: What are the risks associated with keeping session data stored on local machine?
+ // TODO: Become informed on the risks associated with keeping session data stored on local machine.
 app.post('/restore-session', function(request, response) {
 
     var email_address = request.body.email_address;
@@ -204,7 +204,7 @@ app.post('/admin/login', function (request, response) {
           return;
         }
 
-        // TODO: Rework this so one call is to retrieve the token, and another is to retrieve the active user (*sigh*)
+        // TODO: Rework this so one call is to retrieve the token, and another is to retrieve the active user
         // If a user is found
         if(user){
             request.session.email_address = email_address;
@@ -940,7 +940,6 @@ app.post('/proposals/new', function (request, response) {
     function doneCallback(err, newProposal) {
 
         // Retrieve the proposal's group, and add the group's name to the proposal
-        // TODO: Do I need to add the proposal to the group? Perhaps not, because I can search by the proposal
         Group.findOne({_id: request.body.group}).exec(function (err, group) {
             if (err) {
                 // Query returned an error.
@@ -984,7 +983,7 @@ app.get('/proposals/retrieve/:group_id/:status', function (request, response) {
         return;
     }
 
-    // TODO: This is HACKY AF. Replace with an interval function ASAP.
+    // TODO: This is HACKY. Replace with an interval function ASAP.
     // Every time a user requests to retrieve the proposals, iterate through all existing proposals
     // to determine if they should be reclassified as enacted, rejected, etc.
     Proposal.find({}).exec(function (err, proposals) {
@@ -1315,7 +1314,7 @@ app.get('/drafts/retrieve', function (request, response) {
         return;
     }
 
-    // TODO: This is HACKY AF. Replace with an interval function ASAP.
+    // TODO: This is HACKY. Replace with an interval function ASAP.
     // Every time a user requests to retrieve the proposals, iterate through all existing proposals
     // to determine if they should be reclassified as enacted, rejected, etc.
     Proposal.find({}).exec(function (err, proposals) {

@@ -1,6 +1,6 @@
 'use strict';
 
-/* Copyright © 2017 Kevin O'Connell. All rights reserved. */
+/* Copyright © 2018 Kevin O'Connell. All rights reserved. */
 
 /*
  * Manages the discussion of a proposal, which includes:
